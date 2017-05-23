@@ -23,3 +23,5 @@ Cada membro do grupo será argüido e avaliado em separado sobre a teoria da JVM
 Páginas web descrevendo cada função implementada na JVM abrangendo um diagrama de ativação (diagrama de
 comunicação entre os módulos) e a descrição das principais estruturas de dados utilizadas. Para CADA FUNÇÃO deverá ser elaborada um frame contendo: nome da função, objetivo, parâmetros de entrada, parâmetros de saída, descrição do algoritmo que implementa, e links para a função chamadora e para as funções chamadas.
 - Atribuição de nota para a JVM:0,1*leitor-exibidor + 0,4*corretude + 0,4*defesa individual+ 0,1*site
+
+**DEADLINE: 26/06**
