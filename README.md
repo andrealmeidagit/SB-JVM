@@ -3,9 +3,13 @@ Repositório para a JVM
 
 Requisitos do programa:
 
-JVM com opção de leitor/exibidor – Desenvolvida e defendida em grupo de até 5 membros. Não será apresentada
+JVM com opção de leitor/exibidor
+Desenvolvida e defendida em grupo de até 5 membros. Não será apresentada
 especificação por escrito. O programa será executado para avaliação da corretude no sistema operacional Windows e com bytecode gerado pelo Javac e da qualidade da documentação apresentada.
-Critérios de correção do leitor/exibidor e da JVM – Compilação com o GCC com opções –std=c99 e execução para análise da sua corretude. Serão elaborados pequenos programas Java que serão compilados com o Javac.
+
+Critérios de correção do leitor/exibidor e da JVM
+Compilação com o GCC com opções –std=c99 e execução para análise da sua corretude. Serão elaborados pequenos programas Java que serão compilados com o Javac.
+
 ATRIBUIÇÃO DA NOTA
 - Leitor de ponto class e exibidor de bytecode - 1 (100)
 Exibição das estruturas internas montadas após a leitura de um arquivo ponto class (70%) e os mnemônicos em assembly associado aos bytecodes Java (30).
