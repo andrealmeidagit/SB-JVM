@@ -3,6 +3,8 @@ Repositório para a JVM
 
 **Requisitos do programa:**
 
+Os alunos deverão implementar em C99, um “leitor de arquivo ponto class e exibidor de bytecode Java” e uma máquina virtual (JVM) para executar programas Java no formato ponto class.
+
 **JVM com opção de leitor/exibidor**
 Desenvolvida e defendida em grupo de até 5 membros. Não será apresentada
 especificação por escrito. O programa será executado para avaliação da corretude no sistema operacional Windows e com bytecode gerado pelo Javac e da qualidade da documentação apresentada.
