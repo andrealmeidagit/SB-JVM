@@ -27,3 +27,16 @@ comunicação entre os módulos) e a descrição das principais estruturas de da
 - Atribuição de nota para a JVM:0,1*leitor-exibidor + 0,4*corretude + 0,4*defesa individual+ 0,1*site
 
 **DEADLINE: 26/06**
+
+
+
+**Bibliografia**
+
+- https://docs.oracle.com/javase/specs/jvms/se7/jvms7.pdf - livro
+- https://en.wikipedia.org/wiki/List_of_Java_virtual_machines - lista de JVMs open source
+- https://www.youtube.com/watch?v=rPyqB1l4gko - video sobre bytecode
+- https://www.youtube.com/watch?v=DXykPdFt1KY - video sobre bytecode
+
+- https://www.codeproject.com/Articles/24029/Home-Made-Java-Virtual-Machine (TEM VÍRUS NO SITE!! CUIDADO!!)
+- https://1drv.ms/f/s!Aqn_fz2oxhxZg5gIOFuokeRlEomRMw (MATERIAL DO SITE ACIMA - SEM VÍRUS!!)
+- https://github.com/MykolaBova/java.jvm.CodeProject (github do projeto acima)
