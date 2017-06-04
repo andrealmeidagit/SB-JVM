@@ -6,6 +6,6 @@
 #include <string.h>
 
 void checkArgumentAmount(int argc);
-void checkFileExtension(char fileName[]);
+void checkFileExtension(char* file_name);
 
 #endif /* ARGUMENT_CHECKS_H_ */

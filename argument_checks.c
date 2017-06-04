@@ -12,8 +12,8 @@ void checkArgumentAmount(int argc) {
     }
 }
 
-void checkFileExtension(char fileName[]) {
-    if (strstr(fileName, ".class") == NULL) {
+void checkFileExtension(char* file_name) {
+    if (strstr(file_name, ".class") == NULL) {
         fprintf(stderr, "[ERRO]: O arquivo deve ter a extensao .class\n");
         showUsage();
         exit(1);
