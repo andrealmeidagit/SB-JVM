@@ -18,6 +18,5 @@ ClassFile readClassFile(char* file_name) {
     ClassFile class_file;
     fp_class_file = fopen(file_name, "rb");
     readMagicNumber(&class_file, fp_class_file);
-    printf("Magic number: %#010x\n", class_file.magic);
     return class_file;
 }
