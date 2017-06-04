@@ -8,6 +8,6 @@
 
 #include "leitor.h"
 
-void showClassFile(ClassFile class_file);
+void showClassFile(FILE* stream, ClassFile class_file);
 
 #endif
