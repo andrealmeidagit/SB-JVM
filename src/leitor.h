@@ -58,7 +58,7 @@ struct ExceptionTable_{
 typedef struct ExceptionTable_ exception_table_t;
 
 //AttributeInfo
-struct AttributeInfo_{
+struct attribute_info{
     uint16_t attribute_name_index;       
     uint32_t attribute_length;
     union{
@@ -111,7 +111,7 @@ struct AttributeInfo_{
 
     }u;
 };
-typedef struct AttributeInfo_ attribute_info;
+typedef struct attribute_info attribute_info;
 
 //FieldInfo
 struct FieldInfo_{
