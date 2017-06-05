@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
     checkArgumentAmount(argc);
     checkFileExtension(argv[1]);
     hello_world_class = readClassFile(argv[1]);
+    hello_world_class.access_flags = 0x0021;
     showClassFile(output_mode=='t' ? stdout : fopen("output.txt", "w+"), hello_world_class);
     return 0;
 }

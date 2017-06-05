@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "leitor.h"
+#include "access_flags.h"
 
 void showClassFile(FILE* stream, ClassFile class_file);
 
