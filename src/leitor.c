@@ -427,7 +427,6 @@ ClassFile readClassFile(char* file_name) {
     FILE *fp;
     ClassFile class_file;
     fp = fopen(file_name, "rb");
-
     class_file.magic = read4Byte(fp);
     class_file.minor_version = read2Byte(fp);
     class_file.major_version = read2Byte(fp);
