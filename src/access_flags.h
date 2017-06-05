@@ -8,7 +8,7 @@
 #define ACC_INTERFACE   0x0200
 #define ACC_ABSTRACT    0x0400
 #define ACC_SYNTHETIC   0x1000
-#define ACC_ANNOTATION   0x2000
+#define ACC_ANNOTATION  0x2000
 #define ACC_ENUM        0x4000
 
 /* Field access flags */
