@@ -8,6 +8,13 @@
 
 typedef unsigned char uchar;
 
+struct ClassFile_;
+typedef struct ClassFile_ ClassFile;
+struct MethodInfo_;
+typedef struct MethodInfo_ MethodInfo;
+struct AttributeInfo_;
+typedef struct AttributeInfo_ AttributeInfo;
+
 struct ClassFile_ {
     uint32_t magic;
     uint16_t minor_version;
@@ -22,11 +29,24 @@ struct ClassFile_ {
     uint16_t fields_count;
     /* field_info fields */
     uint16_t methods_count;
-    /* method_info methods */
+    MethodInfo* methods;
     uint16_t attributes_count;
-    /* attribute_info attributes */
+    AttributeInfo* attributes;
 };
-typedef struct ClassFile_ ClassFile;
+
+struct MethodInfo_ {
+    uint16_t access_flags;
+    uint16_t name_index;
+    uint16_t descriptor_index;
+    uint16_t attributes_count;
+    AttributeInfo* attributes;
+};
+
+struct AttributeInfo_ {
+    uint16_t attribute_name_index;
+    uint32_t attribute_length;
+    uint8_t* info;
+};
 
 ClassFile readClassFile(char* file_name);
 

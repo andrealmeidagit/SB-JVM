@@ -20,6 +20,10 @@ static uint32_t read4Byte(FILE* fp) {
     return byte4;
 }
 
+static AttributeInfo* readAttributeArray(uint16_t attributes_count, FILE* fp) {
+    return NULL;
+}
+
 static void readConstantPool(ClassFile* class_file, FILE* fp) {
     class_file->constant_pool_count = read2Byte(fp);
 }
@@ -41,10 +45,23 @@ static void readFields(ClassFile* class_file, FILE* fp) {
 
 static void readMethods(ClassFile* class_file, FILE* fp) {
     class_file->methods_count = read2Byte(fp);
+    if (class_file->methods_count > 0) {
+        class_file->methods = (MethodInfo*)malloc(sizeof(MethodInfo));
+        for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
+            it->access_flags = read2Byte(fp);
+            it->name_index = read2Byte(fp);
+            it->descriptor_index = read2Byte(fp);
+            it->attributes_count = read2Byte(fp);
+            it->attributes = readAttributeArray(it->attributes_count, fp);;
+        }
+    }
+    else
+        class_file->methods = NULL;
 }
 
 static void readAttributes(ClassFile* class_file, FILE* fp) {
     class_file->attributes_count = read2Byte(fp);
+    class_file->attributes = readAttributeArray(class_file->attributes_count, fp);
 }
 
 ClassFile readClassFile(char* file_name) {
