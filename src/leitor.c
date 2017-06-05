@@ -78,7 +78,7 @@ static void readMethods(ClassFile* class_file, FILE* fp) {
             it->name_index = read2Byte(fp);
             it->descriptor_index = read2Byte(fp);
             it->attributes_count = read2Byte(fp);
-            it->attributes = readAttributeArray(it->attributes_count, fp);;
+            it->attributes = readAttributeArray(it->attributes_count, fp);
         }
     }
     else
