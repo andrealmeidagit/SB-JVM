@@ -42,15 +42,10 @@ static uint32_t read4Byte (FILE *fp){
     return  byte;
 }
 
-//read magic number from file
-static void readMagicNumber (ClassFile* class_file, FILE* fp) {
-    class_file->magic = read4Byte(fp);
-}
-
 //read constant pool
 static void readCP(ClassFile* class_file, FILE* fp_class_file) {
     uint16_t i, j;
-    CP_table* CP_ptr = class_file->constant_pool;
+    class_file->constant_pool_count = read2Byte(fp_class_file);  // le o numero de elementos na CONSTANTE pool
 
     if(class_file->constant_pool_count == 0){   //verifica se CP_count eh valido
         printf("ERRO CONSTANT POOL COUNT!!!\n");
@@ -58,10 +53,9 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
     }
 
     class_file->constant_pool = (CP_table *) malloc((class_file->constant_pool_count -1)*sizeof(CP_table));
-
-    for(i=0; i<class_file->constant_pool_count; i++){
+    CP_table* CP_ptr;
+    for(CP_ptr = class_file->constant_pool; CP_ptr < (class_file->constant_pool + class_file->constant_pool_count - 1); CP_ptr++){
         CP_ptr->tag = read1Byte(fp_class_file);
-
         switch(CP_ptr->tag){
             case Const_Utf8:    //tag 1
                 CP_ptr->CONSTANT.Utf8_info.length = read2Byte(fp_class_file);
@@ -139,9 +133,9 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
             default:
                 printf("ERRO CONSTANT POOL TAG!!!\n");
                 exit(EXIT_FAILURE);
-        }   
+        } 
+    
     }
-
 }
 
 //read interfaces
@@ -251,6 +245,18 @@ static void readAttributes (field_info* f_info, MethodInfo* m_info, attribute_in
         }
         attributes_count = a_info->u.Code.attributes_count;
         attributes = a_info->u.Code.attributes;
+    }
+    else if(class_file != NULL){
+        class_file->attributes_count = read2Byte(fp);
+        if(class_file->attributes_count){
+            class_file->attributes = (attribute_info *) malloc(class_file->attributes_count * sizeof(attribute_info));
+        }
+        else{
+            class_file->attributes = NULL;
+        }
+        
+        attributes_count = class_file->attributes_count;
+        attributes = class_file->attributes;
     }
     else{
         puts("Read Attributes Error");
@@ -416,12 +422,23 @@ static void readMethods(ClassFile* class_file, FILE* fp) {
         class_file->methods = NULL;
 }
 
-
 //read classfile
 ClassFile readClassFile(char* file_name) {
-    FILE *fp_class_file;
+    FILE *fp;
     ClassFile class_file;
-    fp_class_file = fopen(file_name, "rb");
-    readMagicNumber(&class_file, fp_class_file);
+    fp = fopen(file_name, "rb");
+
+    class_file.magic = read4Byte(fp);
+    class_file.minor_version = read2Byte(fp);
+    class_file.major_version = read2Byte(fp);
+    readCP(&class_file, fp);
+    class_file.access_flags = read2Byte(fp);
+    class_file.this_class = read2Byte(fp);
+    class_file.super_class = read2Byte(fp);
+    readInterfaces(&class_file, fp);
+    readFields(&class_file, fp);
+    readMethods(&class_file, fp);
+    readAttributes(NULL, NULL, NULL, &class_file, fp);
+    fclose(fp);
     return class_file;
 }
