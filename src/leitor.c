@@ -33,6 +33,10 @@ ClassFile readClassFile(char* file_name) {
 static uint8_t readByte(FILE* fp) {
     uint8_t byte;
     fread(&byte, 1, 1, fp);
+    if (feof(fp)) {
+        fprintf(stderr, "[ERROR]: ClassFormatError\n");
+        exit(1);
+    }
     return byte;
 }
 
