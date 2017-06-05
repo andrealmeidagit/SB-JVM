@@ -1,5 +1,35 @@
 #include "leitor.h"
 
+static uint8_t readByte(FILE* fp);
+static uint16_t read2Byte(FILE* fp);
+static uint32_t read4Byte(FILE* fp);
+static void readConstantPool(ClassFile* class_file, FILE* fp);
+static void readInterfaces(ClassFile* class_file, FILE* fp);
+static void readFields(ClassFile* class_file, FILE* fp);
+static void readMethods(ClassFile* class_file, FILE* fp);
+static void readAttributes(ClassFile* class_file, FILE* fp);
+static AttributeInfo* readAttributeArray(uint16_t attributes_count, FILE* fp);
+
+ClassFile readClassFile(char* file_name) {
+    FILE *fp;
+    ClassFile class_file;
+    fp = fopen(file_name, "rb");
+
+    class_file.magic = read4Byte(fp);
+    class_file.minor_version = read2Byte(fp);
+    class_file.major_version = read2Byte(fp);
+    readConstantPool(&class_file, fp);
+    fclose(fp);
+    return class_file;
+    class_file.access_flags = read2Byte(fp);
+    class_file.this_class = read2Byte(fp);
+    class_file.super_class = read2Byte(fp);
+    readInterfaces(&class_file, fp);
+    readFields(&class_file, fp);
+    readMethods(&class_file, fp);
+    readAttributes(&class_file, fp);
+}
+
 static uint8_t readByte(FILE* fp) {
     uint8_t byte;
     fread(&byte, 1, 1, fp);
@@ -18,10 +48,6 @@ static uint32_t read4Byte(FILE* fp) {
     byte4 = read2Byte(fp);
     byte4 = (byte4 << 16) | read2Byte(fp);
     return byte4;
-}
-
-static AttributeInfo* readAttributeArray(uint16_t attributes_count, FILE* fp) {
-    return NULL;
 }
 
 static void readConstantPool(ClassFile* class_file, FILE* fp) {
@@ -46,7 +72,7 @@ static void readFields(ClassFile* class_file, FILE* fp) {
 static void readMethods(ClassFile* class_file, FILE* fp) {
     class_file->methods_count = read2Byte(fp);
     if (class_file->methods_count > 0) {
-        class_file->methods = (MethodInfo*)malloc(sizeof(MethodInfo));
+        class_file->methods = (MethodInfo*)malloc(sizeof(MethodInfo) * class_file->methods_count);
         for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
             it->access_flags = read2Byte(fp);
             it->name_index = read2Byte(fp);
@@ -64,21 +90,18 @@ static void readAttributes(ClassFile* class_file, FILE* fp) {
     class_file->attributes = readAttributeArray(class_file->attributes_count, fp);
 }
 
-ClassFile readClassFile(char* file_name) {
-    FILE *fp_class_file;
-    ClassFile class_file;
-    fp_class_file = fopen(file_name, "rb");
-
-    class_file.magic = read4Byte(fp_class_file);
-    class_file.minor_version = read2Byte(fp_class_file);
-    class_file.major_version = read2Byte(fp_class_file);
-    readConstantPool(&class_file, fp_class_file);
-    return class_file;
-    class_file.access_flags = read2Byte(fp_class_file);
-    class_file.this_class = read2Byte(fp_class_file);
-    class_file.super_class = read2Byte(fp_class_file);
-    readInterfaces(&class_file, fp_class_file);
-    readFields(&class_file, fp_class_file);
-    readMethods(&class_file, fp_class_file);
-    readAttributes(&class_file, fp_class_file);
+static AttributeInfo* readAttributeArray(uint16_t attributes_count, FILE* fp) {
+    if (attributes_count == 0)
+        return NULL;
+    AttributeInfo* array = (AttributeInfo*)malloc(sizeof(AttributeInfo) * attributes_count);
+    for (AttributeInfo* it = array; it < array + attributes_count; ++it) {
+        it->attribute_name_index = read2Byte(fp);
+        it->attribute_length = read4Byte(fp);
+        if (it->attribute_length == 0)
+            it->info = NULL;
+        else {
+            for(uint8_t* it_info = it->info; it_info < it->info + it->attribute_length; ++it_info)
+                *it_info = readByte(fp);
+        }
+    }
 }
