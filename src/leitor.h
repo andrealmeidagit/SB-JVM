@@ -19,12 +19,12 @@ struct ClassFile_ {
     uint16_t super_class;
     uint16_t interfaces_count;
     uint16_t* interfaces;
-    uint16_t fields_counts;
+    uint16_t fields_count;
     /* field_info fields */
     uint16_t methods_count;
     /* method_info methods */
     uint16_t attributes_count;
-    /* attributes */
+    /* attribute_info attributes */
 };
 typedef struct ClassFile_ ClassFile;
 

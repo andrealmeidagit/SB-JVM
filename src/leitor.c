@@ -31,4 +31,15 @@ ClassFile readClassFile(char* file_name) {
     class_file.constant_pool_count = read2Byte(fp_class_file);
     /* Read constant pool */
     return class_file;
+    class_file.access_flags = read2Byte(fp_class_file);
+    class_file.this_class = read2Byte(fp_class_file);
+    class_file.super_class = read2Byte(fp_class_file);
+    class_file.interfaces_count = read2Byte(fp_class_file);
+    /* Read interfaces */
+    class_file.fields_count = read2Byte(fp_class_file);
+    /* Read fields */
+    class_file.methods_count = read2Byte(fp_class_file);
+    /* Read methods */
+    class_file.attributes_count = read2Byte(fp_class_file);
+    /* Read attributes */
 }
