@@ -47,14 +47,123 @@ static void readMagicNumber (ClassFile* class_file, FILE* fp) {
     class_file->magic = read4Byte(fp);
 }
 
+//read constant pool
+static void readCP(ClassFile* class_file, FILE* fp_class_file) {
+    uint16_t i, j;
+    CP_table* CP_ptr = class_file->constant_pool;
+
+    if(class_file->constant_pool_count == 0){   //verifica se CP_count eh valido
+        printf("ERRO CONSTANT POOL COUNT!!!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    class_file->constant_pool = (CP_table *) malloc((class_file->constant_pool_count -1)*sizeof(CP_table));
+
+    for(i=0; i<class_file->constant_pool_count; i++){
+        CP_ptr->tag = read1Byte(fp_class_file);
+
+        switch(CP_ptr->tag){
+            case Const_Utf8:    //tag 1
+                CP_ptr->CONSTANT.Utf8_info.length = read2Byte(fp_class_file);
+                if (CP_ptr->CONSTANT.Utf8_info.length>0){
+                    CP_ptr->CONSTANT.Utf8_info.bytes = (uint8_t*) malloc((CP_ptr->CONSTANT.Utf8_info.length + 1)*sizeof(uint8_t));
+                    for(j=0;j<CP_ptr->CONSTANT.Utf8_info.length;j++){
+                        CP_ptr->CONSTANT.Utf8_info.bytes[j] = read1Byte(fp_class_file);
+                    }
+                    CP_ptr->CONSTANT.Utf8_info.bytes[CP_ptr->CONSTANT.Utf8_info.length] = '\0';
+                }else{
+                    CP_ptr->CONSTANT.Utf8_info.bytes = NULL;
+                }
+                break;
+
+            case Const_Int:     //tag3
+                CP_ptr->CONSTANT.Integer_info.bytes = read4Byte(fp_class_file);
+                break;
+
+            case Const_Float:   //tag4
+                CP_ptr->CONSTANT.Float_info.bytes = read4Byte(fp_class_file);
+                break;
+
+            case Const_Long:   //tag5
+                CP_ptr->CONSTANT.Long_info.high_bytes = read4Byte(fp_class_file);
+                CP_ptr->CONSTANT.Long_info.low_bytes = read4Byte(fp_class_file);
+                break;
+
+            case Const_Double:  //tag6
+                CP_ptr->CONSTANT.Double_info.high_bytes = read4Byte(fp_class_file);
+                CP_ptr->CONSTANT.Double_info.low_bytes = read4Byte(fp_class_file);
+                break;
+
+            case Const_Class:   //tag7
+                CP_ptr->CONSTANT.Class_info.name_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_String:  //tag8
+                CP_ptr->CONSTANT.String_info.string_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_FRef:    //tag9 - Field Reference
+                CP_ptr->CONSTANT.Fieldref_info.class_index = read2Byte(fp_class_file);
+                CP_ptr->CONSTANT.Fieldref_info.name_and_type_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_MRef:    //tag10 - Method Reference
+                CP_ptr->CONSTANT.Methodref_info.class_index = read2Byte(fp_class_file);
+                CP_ptr->CONSTANT.Methodref_info.name_and_type_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_IRef:    //tag11 - Interface Reference
+                CP_ptr->CONSTANT.InterfaceMethodref_info.class_index = read2Byte(fp_class_file);
+                CP_ptr->CONSTANT.InterfaceMethodref_info.name_and_type_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_NAT:     //tag12 - Name and Type
+                CP_ptr->CONSTANT.NameAndType_info.name_index = read2Byte(fp_class_file);
+                CP_ptr->CONSTANT.NameAndType_info.descriptor_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_MHand:   //tag15 - Method Handle
+                CP_ptr->CONSTANT.MethodHandle_info.reference_kind = read1Byte(fp_class_file);
+                CP_ptr->CONSTANT.MethodHandle_info.reference_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_MType:   //tag16 - Method Type
+                CP_ptr->CONSTANT.MethodType_info.descriptor_index = read2Byte(fp_class_file);
+                break;
+
+            case Const_InDyn:   //tag18 - Invoke Dynamic
+                CP_ptr->CONSTANT.InvokeDynamic_info.bootstrap_method_attr_index = read2Byte(fp_class_file);
+                CP_ptr->CONSTANT.InvokeDynamic_info.name_and_type_index = read2Byte(fp_class_file);
+                break;
+
+            default:
+                printf("ERRO CONSTANT POOL TAG!!!\n");
+                exit(EXIT_FAILURE);
+        }   
+    }
+
+}
+
+//read interfaces
+static void readInterfaces(ClassFile* class_file, FILE* fp) {
+    class_file->interfaces_count = read2Byte(fp);
+    if (class_file->interfaces_count > 0) {
+        class_file->interfaces = (uint16_t*)malloc(sizeof(uint16_t) * class_file->interfaces_count);
+        for(uint16_t* it = class_file->interfaces; it < class_file->interfaces + class_file->interfaces_count; ++it)
+            *it = read2Byte(fp);
+    }
+    else
+        class_file->interfaces = NULL;
+}
+
 //get attribute type (faltando implementar constant_pool para funcionar)
 ATTRIBUTE_TYPE getAttributeType (attribute_info* a_info, ClassFile* class_file){
     uint16_t a_name_index = a_info->attribute_name_index;
-    constPoolInf* constPool = class_file->constant_pool + a_name_index - 1;
+    CP_table* constPool = class_file->constant_pool + a_name_index - 1;
     
     // CONSTANTE_Utf8
-    uint16_t length = constPool->u.Utf8.length;
-    uint8_t* bytes = constPool->u.Utf8.bytes;
+    uint16_t length = constPool->CONSTANT.Utf8_info.length;
+    uint8_t* bytes = constPool->CONSTANT.Utf8_info.bytes;
     
     if(length != 0){
         switch(bytes[0]){
@@ -105,7 +214,7 @@ ATTRIBUTE_TYPE getAttributeType (attribute_info* a_info, ClassFile* class_file){
 }
 
 //read attributes (faltando implementar o method_info para funcionar)
-static void readAttributes (field_info* f_info, method_info* m_info, attribute_info* a_info, ClassFile* class_file, FILE* fp){
+static void readAttributes (field_info* f_info, MethodInfo* m_info, attribute_info* a_info, ClassFile* class_file, FILE* fp){
     attribute_info* attributes;
     uint16_t attributes_count;
     
@@ -189,7 +298,7 @@ static void readAttributes (field_info* f_info, method_info* m_info, attribute_i
                     e_table_aux++;
                 }
             }    
-            readAttributes(NULL, NULL, a_info_aux, fp);
+            readAttributes(NULL, NULL, a_info_aux, class_file, fp);
         } 
         else if (attributeType == EXCEPTIONS)
         {
@@ -289,6 +398,22 @@ static void readFields (ClassFile* class_file, FILE* fp) {
     else{
         class_file->fields = NULL;
     }
+}
+
+//read methods
+static void readMethods(ClassFile* class_file, FILE* fp) {
+    class_file->methods_count = read2Byte(fp);
+    if (class_file->methods_count > 0) {
+        class_file->methods = (MethodInfo*)malloc(sizeof(MethodInfo) * class_file->methods_count);
+        for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
+            it->access_flags = read2Byte(fp);
+            it->name_index = read2Byte(fp);
+            it->descriptor_index = read2Byte(fp);
+            readAttributes(NULL, it, NULL, class_file, fp);
+        }
+    }
+    else
+        class_file->methods = NULL;
 }
 
 
