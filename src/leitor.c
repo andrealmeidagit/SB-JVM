@@ -19,13 +19,13 @@ ClassFile readClassFile(char* file_name) {
     class_file.minor_version = read2Byte(fp);
     class_file.major_version = read2Byte(fp);
     readConstantPool(&class_file, fp);
-    fclose(fp);
-    return class_file;
     class_file.access_flags = read2Byte(fp);
     class_file.this_class = read2Byte(fp);
     class_file.super_class = read2Byte(fp);
     readInterfaces(&class_file, fp);
     readFields(&class_file, fp);
+    fclose(fp);
+    return class_file;
     readMethods(&class_file, fp);
     readAttributes(&class_file, fp);
 }

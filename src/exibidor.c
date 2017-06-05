@@ -77,7 +77,7 @@ static void printInterfaces(FILE* stream, ClassFile* class_file) {
     if (class_file->interfaces_count > 0) {
         fprintf(stream, "[ ");
         for (uint16_t i = 0; i < class_file->interfaces_count; ++i)
-            fprintf(stream, "%#06x", *(class_file->interfaces + i));
+            fprintf(stream, "%#06x ", *(class_file->interfaces + i));
         fprintf(stream, "]\n");
     }
 }
