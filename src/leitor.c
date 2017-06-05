@@ -61,9 +61,8 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
                 CP_ptr->CONSTANT.Utf8_info.length = read2Byte(fp_class_file);
                 if (CP_ptr->CONSTANT.Utf8_info.length>0){
                     CP_ptr->CONSTANT.Utf8_info.bytes = (uint8_t*) malloc((CP_ptr->CONSTANT.Utf8_info.length + 1)*sizeof(uint8_t));
-                    for(j=0;j<CP_ptr->CONSTANT.Utf8_info.length;j++){
+                    for(j=0;j<CP_ptr->CONSTANT.Utf8_info.length;j++)
                         CP_ptr->CONSTANT.Utf8_info.bytes[j] = read1Byte(fp_class_file);
-                    }
                     CP_ptr->CONSTANT.Utf8_info.bytes[CP_ptr->CONSTANT.Utf8_info.length] = '\0';
                 }else{
                     CP_ptr->CONSTANT.Utf8_info.bytes = NULL;
@@ -106,7 +105,7 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
                 CP_ptr->CONSTANT.Methodref_info.name_and_type_index = read2Byte(fp_class_file);
                 break;
 
-            case Const_IRef:    //tag11 - Interface Reference
+            case Const_IRef:    //tag11 - Interface Method Reference
                 CP_ptr->CONSTANT.InterfaceMethodref_info.class_index = read2Byte(fp_class_file);
                 CP_ptr->CONSTANT.InterfaceMethodref_info.name_and_type_index = read2Byte(fp_class_file);
                 break;
