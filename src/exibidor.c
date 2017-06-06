@@ -13,8 +13,12 @@ static void printUTF8(FILE* stream, char* unicode);
 
 static void printUTF8 (FILE* stream, char * unicode){
 	setlocale (LC_ALL, "" );
-    fprintf(stream, "Constant UTF-8:\t %s\n", unicode);
+    fprintf(stream, "%s", unicode);
     setlocale (LC_ALL, NULL );
+}
+
+static void print_from_index (FILE* stream, ClassFile* class_file, uint16_t index){
+    printUTF8 (stream, (char *)class_file->constant_pool[index].CONSTANT.Utf8_info.bytes);   //imprime o texto UTF-8
 }
 
 void showClassFile(FILE* stream, ClassFile* class_file) {
@@ -46,56 +50,76 @@ static void printConstantPool(FILE* stream, ClassFile* class_file){
 	fprintf(stream, "\n*****************\n* CONSTANT POOL *\n*****************\n\n");
 
     for (i=0; i<class_file->constant_pool_count-1; i++){
-    	fprintf(stream, "[%d]	", i+1);
+    	fprintf(stream, "\n[%u] ", i+1);
     	switch (class_file->constant_pool[i].tag){
     		case Const_Utf8:    //tag 1
-    				printUTF8 (stream, (char *)class_file->constant_pool[i].CONSTANT.Utf8_info.bytes);
+                fprintf(stream, "UTF-8:\t\t ");
+    			printUTF8 (stream, (char *)class_file->constant_pool[i].CONSTANT.Utf8_info.bytes);   //imprime o texto UTF-8
+                NEWLINE(stream);
     			break;
     		case Const_Int:     //tag3
-    			fprintf(stream, "Constant Integer:\t %"PRIu32"\n", class_file->constant_pool[i].CONSTANT.Integer_info.bytes);
+    			fprintf(stream, "Integer:\t\t #%u\n", class_file->constant_pool[i].CONSTANT.Integer_info.bytes);
     			break;
     		case Const_Float:   //tag4
-    			fprintf(stream, "Constant Float:\t %"PRIu32"\n", class_file->constant_pool[i].CONSTANT.Float_info.bytes);
+    			fprintf(stream, "Float:\t\t #%f\n", class_file->constant_pool[i].CONSTANT.Float_info.bytes);
     			break;
     		case Const_Long:   //tag5
-    			fprintf(stream, "Constant Long:\t 0x%"PRIx32"%"PRIx32"\n", class_file->constant_pool[i].CONSTANT.Long_info.high_bytes, class_file->constant_pool[i].CONSTANT.Long_info.low_bytes);
+    			fprintf(stream, "Long:\t\t #%u\t#%u\n", class_file->constant_pool[i].CONSTANT.Long_info.high_bytes, class_file->constant_pool[i].CONSTANT.Long_info.low_bytes);
                 break;
             case Const_Double:   //tag5
-    			fprintf(stream, "Constant Double:\t 0x%"PRIx32"%"PRIx32"\n", class_file->constant_pool[i].CONSTANT.Double_info.high_bytes, class_file->constant_pool[i].CONSTANT.Double_info.low_bytes);
+    			fprintf(stream, "Double:\t\t \n\t- High Bytes:\t #%#010x\n\t- Low Bytes:\t #%#010x\n", class_file->constant_pool[i].CONSTANT.Double_info.high_bytes, class_file->constant_pool[i].CONSTANT.Double_info.low_bytes);
                 break;
             case Const_Class:   //tag7
-                fprintf(stream, "Constant Class Pointer:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.Class_info.name_index);
+                fprintf(stream, "Class:\t\t #%u\t // ", class_file->constant_pool[i].CONSTANT.Class_info.name_index);
+                print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.Class_info.name_index);   //imprime o texto UTF-8 a partir do indice
+                NEWLINE(stream);
                 break;
             case Const_String:  //tag8
-            	fprintf(stream, "Constant String:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.String_info.string_index);
+            	fprintf(stream, "String:\t\t #%u\n", class_file->constant_pool[i].CONSTANT.String_info.string_index);  //index da string
+                print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.String_info.string_index);   //imprime o texto UTF-8 a partir do indice
+                NEWLINE(stream);
                 break;
             case Const_FRef:    //tag9 - Field Reference
-            	fprintf(stream, "Constant Field Reference:\n\t- Class Index:\t 0x%"PRIx16"\n\t- Name and Type:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.Fieldref_info.class_index, class_file->constant_pool[i].CONSTANT.Fieldref_info.name_and_type_index);
+            	fprintf(stream, "Field Reference:\n\t- Class Index:\t #%u\t // ", class_file->constant_pool[i].CONSTANT.Fieldref_info.class_index); //indice
+                print_from_index (stream, class_file, class_file->constant_pool[ class_file->constant_pool[i].CONSTANT.Fieldref_info.class_index ].CONSTANT.Class_info.name_index);   //imprime (field(classe(UTF-8)))
+                fprintf(stream, "\n\t- Name and Type: #%u\t // name: ", class_file->constant_pool[i].CONSTANT.Fieldref_info.name_and_type_index); //indice
+                print_from_index (stream, class_file, class_file->constant_pool[ class_file->constant_pool[i].CONSTANT.Fieldref_info.name_and_type_index ].CONSTANT.NameAndType_info.name_index);   //imprime (field(NameAndType(name(UTF-8))))
+                fprintf(stream, "\t descriptor: ");
+                print_from_index (stream, class_file, class_file->constant_pool[ class_file->constant_pool[i].CONSTANT.Fieldref_info.name_and_type_index ].CONSTANT.NameAndType_info.descriptor_index);   //imprime (field(NameAndType(descriptor(UTF-8))))
+                NEWLINE(stream);
                 break;
             case Const_MRef:    //tag10 - Method Reference
-                fprintf(stream, "Constant Method Reference:\n\t- Class Index:\t 0x%"PRIx16"\n\t- Name and Type:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.Methodref_info.class_index, class_file->constant_pool[i].CONSTANT.Methodref_info.name_and_type_index);
+                fprintf(stream, "Method Reference:\n\t- Class Index:\t #%u", class_file->constant_pool[i].CONSTANT.Methodref_info.class_index); //indice
+                print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.Methodref_info.class_index);   //imprime o texto UTF-8 a partir do indice
+                fprintf(stream, "\n\t- Name and Type: #%u\t // ", class_file->constant_pool[i].CONSTANT.Methodref_info.name_and_type_index); //indice
+                print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.Methodref_info.name_and_type_index);   //imprime o texto UTF-8 a partir do indice
+                NEWLINE(stream);
                 break;
             case Const_IRef:    //tag11 - Interface Method Reference
-                fprintf(stream, "Constant Interface Method Reference:\n\t- Class Index:\t 0x%"PRIx16"\n\t- Name and Type:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.InterfaceMethodref_info.class_index, class_file->constant_pool[i].CONSTANT.InterfaceMethodref_info.name_and_type_index);
+                fprintf(stream, "Interface Method Reference:\n\t- Class Index:\t #%u", class_file->constant_pool[i].CONSTANT.InterfaceMethodref_info.class_index); //indice
+                print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.InterfaceMethodref_info.class_index);   //imprime o texto UTF-8 a partir do indice
+                fprintf(stream, "\n\t- Name and Type: #%u\t // ", class_file->constant_pool[i].CONSTANT.InterfaceMethodref_info.name_and_type_index); //indice
+                print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.InterfaceMethodref_info.name_and_type_index);   //imprime o texto UTF-8 a partir do indice
+                NEWLINE(stream);
                 break;
-
             case Const_NAT:     //tag12 - Name and Type
-                fprintf(stream, "Constant Name and Type:\n\t- Name Index:\t 0x%"PRIx16"\n\t- Descriptor:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.NameAndType_info.name_index, class_file->constant_pool[i].CONSTANT.NameAndType_info.descriptor_index);
+                fprintf(stream, "Name and Type:\n\t- Name Index:\t #%u", class_file->constant_pool[i].CONSTANT.NameAndType_info.name_index);    //indice
+                //print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.NameAndType_info.name_index);   //imprime o texto UTF-8 a partir do indice
+                fprintf(stream, "\n\t- Descriptor:\t #%u\t // ", class_file->constant_pool[i].CONSTANT.NameAndType_info.descriptor_index); //indice
+                //print_from_index (stream, class_file, class_file->constant_pool[i].CONSTANT.NameAndType_info.descriptor_index);   //imprime o texto UTF-8 a partir do indice
+                NEWLINE(stream);
                 break;
-
             case Const_MHand:   //tag15 - Method Handle
-                fprintf(stream, "Constant Method Handle:\n\t- Reference Kind:\t %"PRIu8"\n\t- Reference Index:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.MethodHandle_info.reference_kind, class_file->constant_pool[i].CONSTANT.MethodHandle_info.reference_index);
+                fprintf(stream, "Method Handle:\n\t- Reference Kind:\t #%u\n\t- Reference Index:\t #%u\n", class_file->constant_pool[i].CONSTANT.MethodHandle_info.reference_kind, class_file->constant_pool[i].CONSTANT.MethodHandle_info.reference_index);
                 break;
-
             case Const_MType:   //tag16 - Method Type
-                fprintf(stream, "Constant Method Type:\n\t- Descriptor:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.MethodType_info.descriptor_index);
+                fprintf(stream, "Method Type:\n\t- Descriptor:\t #%u\n", class_file->constant_pool[i].CONSTANT.MethodType_info.descriptor_index);
                 break;
-
             case Const_InDyn:   //tag18 - Invoke Dynamic
-                fprintf(stream, "Constant Invoke Dynamic:\n\t- Bootstrap Method:\t 0x%"PRIx16"\n\t- Name and Type:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.InvokeDynamic_info.bootstrap_method_attr_index, class_file->constant_pool[i].CONSTANT.InvokeDynamic_info.name_and_type_index);
+                fprintf(stream, "Invoke Dynamic:\n\t- Bootstrap Method:\t #%u\n\t- Name and Type: #%u\n", class_file->constant_pool[i].CONSTANT.InvokeDynamic_info.bootstrap_method_attr_index, class_file->constant_pool[i].CONSTANT.InvokeDynamic_info.name_and_type_index);
                 break;
     		default:
-    			printf("ERRO DE LEITURA!!! %d\n", class_file->constant_pool[i].tag);
+    			printf("ERRO DE LEITURA!!! %u\n", class_file->constant_pool[i].tag);
                 exit(EXIT_FAILURE);
     	}
     }
@@ -130,7 +154,7 @@ static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file) {
 
 static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg) {
 	CP_table* class_cp = class_file->constant_pool + index - 1;
-	fprintf(stream, "%s class: #%u-", msg, index);
+	fprintf(stream, "%s class: #%u ", msg, index);
 	char* this_class = (char*)class_file->constant_pool[class_cp->CONSTANT.Class_info.name_index - 1].CONSTANT.Utf8_info.bytes;
 	printUTF8(stream, this_class);
 	fprintf(stream, "\n");
@@ -149,19 +173,23 @@ static void printInterfaces(FILE* stream, ClassFile* class_file) {
 }
 
 static void printFields(FILE* stream, ClassFile* class_file) {
-	fprintf(stream, "**********\n* Fields *\n**********\n\n");
+	fprintf(stream, "**********\n* Fields *\n**********\n");
     fprintf(stream, "Field count: %u\n", class_file->fields_count);
 	fprintf(stream, "\n");
 }
 
 static void printMethods(FILE* stream, ClassFile* class_file) {
-	fprintf(stream, "***********\n* Methods *\n***********\n\n");
-    fprintf(stream, "Method count: %u\n", class_file->methods_count);
-	fprintf(stream, "\n");
+	fprintf(stream, "***********\n* Methods *\n***********\n");
+	fprintf(stream, "Method count: %u\n", class_file->methods_count);
+	// uint16_t i = 0;
+	// for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
+	// 	fprintf(stream, "[%u] %u", i++, it->name_index);
+	// }
+	// fprintf(stream, "\n");
 }
 
 static void printAttributes(FILE* stream, ClassFile* class_file) {
-	fprintf(stream, "**************\n* Attributes *\n**************\n\n");
+	fprintf(stream, "**************\n* Attributes *\n**************\n");
     fprintf(stream, "Attributes:\n\n");
     fprintf(stream, "Attribute count: %u\n", class_file->attributes_count);
 }
