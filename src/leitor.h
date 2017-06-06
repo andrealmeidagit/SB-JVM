@@ -68,7 +68,7 @@ struct CP_table{
         }Integer_info; //tag == 3
 
         struct{
-            uint32_t bytes;
+            float bytes;
         }Float_info;   //tag == 4
 
         struct{

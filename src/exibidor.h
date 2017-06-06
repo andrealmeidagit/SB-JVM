@@ -13,4 +13,6 @@
 
 void showClassFile(FILE* stream, ClassFile* class_file);
 
+#define NEWLINE(filestream) fprintf(filestream,"\n")
+
 #endif
