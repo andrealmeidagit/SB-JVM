@@ -7,6 +7,7 @@ static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
 static void printAttributes(FILE* stream, ClassFile* class_file);
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
+static void printClassNames(FILE* stream, ClassFile* class_file);
 static void printUTF8(FILE* stream, char* unicode);
 
 static void printUTF8 (FILE* stream, char * unicode){
@@ -25,14 +26,13 @@ void showClassFile(FILE* stream, ClassFile* class_file) {
 }
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
-	fprintf(stream, "*****************************\n* GENERAL CLASS INFORMATION *\n*****************************\n\n");
+    fprintf(stream, "*****************************\n* GENERAL CLASS INFORMATION *\n*****************************\n\n");
     fprintf(stream, "Magic number: %#010x\n", class_file->magic);
     fprintf(stream, "Minor version: %u\n", class_file->minor_version);
     fprintf(stream, "Major version: %u\n", class_file->major_version);
     fprintf(stream, "Constant pool count: %u\n", class_file->constant_pool_count);
     printClassAccessFlags(stream, class_file->access_flags);
-    fprintf(stream, "This class: %u\n", class_file->this_class);
-    fprintf(stream, "Super class: %u\n", class_file->super_class);
+    printClassNames(stream, class_file);
     fprintf(stream, "Interfaces count: %u\n", class_file->interfaces_count);
     fprintf(stream, "Field count: %u\n", class_file->fields_count);
     fprintf(stream, "Method count: %u\n", class_file->methods_count);
@@ -120,6 +120,19 @@ static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
     if (access_flags & ACC_ENUM)
         fprintf(stream, "enum ");
     fprintf(stream, "]\n");
+}
+
+static void printClassNames(FILE* stream, ClassFile* class_file) {
+	// fprintf(stream, "This class: #%u-", class_file->this_class);
+	// fprintf(stream, "#%u // ", class_file->constant_pool[class_file->this_class].CONSTANT.Class_info.name_index);
+	// char* this_class = (char*)class_file->constant_pool[class_file->constant_pool[class_file->this_class].CONSTANT.Class_info.name_index].CONSTANT.Utf8_info.bytes;
+	// printUTF8(stream, this_class);
+	// fprintf(stream, "\n");
+	// fprintf(stream, "Super class: #%u-", class_file->super_class);
+	// fprintf(stream, "#%u // ", class_file->constant_pool[class_file->super_class].CONSTANT.Class_info.name_index);
+	// char* super_class = (char*)class_file->constant_pool[class_file->constant_pool[class_file->super_class].CONSTANT.Class_info.name_index].CONSTANT.Utf8_info.bytes;
+	// printUTF8(stream, super_class);
+	// fprintf(stream, "\n");
 }
 
 static void printInterfaces(FILE* stream, ClassFile* class_file) {
