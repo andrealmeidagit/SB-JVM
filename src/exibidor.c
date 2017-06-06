@@ -1,6 +1,5 @@
 #include "exibidor.h"
 
-static void printDivisoryLine(FILE* stream);
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file);
 static void printConstantPool(FILE* stream, ClassFile* class_file);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
@@ -8,37 +7,25 @@ static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
 static void printAttributes(FILE* stream, ClassFile* class_file);
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
+static void printUTF8(FILE* stream, char* unicode);
 
-void printUTF8 (FILE* stream, char * unicode){
+static void printUTF8 (FILE* stream, char * unicode){
 	setlocale (LC_ALL, "" );
     fprintf(stream, "Constant UTF-8:\t %s\n", unicode);
     setlocale (LC_ALL, NULL );
 }
 
 void showClassFile(FILE* stream, ClassFile* class_file) {
-    printDivisoryLine(stream);
     printGeneralClassInformation(stream, class_file);
-    printDivisoryLine(stream);
     printConstantPool(stream, class_file);
-    printDivisoryLine(stream);
     printInterfaces(stream, class_file);
-    printDivisoryLine(stream);
     printFields(stream, class_file);
-    printDivisoryLine(stream);
     printMethods(stream, class_file);
-    printDivisoryLine(stream);
     printAttributes(stream, class_file);
-    printDivisoryLine(stream);
-}
-
-static void printDivisoryLine(FILE* stream) {
-    for (uint8_t i = 0; i < 80; ++i)
-        fprintf(stream, "=");
-    fprintf(stream, "\n");
 }
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "General Information:\n\n");
+	fprintf(stream, "*****************************\n* GENERAL CLASS INFORMATION *\n*****************************\n\n");
     fprintf(stream, "Magic number: %#010x\n", class_file->magic);
     fprintf(stream, "Minor version: %u\n", class_file->minor_version);
     fprintf(stream, "Major version: %u\n", class_file->major_version);
@@ -111,7 +98,7 @@ static void printConstantPool(FILE* stream, ClassFile* class_file){
                 exit(EXIT_FAILURE);
     	}
     }
-    fprintf(stream, "\n**********\n* END CP *\n**********\n\n");
+	fprintf(stream, "\n");
 }
 
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
@@ -136,7 +123,7 @@ static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
 }
 
 static void printInterfaces(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "Interfaces:\n\n");
+    fprintf(stream, "**************\n* Interfaces *\n**************\n\n");
     fprintf(stream, "Interface count: %u\n", class_file->interfaces_count);
     if (class_file->interfaces_count > 0) {
         fprintf(stream, "[ ");
@@ -144,19 +131,23 @@ static void printInterfaces(FILE* stream, ClassFile* class_file) {
             fprintf(stream, "%#06x ", *(class_file->interfaces + i));
         fprintf(stream, "]\n");
     }
+	fprintf(stream, "\n");
 }
 
 static void printFields(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "Fields:\n\n");
+	fprintf(stream, "**********\n* Fields *\n**********\n\n");
     fprintf(stream, "Field count: %u\n", class_file->fields_count);
+	fprintf(stream, "\n");
 }
 
 static void printMethods(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "Methods:\n\n");
+	fprintf(stream, "***********\n* Methods *\n***********\n\n");
     fprintf(stream, "Method count: %u\n", class_file->methods_count);
+	fprintf(stream, "\n");
 }
 
 static void printAttributes(FILE* stream, ClassFile* class_file) {
+	fprintf(stream, "**************\n* Attributes *\n**************\n\n");
     fprintf(stream, "Attributes:\n\n");
     fprintf(stream, "Attribute count: %u\n", class_file->attributes_count);
 }
