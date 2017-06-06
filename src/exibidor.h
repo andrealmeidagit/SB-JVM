@@ -9,7 +9,8 @@
 #include <locale.h>
 
 #include "leitor.h"
+#include "access_flags.h"
 
-void showClassFile(FILE* stream, ClassFile class_file);
+void showClassFile(FILE* stream, ClassFile* class_file);
 
 #endif

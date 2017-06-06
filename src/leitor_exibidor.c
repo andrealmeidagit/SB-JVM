@@ -3,12 +3,11 @@
 #include "exibidor.h"
 
 int main(int argc, char* argv[]) {
-    ClassFile inp_class;
-    char output_mode = 't';
-
+    ClassFile hello_world_class;
     checkArgumentAmount(argc);
     checkFileExtension(argv[1]);
-    inp_class = readClassFile(argv[1]);
-    showClassFile(output_mode=='t' ? stdout : fopen("output.txt", "w+"), inp_class);
+    int output_to_terminal = checkOutputOption(argv[2]);
+    hello_world_class = readClassFile(argv[1]);
+    showClassFile(output_to_terminal ? stdout : fopen("output.txt", "w+"), &hello_world_class);
     return 0;
 }

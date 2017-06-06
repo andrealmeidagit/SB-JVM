@@ -20,9 +20,6 @@
 #define ATTRIBUTE_TYPE       short
 /**********************************/
 
-typedef unsigned char uchar;
-
-
 /*Tabela de tags*/
 #define Const_Utf8      1
 #define Const_Int       3
@@ -149,7 +146,7 @@ typedef struct ExceptionTable_ exception_table_t;
 
 //AttributeInfo
 struct attribute_info{
-    uint16_t attribute_name_index;       
+    uint16_t attribute_name_index;
     uint32_t attribute_length;
     union{
         struct{
@@ -168,7 +165,7 @@ struct attribute_info{
         }Code;
 
         struct{
-            uint16_t number_of_exceptions;   
+            uint16_t number_of_exceptions;
             uint16_t* exception_index_table;
         }Exceptions;
 
@@ -180,7 +177,7 @@ struct attribute_info{
         struct{
 
         }Synthetic;
-               
+
         struct{
             uint16_t sourcefile_index;
         }SourceFile;
@@ -205,11 +202,11 @@ typedef struct attribute_info attribute_info;
 
 //FieldInfo
 struct FieldInfo_{
-    uint16_t access_flags;           
-    uint16_t name_index;             
-    uint16_t descriptor_index;       
-    uint16_t attributes_count;       
-    attribute_info* attributes;      
+    uint16_t access_flags;
+    uint16_t name_index;
+    uint16_t descriptor_index;
+    uint16_t attributes_count;
+    attribute_info* attributes;
 };
 typedef struct FieldInfo_ field_info;
 
