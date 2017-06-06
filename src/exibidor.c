@@ -1,19 +1,21 @@
 #include "exibidor.h"
 
+void printUTF8 (FILE* stream, char * unicode){
+	setlocale (LC_ALL, "" );
+    fprintf(stream, "Constant UTF-8:\t %s\n", unicode);
+    setlocale (LC_ALL, NULL );
+}
+
 static void printCP(FILE* stream, ClassFile* class_file){
-	uint16_t i, j;
-	char * unicode, string;
+	uint16_t i;
 
 	fprintf(stream, "\n*****************\n* CONSTANT POOL *\n*****************\n\n");
 
-	setlocale (LC_ALL, "" );
-    for (i=0; i<class_file->constant_pool_count; i++){
+    for (i=0; i<class_file->constant_pool_count-1; i++){
+    	fprintf(stream, "[%d]	", i+1);
     	switch (class_file->constant_pool[i].tag){
     		case Const_Utf8:    //tag 1
-    			for(j=0;j<class_file->constant_pool[i].CONSTANT.Utf8_info.length;j++)
-    				char * unicode = class_file->constant_pool[i].CONSTANT.Utf8_info.bytes;
-    				unicode[class_file->constant_pool[i].CONSTANT.Utf8_info.length] = '\0';
-    				fprintf(stream, "Constant UTF-8:\t %s\n", unicode);
+    				printUTF8 (stream, (char *)class_file->constant_pool[i].CONSTANT.Utf8_info.bytes);
     			break;
     		case Const_Int:     //tag3
     			fprintf(stream, "Constant Integer:\t %"PRIu32"\n", class_file->constant_pool[i].CONSTANT.Integer_info.bytes);
@@ -31,8 +33,7 @@ static void printCP(FILE* stream, ClassFile* class_file){
                 fprintf(stream, "Constant Class Pointer:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.Class_info.name_index);
                 break;
             case Const_String:  //tag8
-            	char * string = (char *) class_file->constant_pool[i].CONSTANT.String_info.string_index;
-            	fprintf(stream, "Constant String:\t '%s'\n", string);
+            	fprintf(stream, "Constant String:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.String_info.string_index);
                 break;
             case Const_FRef:    //tag9 - Field Reference
             	fprintf(stream, "Constant Field Reference:\n\t- Class Index:\t 0x%"PRIx16"\n\t- Name and Type:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.Fieldref_info.class_index, class_file->constant_pool[i].CONSTANT.Fieldref_info.name_and_type_index);
@@ -60,12 +61,13 @@ static void printCP(FILE* stream, ClassFile* class_file){
                 fprintf(stream, "Constant Invoke Dynamic:\n\t- Bootstrap Method:\t 0x%"PRIx16"\n\t- Name and Type:\t 0x%"PRIx16"\n", class_file->constant_pool[i].CONSTANT.InvokeDynamic_info.bootstrap_method_attr_index, class_file->constant_pool[i].CONSTANT.InvokeDynamic_info.name_and_type_index);
                 break;
     		default:
-    			printf("ERRO DE LEITURA!!!\n");
+    			printf("ERRO DE LEITURA!!! %d\n", class_file->constant_pool[i].tag);
                 exit(EXIT_FAILURE);
     	}
-    fprintf(stream, "\n**********\n* END CP *\n**********\n\n");
     }
+    fprintf(stream, "\n**********\n* END CP *\n**********\n\n");
 }
+
 
 
 void showClassFile(FILE* stream, ClassFile class_file) {
@@ -73,6 +75,7 @@ void showClassFile(FILE* stream, ClassFile class_file) {
     fprintf(stream, "Magic Number:\t 0x%"PRIx32"\n", class_file.magic);
     fprintf(stream, "Minor Version:\t %"PRIu16"\n", class_file.minor_version);
     fprintf(stream, "Major Version:\t %"PRIu16"\n", class_file.major_version);
+    fprintf(stream, "CPcount:\t %"PRIu16"\n", class_file.constant_pool_count);
     printCP(stream, &class_file);
     fprintf(stream, "Access Flags:\t 0x%"PRIx16"\n", class_file.access_flags);
 	fprintf(stream, "This Class:\t 0x%"PRIx16"\n", class_file.this_class);

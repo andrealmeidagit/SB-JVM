@@ -130,7 +130,7 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
                 break;
 
             default:
-                printf("ERRO CONSTANT POOL TAG!!!\n");
+                printf("ERRO CONSTANT POOL TAG %d!!!\n", CP_ptr->tag);
                 exit(EXIT_FAILURE);
         } 
     
