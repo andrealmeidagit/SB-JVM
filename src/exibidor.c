@@ -1,6 +1,5 @@
 #include "exibidor.h"
 
-static void printDivisoryLine(FILE* stream);
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file);
 static void printConstantPool(FILE* stream, ClassFile* class_file);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
@@ -8,6 +7,9 @@ static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
 static void printAttributes(FILE* stream, ClassFile* class_file);
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
+static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file);
+static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg);
+static void printUTF8(FILE* stream, char* unicode);
 
 static void printUTF8 (FILE* stream, char * unicode){
 	setlocale (LC_ALL, "" );
@@ -20,36 +22,22 @@ static void print_from_index (FILE* stream, ClassFile* class_file, uint16_t inde
 }
 
 void showClassFile(FILE* stream, ClassFile* class_file) {
-    printDivisoryLine(stream);
     printGeneralClassInformation(stream, class_file);
-    printDivisoryLine(stream);
     printConstantPool(stream, class_file);
-    printDivisoryLine(stream);
     printInterfaces(stream, class_file);
-    printDivisoryLine(stream);
     printFields(stream, class_file);
-    printDivisoryLine(stream);
     printMethods(stream, class_file);
-    printDivisoryLine(stream);
     printAttributes(stream, class_file);
-    printDivisoryLine(stream);
-}
-
-static void printDivisoryLine(FILE* stream) {
-    for (uint8_t i = 0; i < 80; ++i)
-        fprintf(stream, "=");
-    fprintf(stream, "\n");
 }
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "General Information:\n\n");
+    fprintf(stream, "*****************************\n* GENERAL CLASS INFORMATION *\n*****************************\n\n");
     fprintf(stream, "Magic number: %#010x\n", class_file->magic);
     fprintf(stream, "Minor version: %u\n", class_file->minor_version);
     fprintf(stream, "Major version: %u\n", class_file->major_version);
     fprintf(stream, "Constant pool count: %u\n", class_file->constant_pool_count);
     printClassAccessFlags(stream, class_file->access_flags);
-    fprintf(stream, "This class: %u\n", class_file->this_class);
-    fprintf(stream, "Super class: %u\n", class_file->super_class);
+    printThisClassAndSuperClass(stream, class_file);
     fprintf(stream, "Interfaces count: %u\n", class_file->interfaces_count);
     fprintf(stream, "Field count: %u\n", class_file->fields_count);
     fprintf(stream, "Method count: %u\n", class_file->methods_count);
@@ -140,7 +128,7 @@ static void printConstantPool(FILE* stream, ClassFile* class_file){
           exit(EXIT_FAILURE);
     	}
     }
-    fprintf(stream, "\n**********\n* END CP *\n**********\n\n");
+	fprintf(stream, "\n");
 }
 
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
@@ -164,8 +152,21 @@ static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
     fprintf(stream, "]\n");
 }
 
+static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file) {
+	printClassName(stream, class_file, class_file->this_class, "This");
+	printClassName(stream, class_file, class_file->super_class, "Super");
+}
+
+static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg) {
+	CP_table* class_cp = class_file->constant_pool + index - 1;
+	fprintf(stream, "%s class: #%u ", msg, index);
+	char* this_class = (char*)class_file->constant_pool[class_cp->CONSTANT.Class_info.name_index - 1].CONSTANT.Utf8_info.bytes;
+	printUTF8(stream, this_class);
+	fprintf(stream, "\n");
+}
+
 static void printInterfaces(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "Interfaces:\n\n");
+    fprintf(stream, "**************\n* Interfaces *\n**************\n\n");
     fprintf(stream, "Interface count: %u\n", class_file->interfaces_count);
     if (class_file->interfaces_count > 0) {
         fprintf(stream, "[ ");
@@ -173,19 +174,27 @@ static void printInterfaces(FILE* stream, ClassFile* class_file) {
             fprintf(stream, "%#06x ", *(class_file->interfaces + i));
         fprintf(stream, "]\n");
     }
+	fprintf(stream, "\n");
 }
 
 static void printFields(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "Fields:\n\n");
+	fprintf(stream, "**********\n* Fields *\n**********\n");
     fprintf(stream, "Field count: %u\n", class_file->fields_count);
+	fprintf(stream, "\n");
 }
 
 static void printMethods(FILE* stream, ClassFile* class_file) {
-    fprintf(stream, "Methods:\n\n");
-    fprintf(stream, "Method count: %u\n", class_file->methods_count);
+	fprintf(stream, "***********\n* Methods *\n***********\n");
+	fprintf(stream, "Method count: %u\n", class_file->methods_count);
+	// uint16_t i = 0;
+	// for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
+	// 	fprintf(stream, "[%u] %u", i++, it->name_index);
+	// }
+	// fprintf(stream, "\n");
 }
 
 static void printAttributes(FILE* stream, ClassFile* class_file) {
+	fprintf(stream, "**************\n* Attributes *\n**************\n");
     fprintf(stream, "Attributes:\n\n");
     fprintf(stream, "Attribute count: %u\n", class_file->attributes_count);
 }
