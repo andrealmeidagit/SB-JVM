@@ -242,5 +242,6 @@ struct ClassFile_ {
 typedef struct ClassFile_ ClassFile;
 
 ClassFile readClassFile(char* file_name);
+ATTRIBUTE_TYPE getAttributeType (attribute_info* a_info, ClassFile* class_file);
 
 #endif
