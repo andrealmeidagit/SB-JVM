@@ -252,6 +252,7 @@ static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attrib
 			case SYNTHETIC:
 				break;
 			case SOURCE_FILE:
+				print_from_index(stream, class_file, it->u.SourceFile.sourcefile_index-1);
 				break;
 			case LINE_NUMBER_TABLE:
 				break;
