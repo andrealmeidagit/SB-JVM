@@ -5,7 +5,7 @@ static void printConstantPool(FILE* stream, ClassFile* class_file);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
 static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
-static void printAttributes(FILE* stream, uint16_t attributes_count, attribute_info* attributes);
+static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes);
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
 static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file);
 static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg);
@@ -27,7 +27,7 @@ void showClassFile(FILE* stream, ClassFile* class_file) {
     printInterfaces(stream, class_file);
     printFields(stream, class_file);
     printMethods(stream, class_file);
-    printAttributes(stream, class_file->attributes_count, class_file->attributes);
+    printAttributes(stream, class_file, class_file->attributes_count, class_file->attributes);
 }
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
@@ -196,15 +196,40 @@ static void printMethods(FILE* stream, ClassFile* class_file) {
 		print_from_index(stream, class_file, it->descriptor_index-1);
 		NEWLINE(stream);
 		printClassAccessFlags(stream, it->access_flags);
-		printAttributes(stream, it->attributes_count, it->attributes);
+		printAttributes(stream, class_file, it->attributes_count, it->attributes);
 		NEWLINE(stream);
 	}
 	NEWLINE(stream);
 }
 
-static void printAttributes(FILE* stream, uint16_t attributes_count, attribute_info* attributes) {
+static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes) {
     fprintf(stream, "Attribute count: %u\n", attributes_count);
 	for (attribute_info* it = attributes; it < attributes + attributes_count; ++it) {
-		
+		ATTRIBUTE_TYPE attribute_type = getAttributeType(it, class_file);
+		switch (attribute_type) {
+			case CONSTANTE_VALUE:
+				break;
+			case CODE:
+				break;
+			case EXCEPTIONS:
+				break;
+			case INNER_CLASSES:
+				break;
+			case SYNTHETIC:
+				break;
+			case SOURCE_FILE:
+				break;
+			case LINE_NUMBER_TABLE:
+				break;
+			case LOCAL_VARIABLE_TABLE:
+				break;
+			case DEPRECATED:
+				break;
+			case UNKNOWN:
+				break;
+			default:
+				break;
+
+		}
 	}
 }
