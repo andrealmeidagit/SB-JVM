@@ -1,7 +1,7 @@
 #include "exibidor.h"
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file);
-static void printConstantPool(FILE* stream, ClassFile* class_file);
+static void printConstantPool(FILE* stream, ClassFile* class_file, uint16_t controle);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
 static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
@@ -23,7 +23,7 @@ static void print_from_index (FILE* stream, ClassFile* class_file, uint16_t inde
 
 void showClassFile(FILE* stream, ClassFile* class_file) {
     printGeneralClassInformation(stream, class_file);
-    printConstantPool(stream, class_file);
+    printConstantPool(stream, class_file, -1);
     printInterfaces(stream, class_file);
     printFields(stream, class_file);
     printMethods(stream, class_file);
@@ -44,13 +44,19 @@ static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
     fprintf(stream, "Attribute count: %u\n", class_file->attributes_count);
 }
 
-static void printConstantPool(FILE* stream, ClassFile* class_file){
+static void printConstantPool(FILE* stream, ClassFile* class_file, uint16_t controle){
 	uint16_t i;
 	fprintf(stream, "\n*****************\n* CONSTANT POOL *\n*****************\n\n");
     for (i=0; i<class_file->constant_pool_count-1; i++){
 			CP_table * p = class_file->constant_pool + i;
-    	fprintf(stream, "\n[%u] ", i+1);
-    	switch (p->tag){
+      if (controle!=0) {
+        CP_table * p = class_file->constant_pool + controle - 1;
+        i = class_file->constant_pool_count;
+      }
+      else {
+        fprintf(stream, "\n[%u] ", i+1); 
+      } 
+      switch (p->tag){
     		case Const_Utf8:    //tag 1
           fprintf(stream, "UTF-8:\t\t ");
     			printUTF8 (stream, (char *)p->CONSTANT.Utf8_info.bytes);   //imprime o texto UTF-8
@@ -203,11 +209,15 @@ static void printMethods(FILE* stream, ClassFile* class_file) {
 }
 
 static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes) {
-    fprintf(stream, "Attribute count: %u\n", attributes_count);
+  fprintf(stream, "Attribute count: %u\n", attributes_count);
 	for (attribute_info* it = attributes; it < attributes + attributes_count; ++it) {
 		ATTRIBUTE_TYPE attribute_type = getAttributeType(it, class_file);
-		switch (attribute_type) {
+    uint16_t index;
+    switch (attribute_type) {
 			case CONSTANTE_VALUE:
+        index = attributes->u.ConstantValue.constantvalue_index;
+        fprintf(stream, "\t\tconstantvalue_index:\tcp_info #%u", index);
+        printConstantPool(stream, class_file, index);
 				break;
 			case CODE:
 				break;
@@ -229,7 +239,6 @@ static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attrib
 				break;
 			default:
 				break;
-
 		}
 	}
 }
