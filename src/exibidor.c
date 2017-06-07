@@ -1,5 +1,34 @@
 #include "exibidor.h"
 
+const static char* OPCODE_ARRAY[] = {
+    "nop", "aconst_null", "iconst_m1", "iconst_0", "iconst_1", "iconst_2", "iconst_3", "iconst_4", "iconst_5", "lconst_0",
+    "lconst_1", "fconst_0", "fconst_1", "fconst_2", "dconst_0", "dconst_1", "bipush", "sipush", "ldc", "ldc_w",
+    "ldc2_w", "iload", "lload", "fload","dload", "aload", "iload_0", "iload_1", "iload_2", "iload_3",
+    "lload_0", "lload_1", "lload_2", "lload_3", "fload_0", "fload_1", "fload_2", "fload_3", "dload_0", "dload_1",
+    "dload_2", "dload_3", "aload_0", "aload_1", "aload_2", "aload_3", "iaload", "laload", "faload", "daload",
+    "aaload", "baload", "caload", "saload", "istore", "lstore", "fstore", "dstore", "astore", "istore_0",
+    "istore_1", "istore_2", "istore_3", "lstore_0", "lstore_1", "lstore_2", "lstore_3", "fstore_0", "fstore_1", "fstore_2",
+    "fstore_3", "dstore_0", "dstore_1", "dstore_2", "dstore_3", "astore_0", "astore_1", "astore_2", "astore_3", "iastore",
+    "lastore", "fastore", "dastore", "aastore", "bastore", "castore", "sastore", "pop", "pop2", "dup",
+    "dup_x1", "dup_x2", "dup2", "dup2_x1", "dup2_x2", "swap", "iadd", "ladd", "fadd", "dadd",
+    "isub", "lsub", "fsub", "dsub", "imul", "lmul", "fmul", "dmul", "idiv", "ldiv",
+    "fdiv", "ddiv", "irem", "lrem", "frem", "drem", "ineg", "lneg", "fneg", "dneg",
+    "ishl", "lshl", "ishr", "lshr", "iushr", "lushr", "iand", "land", "ior", "lor",
+	"ixor", "lxor", "iinc", "i2l", "i2f", "i2d", "l2i", "l2f", "l2d", "f2i",
+    "f2l", "f2d", "d2i", "d2l", "d2f", "i2b", "i2c", "i2s", "lcmp", "fcmpl",
+    "fcmpg", "dcmpl", "dcmpg", "ifeq", "ifne", "iflt", "ifge","ifgt", "ifle", "if_icmpeq",
+    "if_icmpne", "if_icmplt", "if_icmpge", "if_icmpgt", "if_icmple", "if_acmpeq", "if_acmpne", "goto", "jsr", "ret",
+    "tableswitch", "lookupswitch", "ireturn", "lreturn", "freturn", "dreturn", "areturn", "return", "getstatic", "putstatic",
+    "getfield", "putfield", "invokevirtual", "invokespecial", "invokestatic", "invokeinterface", "invokedynamic", "new", "newarray", "anewarray",
+    "arraylength", "athrow", "checkcast", "instanceof", "monitorenter", "monitorexit", "wide", "multianewarray", "ifnull", "ifnonnull",
+    "goto_w", "jsr_w", "breakpoint", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, "impdep1", "impdep2"
+};
+
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file);
 static void printConstantPool(FILE* stream, ClassFile* class_file);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
@@ -10,6 +39,7 @@ static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
 static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file);
 static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg);
 static void printUTF8(FILE* stream, char* unicode);
+static void printCodeAttribute(FILE* stream, ClassFile* class_file, attribute_info* codeAtr);
 
 static void printUTF8 (FILE* stream, char * unicode){
 	setlocale (LC_ALL, "" );
@@ -206,10 +236,14 @@ static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attrib
     fprintf(stream, "Attribute count: %u\n", attributes_count);
 	for (attribute_info* it = attributes; it < attributes + attributes_count; ++it) {
 		ATTRIBUTE_TYPE attribute_type = getAttributeType(it, class_file);
+		fprintf(stream, "Attribute name: ");
+		print_from_index(stream, class_file, it->attribute_name_index-1);
+		NEWLINE(stream);
 		switch (attribute_type) {
 			case CONSTANTE_VALUE:
 				break;
 			case CODE:
+				printCodeAttribute(stream, class_file, it);
 				break;
 			case EXCEPTIONS:
 				break;
@@ -232,4 +266,13 @@ static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attrib
 
 		}
 	}
+}
+
+static void printCodeAttribute(FILE* stream, ClassFile* class_file, attribute_info* codeAtr) {
+	fprintf(stream, "Max stack: %u\tMax locals: %u\n", codeAtr->u.Code.max_stack, codeAtr->u.Code.max_locals);
+	fprintf(stream, "Code length: %u\n", codeAtr->u.Code.code_length);
+	for(uint32_t i = 0; i < codeAtr->u.Code.code_length; ++i)
+		fprintf(stream, "\t[%u]: %s\n", i, OPCODE_ARRAY[*(codeAtr->u.Code.code + i)]);
+	fprintf(stream, "Exception table length: %u\n", codeAtr->u.Code.exception_table_length);
+	printAttributes(stream, class_file, codeAtr->u.Code.attributes_count, codeAtr->u.Code.attributes);
 }
