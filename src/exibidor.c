@@ -5,7 +5,7 @@ static void printConstantPool(FILE* stream, ClassFile* class_file);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
 static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
-static void printAttributes(FILE* stream, ClassFile* class_file);
+static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes);
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
 static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file);
 static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg);
@@ -27,7 +27,7 @@ void showClassFile(FILE* stream, ClassFile* class_file) {
     printInterfaces(stream, class_file);
     printFields(stream, class_file);
     printMethods(stream, class_file);
-    printAttributes(stream, class_file);
+    printAttributes(stream, class_file, class_file->attributes_count, class_file->attributes);
 }
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
@@ -128,7 +128,7 @@ static void printConstantPool(FILE* stream, ClassFile* class_file){
           exit(EXIT_FAILURE);
     	}
     }
-	fprintf(stream, "\n");
+	NEWLINE(stream);
 }
 
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
@@ -149,6 +149,8 @@ static void printClassAccessFlags(FILE* stream, uint16_t access_flags) {
         fprintf(stream, "annotation ");
     if (access_flags & ACC_ENUM)
         fprintf(stream, "enum ");
+	if (access_flags & ACC_STATIC)
+		fprintf(stream, "static ");
     fprintf(stream, "]\n");
 }
 
@@ -162,7 +164,7 @@ static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, 
 	fprintf(stream, "%s class: #%u ", msg, index);
 	char* this_class = (char*)class_file->constant_pool[class_cp->CONSTANT.Class_info.name_index - 1].CONSTANT.Utf8_info.bytes;
 	printUTF8(stream, this_class);
-	fprintf(stream, "\n");
+	NEWLINE(stream);
 }
 
 static void printInterfaces(FILE* stream, ClassFile* class_file) {
@@ -174,27 +176,60 @@ static void printInterfaces(FILE* stream, ClassFile* class_file) {
             fprintf(stream, "%#06x ", *(class_file->interfaces + i));
         fprintf(stream, "]\n");
     }
-	fprintf(stream, "\n");
+	NEWLINE(stream);
 }
 
 static void printFields(FILE* stream, ClassFile* class_file) {
 	fprintf(stream, "**********\n* Fields *\n**********\n");
     fprintf(stream, "Field count: %u\n", class_file->fields_count);
-	fprintf(stream, "\n");
+	NEWLINE(stream);
 }
 
 static void printMethods(FILE* stream, ClassFile* class_file) {
 	fprintf(stream, "***********\n* Methods *\n***********\n");
-	fprintf(stream, "Method count: %u\n", class_file->methods_count);
-	// uint16_t i = 0;
-	// for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
-	// 	fprintf(stream, "[%u] %u", i++, it->name_index);
-	// }
-	// fprintf(stream, "\n");
+	fprintf(stream, "\nMethod count: %u\n\n", class_file->methods_count);
+	uint16_t i = 0;
+	for(MethodInfo* it = class_file->methods; it < class_file->methods + class_file->methods_count; ++it) {
+		fprintf(stream, "[%u] ", i++);
+		print_from_index(stream, class_file, it->name_index-1);
+		fprintf(stream, " ");
+		print_from_index(stream, class_file, it->descriptor_index-1);
+		NEWLINE(stream);
+		printClassAccessFlags(stream, it->access_flags);
+		printAttributes(stream, class_file, it->attributes_count, it->attributes);
+		NEWLINE(stream);
+	}
+	NEWLINE(stream);
 }
 
-static void printAttributes(FILE* stream, ClassFile* class_file) {
-	fprintf(stream, "**************\n* Attributes *\n**************\n");
-    fprintf(stream, "Attributes:\n\n");
-    fprintf(stream, "Attribute count: %u\n", class_file->attributes_count);
+static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes) {
+    fprintf(stream, "Attribute count: %u\n", attributes_count);
+	for (attribute_info* it = attributes; it < attributes + attributes_count; ++it) {
+		ATTRIBUTE_TYPE attribute_type = getAttributeType(it, class_file);
+		switch (attribute_type) {
+			case CONSTANTE_VALUE:
+				break;
+			case CODE:
+				break;
+			case EXCEPTIONS:
+				break;
+			case INNER_CLASSES:
+				break;
+			case SYNTHETIC:
+				break;
+			case SOURCE_FILE:
+				break;
+			case LINE_NUMBER_TABLE:
+				break;
+			case LOCAL_VARIABLE_TABLE:
+				break;
+			case DEPRECATED:
+				break;
+			case UNKNOWN:
+				break;
+			default:
+				break;
+
+		}
+	}
 }
