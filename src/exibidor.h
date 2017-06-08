@@ -5,10 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <inttypes.h>
+#include <locale.h>
 
 #include "leitor.h"
 #include "access_flags.h"
 
 void showClassFile(FILE* stream, ClassFile* class_file);
+
+#define NEWLINE(filestream) fprintf(filestream,"\n")
 
 #endif
