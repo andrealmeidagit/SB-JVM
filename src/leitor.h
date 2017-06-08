@@ -6,16 +6,14 @@
 #include <string.h>
 #include <stdint.h>
 
-typedef unsigned char uchar;
+struct ClassFile;
+typedef struct ClassFile ClassFile;
+struct MethodInfo;
+typedef struct MethodInfo MethodInfo;
+struct AttributeInfo;
+typedef struct AttributeInfo AttributeInfo;
 
-struct ClassFile_;
-typedef struct ClassFile_ ClassFile;
-struct MethodInfo_;
-typedef struct MethodInfo_ MethodInfo;
-struct AttributeInfo_;
-typedef struct AttributeInfo_ AttributeInfo;
-
-struct ClassFile_ {
+struct ClassFile {
     uint32_t magic;
     uint16_t minor_version;
     uint16_t major_version;
@@ -34,7 +32,7 @@ struct ClassFile_ {
     AttributeInfo* attributes;
 };
 
-struct MethodInfo_ {
+struct MethodInfo {
     uint16_t access_flags;
     uint16_t name_index;
     uint16_t descriptor_index;
@@ -42,7 +40,7 @@ struct MethodInfo_ {
     AttributeInfo* attributes;
 };
 
-struct AttributeInfo_ {
+struct AttributeInfo {
     uint16_t attribute_name_index;
     uint32_t attribute_length;
     uint8_t* info;
