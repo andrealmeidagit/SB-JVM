@@ -30,7 +30,7 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
     class_file->constant_pool_count = read2Byte(fp_class_file);  // le o numero de elementos na CONSTANTE pool
 
     if(class_file->constant_pool_count == 0){   //verifica se CP_count eh valido
-        printf("ERRO CONSTANT POOL COUNT!!!\n");
+        fprintf(stderr, "[ERROR]: ConstantPoolCountError\n");
         exit(EXIT_FAILURE);
     }
 
@@ -112,7 +112,7 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
                 break;
 
             default:
-                printf("ERRO CONSTANT POOL TAG %d!!!\n", CP_ptr->tag);
+                fprintf(stderr, "[ERROR]: ConstantPoolTagError %d\n", CP_ptr->tag);
                 exit(EXIT_FAILURE);
         }
 
