@@ -118,7 +118,6 @@ static void readConstantPool(ClassFile* class_file, FILE* fp_class_file) {
     }
 }
 
-//read interfaces
 static void readInterfaces(ClassFile* class_file, FILE* fp) {
     class_file->interfaces_count = read2Byte(fp);
     if (class_file->interfaces_count > 0) {
@@ -130,7 +129,6 @@ static void readInterfaces(ClassFile* class_file, FILE* fp) {
         class_file->interfaces = NULL;
 }
 
-//get attribute type (faltando implementar constant_pool para funcionar)
 ATTRIBUTE_TYPE getAttributeType (AttributeInfo* a_info, ClassFile* class_file){
     uint16_t a_name_index = a_info->attribute_name_index;
     CP_table* constPool = class_file->constant_pool + a_name_index - 1;
@@ -187,7 +185,6 @@ ATTRIBUTE_TYPE getAttributeType (AttributeInfo* a_info, ClassFile* class_file){
     return  UNKNOWN;
 }
 
-//read attributes (faltando implementar o method_info para funcionar)
 static AttributeInfo* readAttributeArray(uint16_t attributes_count, ClassFile* class_file, FILE* fp){
     AttributeInfo* array = (AttributeInfo*)malloc(attributes_count * sizeof(AttributeInfo));
     AttributeInfo* a_info_aux = array;
@@ -313,7 +310,6 @@ static AttributeInfo* readAttributeArray(uint16_t attributes_count, ClassFile* c
     return array;
 }
 
-//read fields
 static void readFields (ClassFile* class_file, FILE* fp) {
 
     class_file->fields_count = read2Byte(fp); //get number of fields
@@ -336,7 +332,6 @@ static void readFields (ClassFile* class_file, FILE* fp) {
     }
 }
 
-//read methods
 static void readMethods(ClassFile* class_file, FILE* fp) {
     class_file->methods_count = read2Byte(fp);
     if (class_file->methods_count > 0) {
@@ -353,7 +348,6 @@ static void readMethods(ClassFile* class_file, FILE* fp) {
         class_file->methods = NULL;
 }
 
-//read classfile
 ClassFile readClassFile(char* file_name) {
     FILE *fp;
     ClassFile class_file;
