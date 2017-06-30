@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 /********  Attribute types  *******/
-#define CONSTANTE_VALUE      0
+#define CONSTANT_VALUE       0
 #define CODE                 1
 #define EXCEPTIONS           2
 #define INNER_CLASSES        3
@@ -115,13 +115,13 @@ struct LocalVariable {
     uint16_t descriptor_index;
     uint16_t index;
 };
-typedef struct LocalVariable local_variable_table_t;
+typedef struct LocalVariable LocalVariable;
 
 struct LineNumber {
     uint16_t start_pc;
     uint16_t line_number;
 };
-typedef struct LineNumber line_number_table_t;
+typedef struct LineNumber LineNumber;
 
 struct InnerClasses {
     uint16_t    inner_class_info_index;
@@ -129,7 +129,7 @@ struct InnerClasses {
     uint16_t    inner_name_index;
     uint16_t    inner_class_access_flags;
 };
-typedef struct InnerClasses inner_classes_t;
+typedef struct InnerClasses InnerClasses;
 
 struct ExceptionTable {
     uint16_t    start_pc;
@@ -137,9 +137,9 @@ struct ExceptionTable {
     uint16_t    handler_pc;
     uint16_t    catch_type;
 };
-typedef struct ExceptionTable exception_table_t;
+typedef struct ExceptionTable ExceptionTable;
 
-struct attribute_info {
+struct AttributeInfo {
     uint16_t attribute_name_index;
     uint32_t attribute_length;
     union{
@@ -153,9 +153,9 @@ struct attribute_info {
             uint32_t code_length;
             uint8_t* code;
             uint16_t exception_table_length;
-            exception_table_t* exception_table;
+            ExceptionTable* exception_table;
             uint16_t attributes_count;
-            struct attribute_info* attributes;
+            struct AttributeInfo* attributes;
         }Code;
 
         struct{
@@ -165,7 +165,7 @@ struct attribute_info {
 
         struct{
             uint16_t number_of_classes;
-            inner_classes_t* classes;
+            InnerClasses* classes;
         }InnerClasses;
 
         struct{
@@ -178,12 +178,12 @@ struct attribute_info {
 
         struct{
             uint16_t line_number_table_length;
-            line_number_table_t *line_number_table;
+            LineNumber *line_number_table;
         }LineNumberTable;
 
         struct{
             uint16_t local_variable_table_length;
-            local_variable_table_t * local_variable_table;
+            LocalVariable * local_variable_table;
         }LocalVariableTable;
 
         struct{
@@ -192,23 +192,23 @@ struct attribute_info {
 
     }u;
 };
-typedef struct attribute_info attribute_info;
+typedef struct AttributeInfo AttributeInfo;
 
 struct FieldInfo {
     uint16_t access_flags;
     uint16_t name_index;
     uint16_t descriptor_index;
     uint16_t attributes_count;
-    attribute_info* attributes;
+    AttributeInfo* attributes;
 };
-typedef struct FieldInfo field_info;
+typedef struct FieldInfo FieldInfo;
 
 struct MethodInfo {
     uint16_t access_flags;
     uint16_t name_index;
     uint16_t descriptor_index;
     uint16_t attributes_count;
-    attribute_info* attributes;
+    AttributeInfo* attributes;
 };
 typedef struct MethodInfo MethodInfo;
 
@@ -224,15 +224,15 @@ struct ClassFile {
     uint16_t interfaces_count;
     uint16_t* interfaces;
     uint16_t fields_count;
-    field_info* fields;
+    FieldInfo* fields;
     uint16_t methods_count;
     MethodInfo* methods;
     uint16_t attributes_count;
-    attribute_info* attributes;
+    AttributeInfo* attributes;
 };
 typedef struct ClassFile ClassFile;
 
 ClassFile readClassFile(char* file_name);
-ATTRIBUTE_TYPE getAttributeType (attribute_info* a_info, ClassFile* class_file);
+ATTRIBUTE_TYPE getAttributeType (AttributeInfo* a_info, ClassFile* class_file);
 
 #endif

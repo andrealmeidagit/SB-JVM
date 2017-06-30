@@ -6,12 +6,12 @@ static void printConstant(FILE* stream, ClassFile* class_file, uint16_t index);
 static void printInterfaces(FILE* stream, ClassFile* class_file);
 static void printFields(FILE* stream, ClassFile* class_file);
 static void printMethods(FILE* stream, ClassFile* class_file);
-static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes);
+static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, AttributeInfo* attributes);
 static void printClassAccessFlags(FILE* stream, uint16_t access_flags);
 static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file);
 static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg);
 static void printUTF8(FILE* stream, char* unicode);
-static void printCodeAttribute(FILE* stream, ClassFile* class_file, attribute_info* codeAtr);
+static void printCodeAttribute(FILE* stream, ClassFile* class_file, AttributeInfo* codeAtr);
 
 static void printUTF8 (FILE* stream, char * unicode){
     setlocale (LC_ALL, "" );
@@ -209,16 +209,16 @@ static void printMethods(FILE* stream, ClassFile* class_file) {
     NEWLINE(stream);
 }
 
-static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, attribute_info* attributes) {
+static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attributes_count, AttributeInfo* attributes) {
   fprintf(stream, "Attribute count: %u\n", attributes_count);
-    for (attribute_info* it = attributes; it < attributes + attributes_count; ++it) {
+    for (AttributeInfo* it = attributes; it < attributes + attributes_count; ++it) {
         ATTRIBUTE_TYPE attribute_type = getAttributeType(it, class_file);
         fprintf(stream, "Attribute name: ");
         print_from_index(stream, class_file, it->attribute_name_index-1);
         NEWLINE(stream);
         uint16_t index;
         switch (attribute_type) {
-            case CONSTANTE_VALUE:
+            case CONSTANT_VALUE:
                 index = attributes->u.ConstantValue.constantvalue_index;
                 fprintf(stream, "\t\tconstantvalue_index:\tcp_info #%u", index);
                 printConstant(stream, class_file, index-1);
@@ -249,7 +249,7 @@ static void printAttributes(FILE* stream, ClassFile* class_file, uint16_t attrib
     }
 }
 
-static void printCodeAttribute(FILE* stream, ClassFile* class_file, attribute_info* codeAtr) {
+static void printCodeAttribute(FILE* stream, ClassFile* class_file, AttributeInfo* codeAtr) {
     fprintf(stream, "Max stack: %u\tMax locals: %u\n", codeAtr->u.Code.max_stack, codeAtr->u.Code.max_locals);
     fprintf(stream, "Code length: %u\n", codeAtr->u.Code.code_length);
     for(uint32_t i = 0; i < codeAtr->u.Code.code_length; ++i)
