@@ -1,45 +1,27 @@
 #include "leitor.h"
 
-//read 1 byte from file
-static uint8_t read1Byte (FILE *fp){
-    uint8_t byte = getc(fp);
-    if(byte << 8 == EOF){
-        puts("ClassFormatError");
+static uint8_t readByte(FILE* fp) {
+    uint8_t byte;
+    fread(&byte, 1, 1, fp);
+    if (feof(fp)) {
+        fprintf(stderr, "[ERROR]: ClassFormatError\n");
         exit(EXIT_FAILURE);
     }
     return byte;
 }
 
-//read 2 bytes from file
-static uint16_t read2Byte (FILE *fp){
-    uint16_t byte = getc(fp);
-    if(byte << 16 == EOF){
-        puts("ClassFormatError");
-        exit(EXIT_FAILURE);
-    }
-    uint8_t byte_aux = read1Byte(fp);
-
-    byte = (byte << 8) | byte_aux;
-
-    return byte;
+static uint16_t read2Byte(FILE* fp) {
+    uint16_t byte2;
+    byte2 = readByte(fp);
+    byte2 = (byte2 << 8) | readByte(fp);
+    return byte2;
 }
 
-//read 4 bytes from file
-static uint32_t read4Byte (FILE *fp){
-    uint32_t byte = getc(fp);
-    if(byte == EOF){
-        puts("ClassFormatError");
-        exit(EXIT_FAILURE);
-    }
-    uint8_t byte_aux = read1Byte(fp);
-    byte = (byte << 8) | byte_aux;
-
-    byte_aux = read1Byte(fp);
-    byte = (byte << 8) | byte_aux;
-
-    byte_aux = read1Byte(fp);
-    byte = (byte << 8) | byte_aux;
-    return  byte;
+static uint32_t read4Byte(FILE* fp) {
+    uint32_t byte4;
+    byte4 = read2Byte(fp);
+    byte4 = (byte4 << 16) | read2Byte(fp);
+    return byte4;
 }
 
 //read constant pool
@@ -55,14 +37,14 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
     class_file->constant_pool = (CP_table *) malloc((class_file->constant_pool_count -1)*sizeof(CP_table));
     CP_table* CP_ptr;
     for(CP_ptr = class_file->constant_pool; CP_ptr < (class_file->constant_pool + class_file->constant_pool_count - 1); CP_ptr++){
-        CP_ptr->tag = read1Byte(fp_class_file);
+        CP_ptr->tag = readByte(fp_class_file);
         switch(CP_ptr->tag){
             case Const_Utf8:    //tag 1
                 CP_ptr->CONSTANT.Utf8_info.length = read2Byte(fp_class_file);
                 if (CP_ptr->CONSTANT.Utf8_info.length>0){
                     CP_ptr->CONSTANT.Utf8_info.bytes = (uint8_t*) malloc((CP_ptr->CONSTANT.Utf8_info.length + 1)*sizeof(uint8_t));
                     for(j=0;j<CP_ptr->CONSTANT.Utf8_info.length;j++)
-                        CP_ptr->CONSTANT.Utf8_info.bytes[j] = read1Byte(fp_class_file);
+                        CP_ptr->CONSTANT.Utf8_info.bytes[j] = readByte(fp_class_file);
                     CP_ptr->CONSTANT.Utf8_info.bytes[CP_ptr->CONSTANT.Utf8_info.length] = '\0';
                 }else{
                     CP_ptr->CONSTANT.Utf8_info.bytes = NULL;
@@ -116,7 +98,7 @@ static void readCP(ClassFile* class_file, FILE* fp_class_file) {
                 break;
 
             case Const_MHand:   //tag15 - Method Handle
-                CP_ptr->CONSTANT.MethodHandle_info.reference_kind = read1Byte(fp_class_file);
+                CP_ptr->CONSTANT.MethodHandle_info.reference_kind = readByte(fp_class_file);
                 CP_ptr->CONSTANT.MethodHandle_info.reference_index = read2Byte(fp_class_file);
                 break;
 
@@ -284,7 +266,7 @@ static void readAttributes (field_info* f_info, MethodInfo* m_info, attribute_in
 
                 uint8_t *code_aux = a_info_aux->u.Code.code;
                 while(code_aux < (a_info_aux->u.Code.code + a_info_aux->u.Code.code_length)){
-                    *code_aux = read1Byte(fp);
+                    *code_aux = readByte(fp);
                     code_aux++;
                 }
             }
