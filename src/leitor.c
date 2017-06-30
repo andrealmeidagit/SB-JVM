@@ -188,63 +188,10 @@ ATTRIBUTE_TYPE getAttributeType (AttributeInfo* a_info, ClassFile* class_file){
 }
 
 //read attributes (faltando implementar o method_info para funcionar)
-static void readAttributes (FieldInfo* f_info, MethodInfo* m_info, AttributeInfo* a_info, ClassFile* class_file, FILE* fp){
-    AttributeInfo* attributes;
-    uint16_t attributes_count;
-
-    if(f_info != NULL){
-        f_info->attributes_count = read2Byte(fp);
-
-        if(f_info->attributes_count){
-            f_info->attributes = (AttributeInfo *) malloc(f_info->attributes_count * sizeof(AttributeInfo));
-        }
-        else{
-            f_info->attributes = NULL;
-        }
-        attributes_count = f_info->attributes_count;
-        attributes = f_info->attributes;
-    }
-    else if(m_info != NULL){
-        m_info->attributes_count = read2Byte(fp);
-        if(m_info->attributes_count){
-            m_info->attributes = (AttributeInfo *) malloc(m_info->attributes_count * sizeof(AttributeInfo));
-        }
-        else{
-            m_info->attributes = NULL;
-        }
-        attributes_count = m_info->attributes_count;
-        attributes = m_info->attributes;
-    }
-    else if(a_info != NULL){
-        a_info->u.Code.attributes_count = read2Byte(fp);
-        if(a_info->u.Code.attributes_count){
-            a_info->u.Code.attributes = (AttributeInfo *) malloc(a_info->u.Code.attributes_count * sizeof(AttributeInfo));
-        }
-        else{
-            a_info->u.Code.attributes = NULL;
-        }
-        attributes_count = a_info->u.Code.attributes_count;
-        attributes = a_info->u.Code.attributes;
-    }
-    else if(class_file != NULL){
-        class_file->attributes_count = read2Byte(fp);
-        if(class_file->attributes_count){
-            class_file->attributes = (AttributeInfo *) malloc(class_file->attributes_count * sizeof(AttributeInfo));
-        }
-        else{
-            class_file->attributes = NULL;
-        }
-
-        attributes_count = class_file->attributes_count;
-        attributes = class_file->attributes;
-    }
-    else{
-        puts("Read Attributes Error");
-        exit(EXIT_FAILURE);
-    }
-
-    AttributeInfo* a_info_aux = attributes;
-    while(a_info_aux < (attributes + attributes_count)){
+static AttributeInfo* readAttributeArray(uint16_t attributes_count, ClassFile* class_file, FILE* fp){
+    AttributeInfo* array = (AttributeInfo*)malloc(attributes_count * sizeof(AttributeInfo));
+    AttributeInfo* a_info_aux = array;
+    while(a_info_aux < (array + attributes_count)){
         a_info_aux->attribute_name_index = read2Byte(fp);
         a_info_aux->attribute_length = read4Byte(fp);
 
@@ -284,7 +231,8 @@ static void readAttributes (FieldInfo* f_info, MethodInfo* m_info, AttributeInfo
                     e_table_aux++;
                 }
             }
-            readAttributes(NULL, NULL, a_info_aux, class_file, fp);
+            a_info_aux->u.Code.attributes_count = read2Byte(fp);
+            a_info_aux->u.Code.attributes = readAttributeArray(a_info_aux->u.Code.attributes_count, class_file, fp);
         }
         else if (attributeType == EXCEPTIONS)
         {
@@ -362,6 +310,7 @@ static void readAttributes (FieldInfo* f_info, MethodInfo* m_info, AttributeInfo
         }
         a_info_aux++;
     }
+    return array;
 }
 
 //read fields
@@ -377,7 +326,8 @@ static void readFields (ClassFile* class_file, FILE* fp) {
             f_info->access_flags = read2Byte(fp);
             f_info->name_index = read2Byte(fp);
             f_info->descriptor_index = read2Byte(fp);
-            readAttributes(f_info, NULL, NULL, class_file, fp);
+            f_info->attributes_count = read2Byte(fp);
+            f_info->attributes = readAttributeArray(f_info->attributes_count, class_file, fp);
             f_info++;
         }
     }
@@ -395,7 +345,8 @@ static void readMethods(ClassFile* class_file, FILE* fp) {
             it->access_flags = read2Byte(fp);
             it->name_index = read2Byte(fp);
             it->descriptor_index = read2Byte(fp);
-            readAttributes(NULL, it, NULL, class_file, fp);
+            it->attributes_count = read2Byte(fp);
+            it->attributes = readAttributeArray(it->attributes_count, class_file, fp);
         }
     }
     else
@@ -417,7 +368,8 @@ ClassFile readClassFile(char* file_name) {
     readInterfaces(&class_file, fp);
     readFields(&class_file, fp);
     readMethods(&class_file, fp);
-    readAttributes(NULL, NULL, NULL, &class_file, fp);
+    class_file.attributes_count = read2Byte(fp);
+    class_file.attributes = readAttributeArray(class_file.attributes_count, &class_file, fp);
     fclose(fp);
     return class_file;
 }
