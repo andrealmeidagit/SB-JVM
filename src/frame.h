@@ -19,7 +19,7 @@ struct Frame {
     uint32_t local_variable_count;
     uint32_t* local_variables;
     uint16_t constant_pool_count;
-    CP_table* constant_pool;
+    ConstantInfo* constant_pool;
 
     /*
     elementoListaArrays *listaArrays;

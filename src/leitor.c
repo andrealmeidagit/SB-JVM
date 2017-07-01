@@ -33,8 +33,8 @@ static void readConstantPool(ClassFile* class_file, FILE* fp_class_file) {
         exit(EXIT_FAILURE);
     }
 
-    class_file->constant_pool = (CP_table *) malloc((class_file->constant_pool_count -1)*sizeof(CP_table));
-    CP_table* CP_ptr;
+    class_file->constant_pool = (ConstantInfo *) malloc((class_file->constant_pool_count -1)*sizeof(ConstantInfo));
+    ConstantInfo* CP_ptr;
     for(CP_ptr = class_file->constant_pool; CP_ptr < (class_file->constant_pool + class_file->constant_pool_count - 1); CP_ptr++){
         CP_ptr->tag = readByte(fp_class_file);
         switch(CP_ptr->tag){
@@ -131,7 +131,7 @@ static void readInterfaces(ClassFile* class_file, FILE* fp) {
 
 ATTRIBUTE_TYPE getAttributeType (AttributeInfo* a_info, ClassFile* class_file){
     uint16_t a_name_index = a_info->attribute_name_index;
-    CP_table* constPool = class_file->constant_pool + a_name_index - 1;
+    ConstantInfo* constPool = class_file->constant_pool + a_name_index - 1;
 
     // CONSTANTE_Utf8
     uint16_t length = constPool->CONSTANT.Utf8_info.length;
