@@ -8,12 +8,12 @@
 
 struct OperandInfo {
     uint32_t data;
-    struct OperandInfo *next;
+    struct OperandInfo *previous;
 };
 typedef struct OperandInfo OperandInfo;
 
 struct Frame {
-    MethodInfo* methods;
+    MethodInfo* method_info;
     uint32_t pc;
     OperandInfo* operand_stack;
     uint32_t local_variable_count;
@@ -26,8 +26,10 @@ struct Frame {
     elementoListaObjetos *listaObjetos;
     */
 
-    uint32_t return_address;
+    struct Frame* previous;
 };
 typedef struct Frame Frame;
+
+Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous);
 
 #endif /* FRAME_H_ */
