@@ -37,7 +37,7 @@
 #define Const_InDyn     18
 
 //Constant Pool
-struct CP_table{
+struct ConstantInfo{
     uint8_t tag;
     union{
         struct{
@@ -106,7 +106,7 @@ struct CP_table{
         }InvokeDynamic_info;  //tag == 18
     }CONSTANT;
 };
-typedef struct CP_table CP_table;
+typedef struct ConstantInfo ConstantInfo;
 
 struct LocalVariable {
     uint16_t start_pc;
@@ -217,7 +217,7 @@ struct ClassFile {
     uint16_t minor_version;
     uint16_t major_version;
     uint16_t constant_pool_count;
-    CP_table* constant_pool;
+    ConstantInfo* constant_pool;
     uint16_t access_flags;
     uint16_t this_class;
     uint16_t super_class;

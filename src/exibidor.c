@@ -58,7 +58,7 @@ static void printConstantPool(FILE* stream, ClassFile* class_file, uint16_t cont
 }
 
 static void printConstant(FILE* stream, ClassFile* class_file, uint16_t index) {
-    CP_table * p = class_file->constant_pool + index;
+    ConstantInfo * p = class_file->constant_pool + index;
     switch (p->tag) {
     case Const_Utf8:    //tag 1
         fprintf(stream, "UTF-8:\t\t ");
@@ -167,7 +167,7 @@ static void printThisClassAndSuperClass(FILE* stream, ClassFile* class_file) {
 }
 
 static void printClassName(FILE* stream, ClassFile* class_file, uint16_t index, char* msg) {
-    CP_table* class_cp = class_file->constant_pool + index - 1;
+    ConstantInfo* class_cp = class_file->constant_pool + index - 1;
     fprintf(stream, "%s class: #%u ", msg, index);
     char* this_class = (char*)class_file->constant_pool[class_cp->CONSTANT.Class_info.name_index - 1].CONSTANT.Utf8_info.bytes;
     printUTF8(stream, this_class);
