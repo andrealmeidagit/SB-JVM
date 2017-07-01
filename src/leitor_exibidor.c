@@ -1,9 +1,10 @@
 #include "argument_checks.h"
 #include "leitor.h"
 #include "exibidor.h"
+#include "finder.h"
 
-#define __EXIBIDOR__
-// #define __JVM__
+// #define __EXIBIDOR__
+#define __JVM__
 
 int main(int argc, char* argv[]) {
     ClassFile hello_world_class;
@@ -17,7 +18,8 @@ int main(int argc, char* argv[]) {
 #endif
 
 #ifdef __JVM__
-
+    MethodInfo* mainMethod = findMethod("main", &hello_world_class);
+    
 #endif
 
     return 0;
