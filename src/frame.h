@@ -1,6 +1,11 @@
 #ifndef FRAME_H_
 #define FRAME_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include "leitor.h"
+
 struct OperandInfo {
     uint32_t data;
     struct OperandInfo *next;
