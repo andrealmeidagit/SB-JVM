@@ -11,4 +11,16 @@ Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous)
     frame->constant_pool_count = class_file->constant_pool_count;
     frame->constant_pool = class_file->constant_pool;
     frame->previous = previous;
+    return frame;
+}
+
+void pushOperand(Frame* frame, OperandInfo* operand) {
+    operand->previous = frame->operand_stack;
+    frame->operand_stack = operand;
+}
+
+OperandInfo* popOperand(Frame* frame) {
+    OperandInfo* removed = frame->operand_stack;
+    frame->operand_stack = removed->previous;
+    return removed;
 }

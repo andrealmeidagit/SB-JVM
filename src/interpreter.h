@@ -3,6 +3,7 @@
 
 #include "leitor.h"
 #include "frame.h"
+#include "instruction.h"
 
 void runFrame(Frame* frame);
 
