@@ -278,7 +278,7 @@ void instruction_sipush(Frame* frame) {
 }
 
 void instruction_ldc(Frame* frame) {
-
+    frame->pc += 2;
 }
 
 void instruction_ldc_w(Frame* frame) {
@@ -923,7 +923,6 @@ void instruction_getstatic(Frame* frame) {
     printf("index byte 1: %u\n", index_byte1);
     printf("index byte 2: %u\n", index_byte2);
     frame->pc += 3;
-    runFrame(frame);
 }
 
 void instruction_putstatic(Frame* frame) {
@@ -939,7 +938,7 @@ void instruction_putfield(Frame* frame) {
 }
 
 void instruction_invokevirtual(Frame* frame) {
-
+    frame->pc += 3;
 }
 
 void instruction_invokespecial(Frame* frame) {
