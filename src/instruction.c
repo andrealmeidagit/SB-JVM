@@ -937,9 +937,9 @@ void instruction_return(Frame* frame) {
 
 void instruction_getstatic(Frame* frame) {
     printf("Executando getstatic\n");
-    uint16_t index_byte = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
-    index_byte = (index_byte << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
-    printf("index byte: %u\n", index_byte);
+    uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
+    index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    printf("index: %u\n", index);
     frame->pc += 3;
 }
 
@@ -957,6 +957,10 @@ void instruction_putfield(Frame* frame) {
 
 void instruction_invokevirtual(Frame* frame) {
     printf("Executando invokevirtual\n");
+    uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
+    index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    printf("index: %u\n", index);
+
     frame->pc += 3;
 }
 
