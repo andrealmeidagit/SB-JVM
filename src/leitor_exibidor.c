@@ -10,6 +10,7 @@
 #define __JVM__
 
 int main(int argc, char* argv[]) {
+    printf("\n\n\n");
     ClassFile hello_world_class;
     checkArgumentAmount(argc);
     checkFileExtension(argv[1]);
