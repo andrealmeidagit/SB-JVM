@@ -278,6 +278,24 @@ void instruction_sipush(Frame* frame) {
 }
 
 void instruction_ldc(Frame* frame) {
+    printf("Executando ldc\n");
+    uint8_t constant_pool_index = frame->method_info->attributes[0].u.Code.code[frame->pc + 1];
+    ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
+    OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
+    switch (constant.tag) {
+        case Const_Int:
+            op->data = constant.CONSTANT.Integer_info.bytes;
+            break;
+        case Const_Float:
+            op->data = constant.CONSTANT.Float_info.bytes;
+            break;
+        case Const_String:
+            op->data = constant.CONSTANT.String_info.string_index;
+            break;
+        default:
+            fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
+    }
+    pushOperand(frame, op);
     frame->pc += 2;
 }
 
@@ -918,10 +936,10 @@ void instruction_return(Frame* frame) {
 }
 
 void instruction_getstatic(Frame* frame) {
-    uint8_t index_byte1 = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
-    uint8_t index_byte2 = frame->method_info->attributes[0].u.Code.code[frame->pc+2];
-    printf("index byte 1: %u\n", index_byte1);
-    printf("index byte 2: %u\n", index_byte2);
+    printf("Executando getstatic\n");
+    uint16_t index_byte = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
+    index_byte = (index_byte << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    printf("index byte: %u\n", index_byte);
     frame->pc += 3;
 }
 
@@ -938,6 +956,7 @@ void instruction_putfield(Frame* frame) {
 }
 
 void instruction_invokevirtual(Frame* frame) {
+    printf("Executando invokevirtual\n");
     frame->pc += 3;
 }
 

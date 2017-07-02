@@ -31,5 +31,7 @@ struct Frame {
 typedef struct Frame Frame;
 
 Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous);
+void pushOperand(Frame* frame, OperandInfo* operand);
+OperandInfo* popOperand(Frame* frame);
 
 #endif /* FRAME_H_ */
