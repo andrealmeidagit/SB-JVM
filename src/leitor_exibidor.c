@@ -4,6 +4,7 @@
 #include "finder.h"
 #include "frame.h"
 #include "interpreter.h"
+#include "instruction.h"
 
 // #define __EXIBIDOR__
 #define __JVM__
@@ -20,6 +21,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 #ifdef __JVM__
+    initInstructionArray();
     MethodInfo* main_method = findMethod("main", &hello_world_class);
     Frame* initial_frame = newFrame(&hello_world_class, main_method, NULL);
     runFrame(initial_frame);
