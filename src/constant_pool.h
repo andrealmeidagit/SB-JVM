@@ -55,7 +55,7 @@ static void printConstantFF(Frame* frame, uint16_t index) {
         break;
     case Const_String:  //tag8
         printf("String:\t\t #%u\n", p->CONSTANT.String_info.string_index);  //index da string
-        print_from_index (frame, p->CONSTANT.String_info.string_index);   //imprime o texto UTF-8 a partir do indice
+        print_from_index (frame, p->CONSTANT.String_info.string_index -1);   //imprime o texto UTF-8 a partir do indice
         printf("\n");
         break;
     case Const_FRef:    //tag9 - Field Reference

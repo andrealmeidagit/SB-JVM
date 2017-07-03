@@ -281,6 +281,7 @@ void instruction_sipush(Frame* frame) {
 void instruction_ldc(Frame* frame) {
     printf("Executando ldc\n");
     uint8_t constant_pool_index = frame->method_info->attributes[0].u.Code.code[frame->pc + 1];
+    printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
     switch (constant.tag) {
@@ -943,6 +944,11 @@ void instruction_getstatic(Frame* frame) {
     index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
     printConstantFF(frame, index-1);
+
+    /*Interpretar o Field Descryptor
+    Aqui é definida a saída de 'hello world'
+    no caso: stdout*/
+
     frame->pc += 3;
 }
 
@@ -966,7 +972,16 @@ void instruction_invokevirtual(Frame* frame) {
 
     printConstantFF(frame, index-1);
 
-    
+    /*Interpretar o Method Descryptor
+    aqui é definida a operação da classe PrintStream
+    A saída padrão da string é definida em getstatic
+    A string de fato é definida em ldc
+
+    tarefas do InvokeVirtual:
+    "resolve the class -> resolve the method -> throw errors"
+    no nosso caso: descobre o que o método faz e transforma em C
+
+    no caso do helloworld - pega a string empilhada e mostra na saída padrão*/
 
     frame->pc += 3;
 }
