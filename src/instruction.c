@@ -1,4 +1,5 @@
 #include "instruction.h"
+#include "exibidor.h"
 
 void initInstructionArray() {
     INSTRUCTION_ARRAY[0x00] = instruction_nop;
@@ -932,6 +933,7 @@ void instruction_areturn(Frame* frame) {
 }
 
 void instruction_return(Frame* frame) {
+    printf("Executando return\n");
 
 }
 
@@ -940,6 +942,7 @@ void instruction_getstatic(Frame* frame) {
     uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
     index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
+    printConstantFF(frame, index-1);
     frame->pc += 3;
 }
 
@@ -960,6 +963,10 @@ void instruction_invokevirtual(Frame* frame) {
     uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
     index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
+
+    printConstantFF(frame, index-1);
+
+    
 
     frame->pc += 3;
 }
