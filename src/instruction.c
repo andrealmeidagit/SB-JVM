@@ -965,6 +965,17 @@ void instruction_putfield(Frame* frame) {
 }
 
 void instruction_invokevirtual(Frame* frame) {
+    /*
+    method_descriptor:
+        (parameter_descriptor*)return_descriptor
+    parameter_descriptor:
+        field_type
+    return_descriptor:
+        field_type
+        void_descriptor
+    void_descriptor:
+        v
+      */
     printf("Executando invokevirtual\n");
     uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
     index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
@@ -982,6 +993,41 @@ void instruction_invokevirtual(Frame* frame) {
     no nosso caso: descobre o que o método faz e transforma em C
 
     no caso do helloworld - pega a string empilhada e mostra na saída padrão*/
+
+    char* method_descriptor;
+    char* parameter_descriptor;
+    char* return_descriptor;
+    unsigned int i=1;
+    unsigned int j;
+
+    method_descriptor = (char*) frame->constant_pool[frame->constant_pool[frame->constant_pool[index-1].CONSTANT.Methodref_info.name_and_type_index -1].CONSTANT.NameAndType_info.descriptor_index -1].CONSTANT.Utf8_info.bytes;
+
+    parameter_descriptor = (char*) malloc (strlen (method_descriptor));
+    if (parameter_descriptor==NULL) exit (1);
+    return_descriptor = (char*) malloc (strlen (method_descriptor));
+    if (return_descriptor==NULL) exit (1);
+
+    while (method_descriptor[i]!=')'){   //get parameter_descriptor
+        parameter_descriptor[i-1] = method_descriptor[i];
+        i++;
+    }
+    i++;
+    parameter_descriptor[i]='\0';
+    j=i;
+    while (method_descriptor[i]!='V'){   //get return_descriptor
+        return_descriptor[i-j] = method_descriptor[i];
+        i++;
+    }
+    return_descriptor[i-j]='\0';
+    if (i==j)
+        return_descriptor=NULL;
+    printf("%s\n", method_descriptor);
+    printf("%s\n", parameter_descriptor);
+    printf("%s\n", return_descriptor);
+
+
+
+    //printf("%s\n", parameter_descriptor);
 
     frame->pc += 3;
 }
