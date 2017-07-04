@@ -987,7 +987,7 @@ void instruction_putfield(Frame* frame) {
 }
 
 void instruction_invokevirtual(Frame* frame) {
-    int verbose = 0;
+    int verbose = 1;
 
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
@@ -1039,8 +1039,7 @@ void instruction_invokevirtual(Frame* frame) {
 
 /*********************************************/
 
-    FieldType *FT = NULL;
-    FT = read_field_type (parameter_descriptor);
+    FieldType *FT = read_field_type (parameter_descriptor);
     if (verbose)
         printf("read field type: %s\n", FT->class_name_ref);
 

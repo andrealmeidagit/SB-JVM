@@ -5,3 +5,5 @@ jam/
 output_backup\.txt
 
 a.out
+
+*.class
