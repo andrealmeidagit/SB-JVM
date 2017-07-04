@@ -14,8 +14,9 @@ uint8_t fromInt8(int8_t num);
 
 float toFloat(uint32_t num);
 double toDouble(uint64_t num);
-
+long toLong(uint64_t num);
 uint32_t fromFloat(float num);
 uint64_t fromDouble(double num);
+uint64_t fromLong(long num);
 
 #endif /* CONVERSIONS_H_ */
