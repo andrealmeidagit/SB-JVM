@@ -1,5 +1,4 @@
 #include "instruction.h"
-#include <string.h>
 
 void initInstructionArray() {
     INSTRUCTION_ARRAY[0x00] = instruction_nop;
@@ -271,7 +270,9 @@ void instruction_dconst_1(Frame* frame) {
 }
 
 void instruction_bipush(Frame* frame) {
-
+    uint8_t data = getByte(frame, 1);
+    pushOperand(frame, newOperand(data));
+    frame->pc += 2;
 }
 
 void instruction_sipush(Frame* frame) {
@@ -286,16 +287,16 @@ void instruction_ldc(Frame* frame) {
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
     switch (constant.tag) {
         case Const_Int:
-            op->data = constant.CONSTANT.Integer_info.bytes;
-            break;
+        op->data = constant.CONSTANT.Integer_info.bytes;
+        break;
         case Const_Float:
-            op->data = constant.CONSTANT.Float_info.bytes;
-            break;
+        op->data = constant.CONSTANT.Float_info.bytes;
+        break;
         case Const_String:
-            op->data = constant.CONSTANT.String_info.string_index;
-            break;
+        op->data = constant.CONSTANT.String_info.string_index;
+        break;
         default:
-            fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
+        fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
     }
     pushOperand(frame, op);
     frame->pc += 2;
@@ -330,19 +331,23 @@ void instruction_aload(Frame* frame) {
 }
 
 void instruction_iload_0(Frame* frame) {
-
+    pushOperand(frame, newOperand(frame->local_variables[0]));
+    frame->pc+=1;
 }
 
 void instruction_iload_1(Frame* frame) {
-
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    frame->pc+=1;
 }
 
 void instruction_iload_2(Frame* frame) {
-
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    frame->pc+=1;
 }
 
 void instruction_iload_3(Frame* frame) {
-
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    frame->pc+=1;
 }
 
 void instruction_lload_0(Frame* frame) {
@@ -462,19 +467,31 @@ void instruction_astore(Frame* frame) {
 }
 
 void instruction_istore_0(Frame* frame) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[0]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_istore_1(Frame* frame) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[1]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_istore_2(Frame* frame) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[2]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_istore_3(Frame* frame) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[3]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_lstore_0(Frame* frame) {
@@ -965,39 +982,13 @@ void instruction_putfield(Frame* frame) {
 }
 
 void instruction_invokevirtual(Frame* frame) {
-    /*
-    method_descriptor:
-        (parameter_descriptor*)return_descriptor
-    parameter_descriptor:
-        field_type
-    return_descriptor:
-        field_type
-        void_descriptor
-    void_descriptor:
-        v
-      */
+
     printf("Executando invokevirtual\n");
     uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
     index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
 
     printConstantFF(frame, index-1);
-
-    /*Interpretar o Method Descryptor
-    aqui é definida a operação da classe PrintStream
-    A saída padrão da string é definida em getstatic
-    A string de fato é definida em ldc
-
-    tarefas do InvokeVirtual:
-    "resolve the class -> resolve the method -> throw errors"
-    no nosso caso: descobre o que o método faz e transforma em C
-
-    no caso do helloworld - pega a string empilhada e mostra na saída padrão*/
-
-
-/*****************************************
-**** method descreiptor reader function***
-*****************************************/
 
     char* method_descriptor;
     char* parameter_descriptor;
@@ -1024,29 +1015,20 @@ void instruction_invokevirtual(Frame* frame) {
         i++;
     }
     return_descriptor[i-j]='\0';
+
     if (i==j)
-        return_descriptor=NULL;
+    return_descriptor=NULL;
     printf("method_descriptor: %s\n", method_descriptor);
     printf("parameter_descriptor: %s\n", parameter_descriptor);
     printf("return_descriptor: %s\n", return_descriptor);
 
-/*********************************************/
+    FieldType *FT = NULL;
+    FT = read_field_type (parameter_descriptor);
+    printf("read field type: %s\n", FT->class_name_ref);
+    /*********************************************/
 
-/***********************
-*** field type *********
-***********************/
-
-
-
-
-
-FieldType *FT = NULL;
-FT = read_field_type (parameter_descriptor);
-printf("read field type: %s\n", FT->class_name_ref);
-/*********************************************/
-
-free(parameter_descriptor);
-free(return_descriptor);
+    free(parameter_descriptor);
+    free(return_descriptor);
     frame->pc += 3;
 }
 
@@ -1057,25 +1039,25 @@ FieldType* read_field_type (char* str){
     int j=1;
     int i=0;
     if (str[0]=='B')
-        i = 1;
+    i = 1;
     else if (str[0]=='C')
-        i = 2;
+    i = 2;
     else if (str[0]=='D')
-        i = 3;
+    i = 3;
     else if (str[0]=='F')
-        i = 4;
+    i = 4;
     else if (str[0]=='I')
-        i = 5;
+    i = 5;
     else if (str[0]=='J')
-        i = 6;
+    i = 6;
     else if (str[0]=='L')
-        i = 7;
+    i = 7;
     else if (str[0]=='S')
-        i = 8;
+    i = 8;
     else if (str[0]=='Z')
-        i = 9;
+    i = 9;
     else if (str[0]=='[')
-        i = 10;
+    i = 10;
 
     switch (i) {
         case 0:
@@ -1104,12 +1086,10 @@ FieldType* read_field_type (char* str){
             aux = (char*) malloc (strlen(str)-2);
             for (i = 0, j = 1; i<strlen(str)-2; i++, j++)
             {
-              aux[i]=str[j];
+                aux[i]=str[j];
             }
             aux[i]='\0';
             FT->class_name_ref = aux;
-            // printf ("YO! %s", FT->class_name_ref);
-            // getchar();
             break;
         case 8:
             printf("implementar field_type->short\n" );
@@ -1128,8 +1108,8 @@ FieldType* read_field_type (char* str){
 
 /*
 struct MethodDescriptor{
-    char* parameter_descriptor;
-    char* return_descriptor;
+char* parameter_descriptor;
+char* return_descriptor;
 }Meth_Desc;
 typedef struct MethodDescriptor MethodDescriptor;
 
@@ -1137,7 +1117,7 @@ MethodDescriptor * read_method_descriptor (Frame* frame, uint16_t index){
 MethodDescriptor Meth_Desc;
 
 
-  return Meth_Desc;
+return Meth_Desc;
 }
 
 */

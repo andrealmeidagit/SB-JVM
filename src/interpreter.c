@@ -6,7 +6,6 @@ void runFrame(Frame* frame) {
     printf("\n\n**************\nCurrent opcode: %u\n", current_opcode);
     INSTRUCTION_ARRAY[current_opcode](frame);
     if (current_opcode != 0xb1)
-        runFrame(frame);
-    if (frame->previous != NULL)
-        runFrame(frame->previous);
+    {getchar();    runFrame(frame);}
+
 }

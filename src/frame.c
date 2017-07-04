@@ -24,3 +24,14 @@ OperandInfo* popOperand(Frame* frame) {
     frame->operand_stack = removed->previous;
     return removed;
 }
+
+OperandInfo* newOperand(uint32_t data){
+    OperandInfo *operand = (OperandInfo*)malloc(sizeof(OperandInfo));
+    operand->data = data;
+    operand->previous = NULL;
+    return operand;
+}
+
+uint8_t getByte (Frame* frame, uint32_t index){
+    return frame->method_info->attributes[0].u.Code.code[frame->pc + index];
+}
