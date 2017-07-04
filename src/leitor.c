@@ -61,11 +61,13 @@ static void readConstantPool(ClassFile* class_file, FILE* fp_class_file) {
             case Const_Long:   //tag5
                 CP_ptr->CONSTANT.Long_info.high_bytes = read4Byte(fp_class_file);
                 CP_ptr->CONSTANT.Long_info.low_bytes = read4Byte(fp_class_file);
+                CP_ptr++;
                 break;
 
             case Const_Double:  //tag6
                 CP_ptr->CONSTANT.Double_info.high_bytes = read4Byte(fp_class_file);
                 CP_ptr->CONSTANT.Double_info.low_bytes = read4Byte(fp_class_file);
+                CP_ptr++;
                 break;
 
             case Const_Class:   //tag7
