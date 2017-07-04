@@ -4,6 +4,7 @@
 #include "leitor.h"
 #include "frame.h"
 #include "instruction.h"
+#include "finder.h"
 
 void runFrame(Frame* frame);
 

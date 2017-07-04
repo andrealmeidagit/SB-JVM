@@ -12,3 +12,15 @@ MethodInfo* findMethod(const char* method_name, ClassFile* class_file) {
     exit(EXIT_FAILURE);
     return NULL;
 }
+
+AttributeInfo* findCodeAttribute(const MethodInfo* method, const ConstantInfo* constant_pool) {
+    uint16_t i;
+    for (i = 0; i < method->attributes_count; ++i) {
+        AttributeInfo* current_attribute = method->attributes + i;
+        if (strcmp("Code", constant_pool[current_attribute->attribute_name_index - 1].CONSTANT.Utf8_info.bytes) == 0)
+            return current_attribute;
+    }
+    fprintf(stderr, "[ERROR]: CodeAttributeNotFoundError");
+    exit(EXIT_FAILURE);
+    return NULL;
+}
