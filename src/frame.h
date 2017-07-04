@@ -25,12 +25,10 @@ struct Frame {
     elementoListaArrays *listaArrays;
     elementoListaObjetos *listaObjetos;
     */
-
-    struct Frame* previous;
 };
 typedef struct Frame Frame;
 
-Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous);
+Frame* newFrame(ClassFile* class_file, MethodInfo* method_info);
 void pushOperand(Frame* frame, OperandInfo* operand);
 OperandInfo* popOperand(Frame* frame);
 

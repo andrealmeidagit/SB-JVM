@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 #ifdef __JVM__
     initInstructionArray();
     MethodInfo* main_method = findMethod("main", &hello_world_class);
-    Frame* initial_frame = newFrame(&hello_world_class, main_method, NULL);
+    Frame* initial_frame = newFrame(&hello_world_class, main_method);
     runFrame(initial_frame);
 #endif
 
