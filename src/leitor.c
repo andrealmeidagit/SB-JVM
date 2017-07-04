@@ -25,7 +25,7 @@ static uint32_t read4Byte(FILE* fp) {
 }
 
 static void readConstantPool(ClassFile* class_file, FILE* fp_class_file) {
-    uint16_t i, j;
+    uint16_t /*i,*/ j;
     class_file->constant_pool_count = read2Byte(fp_class_file);  // le o numero de elementos na CONSTANTE pool
 
     if(class_file->constant_pool_count == 0){   //verifica se CP_count eh valido

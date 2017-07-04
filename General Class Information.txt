@@ -1,0 +1,149 @@
+*****************************
+* GENERAL CLASS INFORMATION *
+*****************************
+
+Magic number: 0xcafebabe
+Minor version: 0
+Major version: 52
+Constant pool count: 29
+Access flags: 0x0021 [ public super ]
+This class: #5 HelloWorld
+Super class: #6 java/lang/Object
+Interfaces count: 0
+Field count: 0
+Method count: 2
+Attribute count: 1
+
+*****************
+* CONSTANT POOL *
+*****************
+
+
+[1] Method Reference:
+	- Class Index:	 #6	 //	java/lang/Object
+	- Name and Type: #15	 //	name: <init>	 descriptor: ()V
+
+[2] Field Reference:
+	- Class Index:	 #16	 // java/lang/System
+	- Name and Type: #17	 // name: out	 descriptor: Ljava/io/PrintStream;
+
+[3] String:		 #18
+Hello, world!
+
+[4] Method Reference:
+	- Class Index:	 #19	 //	java/io/PrintStream
+	- Name and Type: #20	 //	name: println	 descriptor: (Ljava/lang/String;)V
+
+[5] Class:		 #21	 // HelloWorld
+
+[6] Class:		 #22	 // java/lang/Object
+
+[7] UTF-8:		 <init>
+
+[8] UTF-8:		 ()V
+
+[9] UTF-8:		 Code
+
+[10] UTF-8:		 LineNumberTable
+
+[11] UTF-8:		 main
+
+[12] UTF-8:		 ([Ljava/lang/String;)V
+
+[13] UTF-8:		 SourceFile
+
+[14] UTF-8:		 HelloWorld.java
+
+[15] Name and Type:
+	- Name Index:	 #7	 // <init>
+	- Descriptor:	 #8	 // ()V
+
+[16] Class:		 #23	 // java/lang/System
+
+[17] Name and Type:
+	- Name Index:	 #24	 // out
+	- Descriptor:	 #25	 // Ljava/io/PrintStream;
+
+[18] UTF-8:		 Hello, world!
+
+[19] Class:		 #26	 // java/io/PrintStream
+
+[20] Name and Type:
+	- Name Index:	 #27	 // println
+	- Descriptor:	 #28	 // (Ljava/lang/String;)V
+
+[21] UTF-8:		 HelloWorld
+
+[22] UTF-8:		 java/lang/Object
+
+[23] UTF-8:		 java/lang/System
+
+[24] UTF-8:		 out
+
+[25] UTF-8:		 Ljava/io/PrintStream;
+
+[26] UTF-8:		 java/io/PrintStream
+
+[27] UTF-8:		 println
+
+[28] UTF-8:		 (Ljava/lang/String;)V
+
+**************
+* Interfaces *
+**************
+
+Interface count: 0
+
+**********
+* Fields *
+**********
+Field count: 0
+
+***********
+* Methods *
+***********
+
+Method count: 2
+
+[0] <init> ()V
+Access flags: 0x0001 [ public ]
+Attribute count: 1
+Attribute name: Code
+Max stack: 1	Max locals: 1
+Code length: 5
+	[0]: aload_0
+	[1]: invokespecial
+	[2]: nop
+	[3]: aconst_null
+	[4]: return
+Exception table length: 0
+Attribute count: 1
+Attribute name: LineNumberTable
+
+[1] main ([Ljava/lang/String;)V
+Access flags: 0x0009 [ public static ]
+Attribute count: 1
+Attribute name: Code
+Max stack: 2	Max locals: 1
+Code length: 9
+	[0]: getstatic
+	[1]: nop
+	[2]: iconst_m1
+	[3]: ldc
+	[4]: iconst_0
+	[5]: invokevirtual
+	[6]: nop
+	[7]: iconst_1
+	[8]: return
+Exception table length: 0
+Attribute count: 1
+Attribute name: LineNumberTable
+
+
+**************
+* ATTRIBUTES *
+**************
+
+Attribute count: 1
+Attribute name: SourceFile
+HelloWorld.java

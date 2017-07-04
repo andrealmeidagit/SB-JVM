@@ -1,4 +1,5 @@
 #include "instruction.h"
+#include <string.h>
 
 void initInstructionArray() {
     INSTRUCTION_ARRAY[0x00] = instruction_nop;
@@ -280,6 +281,7 @@ void instruction_sipush(Frame* frame) {
 void instruction_ldc(Frame* frame) {
     printf("Executando ldc\n");
     uint8_t constant_pool_index = frame->method_info->attributes[0].u.Code.code[frame->pc + 1];
+    printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
     switch (constant.tag) {
@@ -932,14 +934,21 @@ void instruction_areturn(Frame* frame) {
 }
 
 void instruction_return(Frame* frame) {
+    printf("Executando return\n");
 
 }
 
 void instruction_getstatic(Frame* frame) {
     printf("Executando getstatic\n");
-    uint16_t index_byte = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
-    index_byte = (index_byte << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
-    printf("index byte: %u\n", index_byte);
+    uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
+    index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    printf("index: %u\n", index);
+    printConstantFF(frame, index-1);
+
+    /*Interpretar o Field Descryptor
+    Aqui é definida a saída de 'hello world'
+    no caso: stdout*/
+
     frame->pc += 3;
 }
 
@@ -956,9 +965,185 @@ void instruction_putfield(Frame* frame) {
 }
 
 void instruction_invokevirtual(Frame* frame) {
+    /*
+    method_descriptor:
+        (parameter_descriptor*)return_descriptor
+    parameter_descriptor:
+        field_type
+    return_descriptor:
+        field_type
+        void_descriptor
+    void_descriptor:
+        v
+      */
     printf("Executando invokevirtual\n");
+    uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
+    index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    printf("index: %u\n", index);
+
+    printConstantFF(frame, index-1);
+
+    /*Interpretar o Method Descryptor
+    aqui é definida a operação da classe PrintStream
+    A saída padrão da string é definida em getstatic
+    A string de fato é definida em ldc
+
+    tarefas do InvokeVirtual:
+    "resolve the class -> resolve the method -> throw errors"
+    no nosso caso: descobre o que o método faz e transforma em C
+
+    no caso do helloworld - pega a string empilhada e mostra na saída padrão*/
+
+
+/*****************************************
+**** method descreiptor reader function***
+*****************************************/
+
+    char* method_descriptor;
+    char* parameter_descriptor;
+    char* return_descriptor;
+    unsigned int i=1;
+    unsigned int j;
+
+    method_descriptor = (char*) frame->constant_pool[frame->constant_pool[frame->constant_pool[index-1].CONSTANT.Methodref_info.name_and_type_index -1].CONSTANT.NameAndType_info.descriptor_index -1].CONSTANT.Utf8_info.bytes;
+
+    parameter_descriptor = (char*) malloc (strlen (method_descriptor));
+    if (parameter_descriptor==NULL) exit (1);
+    return_descriptor = (char*) malloc (strlen (method_descriptor));
+    if (return_descriptor==NULL) exit (1);
+
+    while (method_descriptor[i]!=')'){   //get parameter_descriptor
+        parameter_descriptor[i-1] = method_descriptor[i];
+        i++;
+    }
+    i++;
+    parameter_descriptor[i]='\0';
+    j=i;
+    while (method_descriptor[i]!='V'){   //get return_descriptor
+        return_descriptor[i-j] = method_descriptor[i];
+        i++;
+    }
+    return_descriptor[i-j]='\0';
+    if (i==j)
+        return_descriptor=NULL;
+    printf("method_descriptor: %s\n", method_descriptor);
+    printf("parameter_descriptor: %s\n", parameter_descriptor);
+    printf("return_descriptor: %s\n", return_descriptor);
+
+/*********************************************/
+
+/***********************
+*** field type *********
+***********************/
+
+
+
+
+
+FieldType *FT = NULL;
+FT = read_field_type (parameter_descriptor);
+printf("read field type: %s\n", FT->class_name_ref);
+/*********************************************/
+
+free(parameter_descriptor);
+free(return_descriptor);
     frame->pc += 3;
 }
+
+
+FieldType* read_field_type (char* str){
+    FieldType *FT = malloc (sizeof(FieldType));
+    char *aux;
+    int j=1;
+    int i=0;
+    if (str[0]=='B')
+        i = 1;
+    else if (str[0]=='C')
+        i = 2;
+    else if (str[0]=='D')
+        i = 3;
+    else if (str[0]=='F')
+        i = 4;
+    else if (str[0]=='I')
+        i = 5;
+    else if (str[0]=='J')
+        i = 6;
+    else if (str[0]=='L')
+        i = 7;
+    else if (str[0]=='S')
+        i = 8;
+    else if (str[0]=='Z')
+        i = 9;
+    else if (str[0]=='[')
+        i = 10;
+
+    switch (i) {
+        case 0:
+            printf("FIELD TYPE DOES NOT EXIST!!! Base Type Character:%c\n", str[0]);
+            exit(EXIT_FAILURE);
+            break;
+        case 1:
+            printf("implementar field_type->byte\n" );
+            break;
+        case 2:
+            printf("implementar field_type->char\n" );
+            break;
+        case 3:
+            printf("implementar field_type->double\n" );
+            break;
+        case 4:
+            printf("implementar field_type->float\n" );
+            break;
+        case 5:
+            printf("implementar field_type->int\n" );
+            break;
+        case 6:
+            printf("implementar field_type->long\n" );
+            break;
+        case 7:
+            aux = (char*) malloc (strlen(str)-2);
+            for (i = 0, j = 1; i<strlen(str)-2; i++, j++)
+            {
+              aux[i]=str[j];
+            }
+            aux[i]='\0';
+            FT->class_name_ref = aux;
+            // printf ("YO! %s", FT->class_name_ref);
+            // getchar();
+            break;
+        case 8:
+            printf("implementar field_type->short\n" );
+            break;
+        case 9:
+            printf("implementar field_type->bool\n" );
+            break;
+        case 10:
+            printf("implementar field_type->array\n" );
+            break;
+        default:
+            return FT;
+    }
+    return FT;
+}
+
+/*
+struct MethodDescriptor{
+    char* parameter_descriptor;
+    char* return_descriptor;
+}Meth_Desc;
+typedef struct MethodDescriptor MethodDescriptor;
+
+MethodDescriptor * read_method_descriptor (Frame* frame, uint16_t index){
+MethodDescriptor Meth_Desc;
+
+
+  return Meth_Desc;
+}
+
+*/
+
+
+
 
 void instruction_invokespecial(Frame* frame) {
 
