@@ -28,15 +28,18 @@ struct Frame {
     elementoListaArrays *listaArrays;
     elementoListaObjetos *listaObjetos;
     */
+
+    struct Frame* previous;
 };
 typedef struct Frame Frame;
 
-Frame* newFrame(ClassFile* class_file, MethodInfo* method_info);
+Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous_frame);
 void freeFrame(Frame* frame);
-void pushOperand(Frame* frame, OperandInfo* operand);
 
 uint8_t getByteAt(Frame* frame, uint32_t index);
+
 OperandInfo* newOperand(uint32_t data);
+void pushOperand(Frame* frame, OperandInfo* operand);
 OperandInfo* popOperand(Frame* frame);
 
 #endif /* FRAME_H_ */

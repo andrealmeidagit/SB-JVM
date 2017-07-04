@@ -1,6 +1,6 @@
 #include "frame.h"
 
-Frame* newFrame(ClassFile* class_file, MethodInfo* method_info) {
+Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous_frame) {
     Frame* frame = (Frame*)malloc(sizeof(Frame));
     frame->method_info = method_info;
     frame->pc = 0;
@@ -10,6 +10,7 @@ Frame* newFrame(ClassFile* class_file, MethodInfo* method_info) {
     frame->local_variables = (uint32_t*)malloc(frame->local_variable_count * sizeof(uint32_t));
     frame->constant_pool_count = class_file->constant_pool_count;
     frame->constant_pool = class_file->constant_pool;
+    frame->previous = previous_frame;
     FRAME_AMOUNT++;
     return frame;
 }

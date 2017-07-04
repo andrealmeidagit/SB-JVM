@@ -1009,19 +1009,25 @@ void instruction_lookupswitch(Frame* frame, ClassFile* class_files, int class_fi
 }
 
 void instruction_ireturn(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame->previous, popOperand(frame));
 }
 
 void instruction_lreturn(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op2 = popOperand(frame);
+    OperandInfo* op1 = popOperand(frame);
+    pushOperand(frame->previous, op1);
+    pushOperand(frame->previous, op2);
 }
 
 void instruction_freturn(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame->previous, popOperand(frame));
 }
 
 void instruction_dreturn(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op2 = popOperand(frame);
+    OperandInfo* op1 = popOperand(frame);
+    pushOperand(frame->previous, op1);
+    pushOperand(frame->previous, op2);
 }
 
 void instruction_areturn(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1209,7 +1215,14 @@ void instruction_invokestatic(Frame* frame, ClassFile* class_files, int class_fi
     /**** Find the target class file and method info ****/
     ClassFile* target_class_file = findClassFile(class_name, class_files, class_files_count);
     MethodInfo* target_method_info = findMethodWithDesc(method_name, method_descriptor, target_class_file);
-    Frame* new_frame = newFrame(target_class_file, target_method_info);
+    Frame* new_frame = newFrame(target_class_file, target_method_info, frame);
+    /**** Calculate argument amount and transfer them to new frame's local variable array ****/
+    uint32_t argument_amount = argumentAmountFromDescriptor(method_descriptor);
+    for (int i = argument_amount - 1; i >= 0; --i) {
+        OperandInfo* op = popOperand(frame);
+        new_frame->local_variables[i] = op->data;
+        free(op);
+    }
     runFrame(new_frame, class_files, class_files_count);
     freeFrame(new_frame);
     frame->pc += 3;

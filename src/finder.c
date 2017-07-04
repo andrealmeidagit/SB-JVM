@@ -50,3 +50,14 @@ ClassFile* findClassFile(char* class_name, ClassFile* class_files, uint16_t clas
     exit(EXIT_FAILURE);
     return NULL;
 }
+
+uint32_t argumentAmountFromDescriptor(char* descriptor) {
+    int i = 0;
+    int argument_amount = 0;
+    while(descriptor[++i] != ')') {
+        argument_amount++;
+        if (descriptor[i] == 'D' || descriptor[i] == 'J')
+            argument_amount++;
+    }
+    return argument_amount;
+}

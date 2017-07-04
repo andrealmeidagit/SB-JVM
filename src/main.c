@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     FRAME_AMOUNT = 0;
     initInstructionArray();
     MethodInfo* main_method = findMethod("main", &input_class);
-    Frame* initial_frame = newFrame(&input_class, main_method);
+    Frame* initial_frame = newFrame(&input_class, main_method, NULL);
     runFrame(initial_frame, &input_class, 1);
 #endif
 

@@ -9,4 +9,6 @@ MethodInfo* findMethodWithDesc(const char* method_name, const char* method_descr
 AttributeInfo* findCodeAttribute(const MethodInfo* method, const ConstantInfo* constant_pool);
 ClassFile* findClassFile(char* class_name, ClassFile* class_files, uint16_t class_files_count);
 
+uint32_t argumentAmountFromDescriptor(char* descriptor);
+
 #endif /* FINDER_H_ */
