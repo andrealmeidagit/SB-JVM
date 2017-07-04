@@ -421,35 +421,48 @@ void instruction_iload_3(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_lload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[0]));
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    frame->pc += 1;
 }
 
 void instruction_lload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    frame->pc += 1;
 }
 
 void instruction_lload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    frame->pc += 1;
 }
 
 void instruction_lload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, newOperand(frame->local_variables[4]));
+    frame->pc += 1;
 }
 
 void instruction_fload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[0]));
+    frame->pc += 1;
 }
 
 void instruction_fload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    frame->pc += 1;
 }
 
 void instruction_fload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    frame->pc += 1;
 }
 
 void instruction_fload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    frame->pc += 1;
 }
 
 void instruction_dload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
