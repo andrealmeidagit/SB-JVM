@@ -277,13 +277,17 @@ void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_bipush(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint8_t data = getByteAt(frame, frame->pc);
+    uint8_t data = getByteAt(frame, frame->pc+1);
     pushOperand(frame, newOperand(data));
     frame->pc += 2;
 }
 
 void instruction_sipush(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint16_t data = getByteAt(frame, frame->pc+1);
+    uint16_t data2 = getByteAt(frame, frame->pc+2);
+    pushOperand(frame, newOperand(fromInt16((toInt16(data)<<8)|toInt16(data2))));
+    // printf("%d \n", ((toInt16(data)<<8)|toInt16(data2)));
+    frame->pc += 3;
 }
 
 void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -879,15 +883,33 @@ void instruction_iinc(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_i2l(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    uint64_t aux = fromLong((long)toInt32(op->data));
+    OperandInfo *op2 = newOperand((uint32_t)aux);
+    op->data = (uint32_t)(aux >> 32); //hi
+    pushOperand (frame, op2);
+    pushOperand (frame, op);
+    frame->pc+=1;
 }
 
 void instruction_i2f(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromFloat((float)(toInt32(op->data)));
+    pushOperand (frame, op);
+    frame->pc+=1;
 }
 
 void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint64_t aux = fromDouble((double)toInt32(op->data));
+    OperandInfo *op2 = newOperand((uint32_t)aux);
 
+    op->data = (uint32_t)(aux >> 32); //hi
+
+    // printf("->i2d: %d\n", toInt32(op->data));
+    pushOperand (frame, op2);
+    pushOperand (frame, op);
+    frame->pc+=1;
 }
 
 void instruction_l2i(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -931,7 +953,11 @@ void instruction_i2b(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_i2c(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    printf("eh noix %d/n", toInt32(op->data));
+    op->data = op->data & 0x0000FFFF;
+    pushOperand(frame, op);
+    frame->pc+=1;
 }
 
 void instruction_i2s(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1086,11 +1112,13 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     int verbose = 1;
     uint16_t i=1;
     uint16_t j, k, y;
+    uint64_t aux_double, aux_long;
     char * method_descriptor;
     char * parameter_descriptor;
     char * return_descriptor;
     char * aux;
     OperandInfo *op = (OperandInfo*) malloc(sizeof(OperandInfo));
+    OperandInfo *op2 = (OperandInfo*) malloc(sizeof(OperandInfo));
 
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
@@ -1167,21 +1195,35 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             break;
         case 2:
             printf("implementar field_type->char\n" );
+            op = popOperand(frame);
+            // printUTF8
+            printf ("CHAR: %c\n", ((char)(op->data))+1);
             break;
         case 3:
-            printf("implementar field_type->double\n" );
+            // printf("implementar field_type->double\n" );
+            op = popOperand(frame);
+            op2 = popOperand(frame);
+            aux_double = ((uint64_t)op->data) << 32;
+            aux_double = aux_double | (uint64_t)op2->data;
+            printf("%lf\n", toDouble(aux_double));
             break;
         case 4:
-            printf("implementar field_type->float\n" );
+            // printf("implementar field_type->float\n" );
+            op = popOperand(frame);
+            printf("%f\n", toFloat(op->data));
             break;
         case 5:
-            //printf("implementar field_type->int\n" );
+            // printf("implementar field_type->int\n" );
             op = popOperand(frame);
             printf("%d\n", toInt32(op->data));
 
             break;
         case 6:
-            printf("implementar field_type->long\n" );
+            op = popOperand(frame);
+            op2 = popOperand(frame);
+            aux_long = ((uint64_t)op->data) << 32;
+            aux_long = aux_long | (uint64_t)op2->data;
+            printf("%ld\n", toLong(aux_long));
             break;
         case 7:
             aux = (char*) malloc (strlen(parameter_descriptor)-2);

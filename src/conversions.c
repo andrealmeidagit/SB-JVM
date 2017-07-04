@@ -12,6 +12,7 @@ int16_t toInt16(uint16_t num) {
     return result;
 }
 
+
 int8_t toInt8(uint8_t num) {
     int8_t result;
     memcpy(&result, &num, sizeof(int8_t));
@@ -48,6 +49,12 @@ double toDouble(uint64_t num) {
     return result;
 }
 
+long toLong(uint64_t num) {
+    long result;
+    memcpy(&result, &num, sizeof(long));
+    return result;
+}
+
 uint32_t fromFloat(float num) {
     uint32_t result;
     memcpy(&result, &num, sizeof(uint32_t));
@@ -55,6 +62,12 @@ uint32_t fromFloat(float num) {
 }
 
 uint64_t fromDouble(double num) {
+    uint64_t result;
+    memcpy(&result, &num, sizeof(uint64_t));
+    return result;
+}
+
+uint64_t fromLong(long num) {
     uint64_t result;
     memcpy(&result, &num, sizeof(uint64_t));
     return result;
