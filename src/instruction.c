@@ -343,6 +343,7 @@ void instruction_iload_0(Frame* frame) {
 
 void instruction_iload_1(Frame* frame) {
     pushOperand(frame, newOperand(frame->local_variables[1]));
+    printf("ILOAD1: %d\n", toInt32(frame->local_variables[1]));
     frame->pc+=1;
 }
 
@@ -633,15 +634,15 @@ void instruction_swap(Frame* frame) {
 }
 
 void instruction_iadd(Frame* frame) {
-    OperandInfo *op = popOperand(frame);
     OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
     op->data = fromInt32(toInt32(op->data) + toInt32(op2->data));
 
     pushOperand(frame, op);
     free(op2);
 
-    frame->pc+=3;
+    frame->pc+=1;
 }
 
 void instruction_ladd(Frame* frame) {
@@ -657,7 +658,15 @@ void instruction_dadd(Frame* frame) {
 }
 
 void instruction_isub(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) - toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lsub(Frame* frame) {
@@ -673,7 +682,15 @@ void instruction_dsub(Frame* frame) {
 }
 
 void instruction_imul(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) * toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lmul(Frame* frame) {
@@ -689,7 +706,15 @@ void instruction_dmul(Frame* frame) {
 }
 
 void instruction_idiv(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) / toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_ldiv(Frame* frame) {
@@ -705,7 +730,17 @@ void instruction_ddiv(Frame* frame) {
 }
 
 void instruction_irem(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) -
+    (toInt32(op->data)/toInt32(op2->data)) *
+    toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lrem(Frame* frame) {
@@ -721,7 +756,10 @@ void instruction_drem(Frame* frame) {
 }
 
 void instruction_ineg(Frame* frame) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32(0 - toInt32(op->data));
+    pushOperand(frame, op);
+    frame->pc++;
 }
 
 void instruction_lneg(Frame* frame) {
@@ -737,7 +775,15 @@ void instruction_dneg(Frame* frame) {
 }
 
 void instruction_ishl(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) << (toInt32(op2->data) & 0x1F));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lshl(Frame* frame) {
@@ -745,7 +791,17 @@ void instruction_lshl(Frame* frame) {
 }
 
 void instruction_ishr(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    printf("***********************************************************\n");
+    printf ("OP1: %d\tOP2: %d",toInt32(op->data),toInt32(op2->data));
+    op->data = fromInt32(toInt32(op->data) >> (toInt32(op2->data) & 0x1F));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lshr(Frame* frame) {
@@ -761,7 +817,15 @@ void instruction_lushr(Frame* frame) {
 }
 
 void instruction_iand(Frame* frame) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) & toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_land(Frame* frame) {
@@ -988,47 +1052,53 @@ void instruction_putfield(Frame* frame) {
 
 void instruction_invokevirtual(Frame* frame) {
     int verbose = 1;
+<<<<<<< HEAD
+=======
+    uint16_t i=1;
+    uint16_t j, k, y;
+    char * method_descriptor;
+    char * parameter_descriptor;
+    char * return_descriptor;
+    char * aux;
+    OperandInfo *op = (OperandInfo*) malloc(sizeof(OperandInfo));
+>>>>>>> lucchesi
 
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
-    printf("index: %u\n", index);
+
+    printf("Constant Pool index: %u\n", index);
 
     if (verbose)
         printConstantFF(frame, index-1);
 
-/*****************************************
-**** method descreiptor reader function***
-*****************************************/
-
-    char* method_descriptor;
-    char* parameter_descriptor;
-    char* return_descriptor;
-    uint16_t i=1;
-    uint16_t j, k, y;
-    k = frame->constant_pool[index-1].CONSTANT.Methodref_info.name_and_type_index -1;
-    y = frame->constant_pool[k].CONSTANT.NameAndType_info.descriptor_index -1;
+    //******** method_descriptor **********//
+    k = frame->constant_pool[index-1].CONSTANT.Methodref_info.name_and_type_index - 1;
+    y = frame->constant_pool[k].CONSTANT.NameAndType_info.descriptor_index - 1;
     method_descriptor = (char*) frame->constant_pool[y].CONSTANT.Utf8_info.bytes;
+
+    //******** parameter_descriptor **********//
     parameter_descriptor = (char*) malloc (strlen (method_descriptor));
-    if (parameter_descriptor==NULL) exit (1);
-    return_descriptor = (char*) malloc (strlen (method_descriptor));
-    if (return_descriptor==NULL) exit (1);
-
-
+    if (parameter_descriptor == NULL) exit (1);
     while (method_descriptor[i]!=')'){   //get parameter_descriptor
         parameter_descriptor[i-1] = method_descriptor[i];
         i++;
     }
     i++;
     parameter_descriptor[i]='\0';
+
+    //******** return_descriptor **********//
+    return_descriptor = (char*) malloc (strlen (method_descriptor));
+    if (return_descriptor==NULL) exit (1);
     j=i;
     while (method_descriptor[i]!='V'){   //get return_descriptor
         return_descriptor[i-j] = method_descriptor[i];
         i++;
     }
     return_descriptor[i-j]='\0';
+    if (i==j) return_descriptor=NULL;
 
-    if (i==j)
-        return_descriptor=NULL;
+    //*********************************//
+
     if (verbose)
         printf("method_descriptor: %s\n", method_descriptor);
     if (verbose)
@@ -1036,6 +1106,7 @@ void instruction_invokevirtual(Frame* frame) {
     if (verbose)
         printf("return_descriptor: %s\n", return_descriptor);
 
+<<<<<<< HEAD
 
 /*********************************************/
 
@@ -1051,12 +1122,94 @@ void instruction_invokevirtual(Frame* frame) {
         free(op);
     } else if (strcmp (FT->class_name_ref, "java/io/PrintStream") == 0){
         printf("do nothing\n");
+=======
+    //********************************//
+
+    if (parameter_descriptor[0]=='B')
+        i = 1;
+    else if (parameter_descriptor[0]=='C')
+        i = 2;
+    else if (parameter_descriptor[0]=='D')
+        i = 3;
+    else if (parameter_descriptor[0]=='F')
+        i = 4;
+    else if (parameter_descriptor[0]=='I')
+        i = 5;
+    else if (parameter_descriptor[0]=='J')
+        i = 6;
+    else if (parameter_descriptor[0]=='L')
+        i = 7;
+    else if (parameter_descriptor[0]=='S')
+        i = 8;
+    else if (parameter_descriptor[0]=='Z')
+        i = 9;
+    else if (parameter_descriptor[0]=='[')
+        i = 10;
+    else
+        i = 0;
+
+    switch (i)
+    {
+        case 1:
+            printf("implementar field_type->byte\n" );
+            break;
+        case 2:
+            printf("implementar field_type->char\n" );
+            break;
+        case 3:
+            printf("implementar field_type->double\n" );
+            break;
+        case 4:
+            printf("implementar field_type->float\n" );
+            break;
+        case 5:
+            //printf("implementar field_type->int\n" );
+            op = popOperand(frame);
+            printf("%d\n", toInt32(op->data));
+
+            break;
+        case 6:
+            printf("implementar field_type->long\n" );
+            break;
+        case 7:
+            // aux = (char*) malloc (strlen(parameter_descriptor)-2);
+            // for (i = 0, j = 1; i<strlen(parameter_descriptor)-2; i++, j++)
+            // {
+            //     aux[i]=parameter_descriptor[j];
+            // }
+            // aux[i]='\0';
+            op = popOperand(frame);
+            if (strcmp (aux, "Ljava/lang/String;")==0)
+            {
+                print_from_index(frame, op->data-1);
+                printf("\n");
+
+            }else
+            {
+                printf("Case 'java/io/PrintStream'. Do nothing.\n");
+            }
+
+            break;
+        case 8:
+            printf("implementar field_type->short\n" );
+            break;
+        case 9:
+            printf("implementar field_type->bool\n" );
+            break;
+        case 10:
+            printf("implementar field_type->array\n" );
+            break;
+        default:
+            printf("FIELD TYPE DOES NOT EXIST!!! Base Type Character:%c\n", parameter_descriptor[0]);
+            exit(EXIT_FAILURE);
+>>>>>>> lucchesi
     }
 
-/*********************************************/
-
-    free(parameter_descriptor);
-    free(return_descriptor);
+    /*********************************************/
+    // free(method_descriptor);
+    // free(parameter_descriptor);
+    // free(return_descriptor);
+    // free(op);
     frame->pc += 3;
 }
 
