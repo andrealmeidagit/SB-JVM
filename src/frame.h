@@ -32,6 +32,9 @@ typedef struct Frame Frame;
 
 Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous);
 void pushOperand(Frame* frame, OperandInfo* operand);
+
+uint8_t getByte (Frame* frame, uint32_t index);
+OperandInfo* newOperand(uint32_t data);
 OperandInfo* popOperand(Frame* frame);
 
 #endif /* FRAME_H_ */

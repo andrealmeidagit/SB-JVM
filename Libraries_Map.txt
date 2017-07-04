@@ -1,10 +1,79 @@
-#ifndef INSTRUCTION_H_
-#define INSTRUCTION_H_
+Libraries Map:
 
-#include "interpreter.h"
-#include "frame.h"
-#include "constant_pool.h"
-#include <string.h>
+*******************
+* access_flags.h: *
+*******************
+
+    /* Class access flags */
+    #define ACC_PUBLIC      0x0001
+    #define ACC_FINAL       0x0010
+    #define ACC_SUPER       0x0020
+    #define ACC_INTERFACE   0x0200
+    #define ACC_ABSTRACT    0x0400
+    #define ACC_SYNTHETIC   0x1000
+    #define ACC_ANNOTATION  0x2000
+    #define ACC_ENUM        0x4000
+
+    /* Field access flags */
+    #define ACC_PUBLIC      0x0001
+    #define ACC_PRIVATE     0x0002
+    #define ACC_PROTECTED   0x0004
+    #define ACC_STATIC      0x0008
+    #define ACC_FINAL       0x0010
+    #define ACC_VOLATILE    0x0040
+    #define ACC_TRANSIENT   0x0080
+    #define ACC_SYNTHETIC   0x1000
+    #define ACC_ENUM        0x4000
+
+    /* Method access flags */
+    #define ACC_PUBLIC          0x0001
+    #define ACC_PRIVATE         0x0002
+    #define ACC_PROTECTED       0x0004
+    #define ACC_STATIC          0x0008
+    #define ACC_FINAL           0x0010
+    #define ACC_SYNCHRONIZED    0x0020
+    #define ACC_BRIDGE          0x0040
+    #define ACC_VARARGS         0x0080
+    #define ACC_NATIVE          0x0100
+    #define ACC_ABSTRACT        0x0400
+    #define ACC_STRICT          0x0800
+    #define ACC_SYNTHETIC       0x1000
+
+*********************
+* argument_checks.h *
+*********************
+
+    void checkArgumentAmount(int argc);
+    void checkFileExtension(char* file_name);
+    int checkOutputOption(char* op);
+
+**************
+* exibidor.h *
+**************
+
+    void showClassFile(FILE* stream, ClassFile* class_file);
+    #define NEWLINE(filestream) fprintf(filestream,"\n")
+
+************
+* finder.h *
+************
+
+    MethodInfo* findMethod(const char* method_name, ClassFile* class_file);
+
+***********
+* frame.h *
+***********
+
+    typedef struct OperandInfo OperandInfo;
+    typedef struct Frame Frame;
+
+    Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous);
+    void pushOperand(Frame* frame, OperandInfo* operand);
+    OperandInfo* popOperand(Frame* frame);
+
+******************
+* instructions.h *
+******************
 
 void (*INSTRUCTION_ARRAY[0xff])();
 
@@ -213,24 +282,61 @@ void instruction_ifnonnull(Frame* frame);
 void instruction_goto_w(Frame* frame);
 void instruction_jsr_w(Frame* frame);
 
+*****************
+* interpreter.h *
+*****************
 
+    void runFrame(Frame* frame);
 
-typedef union FieldType{
-    int8_t    byte_type;
-    char      char_type;
-    double    double_type;
-    float     float_type;
-    int       integer_type;
-    long int  long_type;
-    char*     class_name_ref;
-    short int short_type;
-    int8_t    bool_type;
-    char*     array_ref; /*?*/
-}FieldType;
+************
+* leitor.h *
+************
 
-//Funções auxiliares
-FieldType* read_field_type (char* str);
+    /********  Attribute types  *******/
+    #define CONSTANT_VALUE       0
+    #define CODE                 1
+    #define EXCEPTIONS           2
+    #define INNER_CLASSES        3
+    #define SYNTHETIC            4
+    #define SOURCE_FILE          5
+    #define LINE_NUMBER_TABLE    6
+    #define LOCAL_VARIABLE_TABLE 7
+    #define DEPRECATED           8
+    #define UNKNOWN              9
+    #define ATTRIBUTE_TYPE       short
+    /**********************************/
 
+    /*Tabela de tags*/
+    #define Const_Utf8      1
+    #define Const_Int       3
+    #define Const_Float     4
+    #define Const_Long      5
+    #define Const_Double    6
+    #define Const_Class     7
+    #define Const_String    8
+    #define Const_FRef      9
+    #define Const_MRef      10
+    #define Const_IRef      11
+    #define Const_NAT       12
+    #define Const_MHand     15
+    #define Const_MType     16
+    #define Const_InDyn     18
 
+    typedef struct ConstantInfo ConstantInfo;
+    typedef struct LocalVariable LocalVariable;
+    typedef struct LineNumber LineNumber;
+    typedef struct InnerClasses InnerClasses;
+    typedef struct ExceptionTable ExceptionTable;
+    typedef struct AttributeInfo AttributeInfo;
+    typedef struct FieldInfo FieldInfo;
+    typedef struct MethodInfo MethodInfo;
+    typedef struct ClassFile ClassFile;
 
-#endif /* INSTRUCTION_H_ */
+    ClassFile readClassFile(char* file_name);
+    ATTRIBUTE_TYPE getAttributeType (AttributeInfo* a_info, ClassFile* class_file);
+
+******************
+* opcode_array.h *
+******************
+
+    extern const char* OPCODE_ARRAY[];
