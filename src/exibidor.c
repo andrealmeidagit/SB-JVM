@@ -53,6 +53,8 @@ static void printConstantPool(FILE* stream, ClassFile* class_file, uint16_t cont
     for (i = 0; i < class_file->constant_pool_count-1; i++) {
         fprintf(stream, "\n[%u] ", i+1);
         printConstant(stream, class_file, i);
+        if ((class_file->constant_pool + i)->tag == Const_Long || (class_file->constant_pool + i)->tag == Const_Double)
+            ++i;
     }
     NEWLINE(stream);
 }

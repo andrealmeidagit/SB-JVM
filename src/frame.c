@@ -31,6 +31,6 @@ OperandInfo* newOperand(uint32_t data){
     return operand;
 }
 
-uint8_t getByte (Frame* frame, uint32_t index){
-    return findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc + index];
+uint8_t getByteAt(Frame* frame, uint32_t index){
+    return findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[index];
 }

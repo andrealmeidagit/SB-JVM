@@ -7,6 +7,6 @@
 #include "finder.h"
 #include "opcode_array.h"
 
-void runFrame(Frame* frame);
+void runFrame(Frame* frame, ClassFile* class_files, int class_files_count);
 
 #endif /* INTERPRETER_H_ */
