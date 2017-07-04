@@ -281,7 +281,7 @@ void instruction_sipush(Frame* frame) {
 
 void instruction_ldc(Frame* frame) {
     printf("Executando ldc\n");
-    uint8_t constant_pool_index = frame->method_info->attributes[0].u.Code.code[frame->pc + 1];
+    uint8_t constant_pool_index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc + 1];
     printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
@@ -957,8 +957,8 @@ void instruction_return(Frame* frame) {
 
 void instruction_getstatic(Frame* frame) {
     printf("Executando getstatic\n");
-    uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
-    index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
+    index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
     printConstantFF(frame, index-1);
 
@@ -984,8 +984,8 @@ void instruction_putfield(Frame* frame) {
 void instruction_invokevirtual(Frame* frame) {
 
     printf("Executando invokevirtual\n");
-    uint16_t index = frame->method_info->attributes[0].u.Code.code[frame->pc+1];
-    index = (index << 8) | frame->method_info->attributes[0].u.Code.code[frame->pc+2];
+    uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
+    index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
 
     printConstantFF(frame, index-1);

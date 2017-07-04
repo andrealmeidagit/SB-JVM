@@ -6,7 +6,7 @@ Frame* newFrame(ClassFile* class_file, MethodInfo* method_info) {
     frame->pc = 0;
     frame->operand_stack = NULL;
     /* TODO: ver se o atributo CODE eh sempre zero mesmo */
-    frame->local_variable_count = method_info->attributes[0].u.Code.max_locals;
+    frame->local_variable_count = findCodeAttribute(method_info, class_file->constant_pool)->u.Code.max_locals;
     frame->local_variables = (uint32_t*)malloc(frame->local_variable_count * sizeof(uint32_t));
     frame->constant_pool_count = class_file->constant_pool_count;
     frame->constant_pool = class_file->constant_pool;
@@ -32,5 +32,5 @@ OperandInfo* newOperand(uint32_t data){
 }
 
 uint8_t getByte (Frame* frame, uint32_t index){
-    return frame->method_info->attributes[0].u.Code.code[frame->pc + index];
+    return findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc + index];
 }

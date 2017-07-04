@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "leitor.h"
+#include "finder.h"
 
 struct OperandInfo {
     uint32_t data;
