@@ -214,31 +214,38 @@ void instruction_aconst_null(Frame* frame) {
 }
 
 void instruction_iconst_m1(Frame* frame) {
-
+    pushOperand(frame, newOperand(fromInt32(-1)));
+    frame->pc+=1;
 }
 
 void instruction_iconst_0(Frame* frame) {
-
+    pushOperand(frame, newOperand(0));
+    frame->pc+=1;
 }
 
 void instruction_iconst_1(Frame* frame) {
-
+    pushOperand(frame, newOperand(1));
+    frame->pc+=1;
 }
 
 void instruction_iconst_2(Frame* frame) {
-
+    pushOperand(frame, newOperand(2));
+    frame->pc+=1;
 }
 
 void instruction_iconst_3(Frame* frame) {
-
+    pushOperand(frame, newOperand(3));
+    frame->pc+=1;
 }
 
 void instruction_iconst_4(Frame* frame) {
-
+    pushOperand(frame, newOperand(4));
+    frame->pc+=1;
 }
 
 void instruction_iconst_5(Frame* frame) {
-
+    pushOperand(frame, newOperand(5));
+    frame->pc+=1;
 }
 
 void instruction_lconst_0(Frame* frame) {
@@ -630,7 +637,7 @@ void instruction_iadd(Frame* frame) {
     OperandInfo *op = popOperand(frame);
     OperandInfo *op2 = popOperand(frame);
 
-    op->data = toInt32(op->data) + toInt32(op2->data);
+    op->data = fromInt32(toInt32(op->data) + toInt32(op2->data));
 
     pushOperand(frame, op);
     free(op2);
