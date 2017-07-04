@@ -8,5 +8,6 @@
 #include "opcode_array.h"
 
 void runFrame(Frame* frame, ClassFile* class_files, int class_files_count);
+int isOpcodeReturnStatement(uint8_t opcode);
 
 #endif /* INTERPRETER_H_ */
