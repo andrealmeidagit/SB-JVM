@@ -313,7 +313,12 @@ void instruction_ldc_w(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_ldc2_w(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint16_t index = getByteAt(frame, frame->pc+1);
+    index = (index << 8) | getByteAt(frame, frame->pc+2);
+    ConstantInfo cp_info = frame->constant_pool[index-1];
+    pushOperand(frame, newOperand(cp_info.CONSTANT.Long_info.high_bytes));
+    pushOperand(frame, newOperand(cp_info.CONSTANT.Long_info.low_bytes));
+    frame->pc += 3;
 }
 
 void instruction_iload(Frame* frame, ClassFile* class_files, int class_files_count) {
