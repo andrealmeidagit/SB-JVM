@@ -40,6 +40,11 @@ comunicação entre os módulos) e a descrição das principais estruturas de da
 - https://www.codeproject.com/Articles/30422/How-the-Java-Virtual-Machine-JVM-Works - texto sobre JVM
 
 
+Documentação das classes
+- https://docs.oracle.com/javase/7/docs/api/java/io/PrintStream.html
+- https://docs.oracle.com/javase/7/docs/api/java/lang/System.html
+
+
 Exemplos de JVM
 - https://www.codeproject.com/Articles/24029/Home-Made-Java-Virtual-Machine
 - https://www.codeproject.com/Articles/43176/How-to-create-your-own-virtual-machine

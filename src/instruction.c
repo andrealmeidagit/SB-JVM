@@ -1,5 +1,5 @@
 #include "instruction.h"
-#include "exibidor.h"
+#include <string.h>
 
 void initInstructionArray() {
     INSTRUCTION_ARRAY[0x00] = instruction_nop;
@@ -1026,59 +1026,60 @@ void instruction_invokevirtual(Frame* frame) {
     return_descriptor[i-j]='\0';
     if (i==j)
         return_descriptor=NULL;
-    printf("%s\n", method_descriptor);
-    printf("%s\n", parameter_descriptor);
-    printf("%s\n", return_descriptor);
+    printf("method_descriptor: %s\n", method_descriptor);
+    printf("parameter_descriptor: %s\n", parameter_descriptor);
+    printf("return_descriptor: %s\n", return_descriptor);
 
 /*********************************************/
 
+/***********************
+*** field type *********
+***********************/
 
 
 
+
+
+FieldType *FT = NULL;
+FT = read_field_type (parameter_descriptor);
+printf("read field type: %s\n", FT->class_name_ref);
+/*********************************************/
+
+free(parameter_descriptor);
+free(return_descriptor);
     frame->pc += 3;
 }
 
-union FieldType{
-    int8_t    byte_type;
-    char      char_type;
-    double    double_type;
-    float     float_type;
-    int       integer_type;
-    long int  long_type;
-    char*     class_name_ref;
-    short int short_type;
-    int8_t    bool_type;
-    char*  array_ref; /*?*/
-}FT;
 
-union FieldType* read_field_type (char* str){
-    union FieldType * FT;
+FieldType* read_field_type (char* str){
+    FieldType *FT = malloc (sizeof(FieldType));
+    char *aux;
     int j=1;
     int i=0;
     if (str[0]=='B')
         i = 1;
-    if (str[0]=='C')
+    else if (str[0]=='C')
         i = 2;
-    if (str[0]=='D')
+    else if (str[0]=='D')
         i = 3;
-    if (str[0]=='F')
+    else if (str[0]=='F')
         i = 4;
-    if (str[0]=='I')
+    else if (str[0]=='I')
         i = 5;
-    if (str[0]=='J')
+    else if (str[0]=='J')
         i = 6;
-    if (str[0]=='L')
+    else if (str[0]=='L')
         i = 7;
-    if (str[0]=='S')
+    else if (str[0]=='S')
         i = 8;
-    if (str[0]=='Z')
+    else if (str[0]=='Z')
         i = 9;
-    if (str[0]=='[')
+    else if (str[0]=='[')
         i = 10;
 
     switch (i) {
         case 0:
-            printf("FIELD TIPE DOES NOT EXIST!!! Base Type Character:%c\n", str[0]);
+            printf("FIELD TYPE DOES NOT EXIST!!! Base Type Character:%c\n", str[0]);
             exit(EXIT_FAILURE);
             break;
         case 1:
@@ -1100,14 +1101,15 @@ union FieldType* read_field_type (char* str){
             printf("implementar field_type->long\n" );
             break;
         case 7:
-            FT->class_name_ref = (char*) malloc (strlen(str)-2);
-            if (FT->class_name_ref==NULL) exit (1);
-            while (str[j]!=';'){
-                FT->class_name_ref[j-1] = str[j];
-                j++;
+            aux = (char*) malloc (strlen(str)-2);
+            for (i = 0, j = 1; i<strlen(str)-2; i++, j++)
+            {
+              aux[i]=str[j];
             }
-            FT->class_name_ref[j]='\0';
-            printf("%s\n", FT->class_name_ref);
+            aux[i]='\0';
+            FT->class_name_ref = aux;
+            // printf ("YO! %s", FT->class_name_ref);
+            // getchar();
             break;
         case 8:
             printf("implementar field_type->short\n" );
@@ -1118,6 +1120,8 @@ union FieldType* read_field_type (char* str){
         case 10:
             printf("implementar field_type->array\n" );
             break;
+        default:
+            return FT;
     }
     return FT;
 }
