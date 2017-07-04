@@ -277,7 +277,7 @@ void instruction_dconst_1(Frame* frame) {
 }
 
 void instruction_bipush(Frame* frame) {
-    uint8_t data = getByte(frame, 1);
+    uint8_t data = getByteAt(frame, frame->pc);
     pushOperand(frame, newOperand(data));
     frame->pc += 2;
 }
@@ -1066,7 +1066,18 @@ void instruction_invokespecial(Frame* frame) {
 }
 
 void instruction_invokestatic(Frame* frame) {
-
+    uint16_t index = getByteAt(frame, frame->pc+1);
+    index = (index << 8) | getByteAt(frame, frame->pc+2);
+    /**** Constant pool reference search ****/
+    ConstantInfo method_ref = frame->constant_pool[index-1];
+    ConstantInfo class = frame->constant_pool[method_ref.CONSTANT.Methodref_info.class_index - 1];
+    ConstantInfo name_and_type = frame->constant_pool[method_ref.CONSTANT.Methodref_info.name_and_type_index - 1];
+    char* class_name = (char*)frame->constant_pool[class.CONSTANT.Class_info.name_index-1].CONSTANT.Utf8_info.bytes;
+    char* method_name = (char*)frame->constant_pool[name_and_type.CONSTANT.NameAndType_info.name_index -1].CONSTANT.Utf8_info.bytes;
+    char* method_descriptor = (char*)frame->constant_pool[name_and_type.CONSTANT.NameAndType_info.descriptor_index-1].CONSTANT.Utf8_info.bytes;
+    printf("class name: %s\n", class_name);
+    printf("name: %s | descriptor: %s\n", method_name, method_descriptor);
+    frame->pc += 3;
 }
 
 void instruction_invokeinterface(Frame* frame) {
