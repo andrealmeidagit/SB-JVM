@@ -280,7 +280,6 @@ void instruction_sipush(Frame* frame) {
 }
 
 void instruction_ldc(Frame* frame) {
-    printf("Executando ldc\n");
     uint8_t constant_pool_index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc + 1];
     printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
@@ -950,15 +949,9 @@ void instruction_areturn(Frame* frame) {
 
 }
 
-void instruction_return(Frame* frame) {
-    int verbose = 0;
-    if (verbose)
-        printf("Executando return\n");
-
-}
+void instruction_return(Frame* frame) {}
 
 void instruction_getstatic(Frame* frame) {
-    printf("Executando getstatic\n");
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
@@ -983,7 +976,6 @@ void instruction_putfield(Frame* frame) {
 void instruction_invokevirtual(Frame* frame) {
     int verbose = 0;
 
-    printf("Executando invokevirtual\n");
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
