@@ -210,6 +210,7 @@ void instruction_nop(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_aconst_null(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     frame->pc += 1;
 }
@@ -250,39 +251,46 @@ void instruction_iconst_5(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_lconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_lconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(1));
     frame->pc++;
 }
 
 void instruction_fconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_fconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(fromFloat(1)));
     frame->pc++;
 }
 
 void instruction_fconst_2(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(fromFloat(2)));
     frame->pc++;
 }
 
 void instruction_dconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
     uint64_t num = fromDouble(1);
     pushOperand(frame, newOperand(num >> 32));
     pushOperand(frame, newOperand(num & 0x00000000FFFFFFFF));
@@ -304,20 +312,20 @@ void instruction_sipush(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint8_t constant_pool_index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc + 1];
+    uint8_t constant_pool_index = getByteAt(frame, frame->pc + 1);
     printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
     switch (constant.tag) {
         case Const_Int:
-        op->data = constant.CONSTANT.Integer_info.bytes;
-        break;
+            op->data = constant.CONSTANT.Integer_info.bytes;
+            break;
         case Const_Float:
-        op->data = constant.CONSTANT.Float_info.bytes;
-        break;
+            op->data = constant.CONSTANT.Float_info.bytes;
+            break;
         case Const_String:
-        op->data = constant.CONSTANT.String_info.string_index;
-        break;
+            op->data = constant.CONSTANT.String_info.string_index;
+            break;
         default:
         fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
     }
@@ -326,7 +334,26 @@ void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_ldc_w(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint16_t constant_pool_index = getByteAt(frame, frame->pc+1);
+    constant_pool_index = constant_pool_index << 8 | getByteAt(frame, frame->pc+2);
+    ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
+    OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
+    switch (constant.tag) {
+        case Const_Int:
+            op->data = constant.CONSTANT.Integer_info.bytes;
+            break;
+        case Const_Float:
+            op->data = constant.CONSTANT.Float_info.bytes;
+            break;
+        case Const_String:
+            op->data = constant.CONSTANT.String_info.string_index;
+            break;
+        default:
+        fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
+    }
+    pushOperand(frame, op);
+    frame->pc += 3;
 }
 
 void instruction_ldc2_w(Frame* frame, ClassFile* class_files, int class_files_count) {
