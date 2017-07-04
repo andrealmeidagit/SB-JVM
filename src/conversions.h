@@ -12,4 +12,10 @@ uint32_t fromInt32(int32_t num);
 uint16_t fromInt16(int16_t num);
 uint8_t fromInt8(int8_t num);
 
+float toFloat(uint32_t num);
+double toDouble(uint64_t num);
+
+uint32_t fromFloat(float num);
+uint64_t fromDouble(double num);
+
 #endif /* CONVERSIONS_H_ */
