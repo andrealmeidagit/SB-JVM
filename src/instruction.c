@@ -210,7 +210,8 @@ void instruction_nop(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_aconst_null(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(0));
+    frame->pc += 1;
 }
 
 void instruction_iconst_m1(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -249,31 +250,43 @@ void instruction_iconst_5(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_lconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(0));
+    pushOperand(frame, newOperand(0));
+    frame->pc++;
 }
 
 void instruction_lconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(0));
+    pushOperand(frame, newOperand(1));
+    frame->pc++;
 }
 
 void instruction_fconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(0));
+    frame->pc++;
 }
 
 void instruction_fconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(fromFloat(1)));
+    frame->pc++;
 }
 
 void instruction_fconst_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(fromFloat(2)));
+    frame->pc++;
 }
 
 void instruction_dconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(0));
+    pushOperand(frame, newOperand(0));
+    frame->pc++;
 }
 
 void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t num = fromDouble(1);
+    pushOperand(frame, newOperand(num >> 32));
+    pushOperand(frame, newOperand(num & 0x00000000FFFFFFFF));
+    frame->pc++;
 }
 
 void instruction_bipush(Frame* frame, ClassFile* class_files, int class_files_count) {
