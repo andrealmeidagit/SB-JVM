@@ -1052,8 +1052,7 @@ void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
     int verbose = 1;
-<<<<<<< HEAD
-=======
+
     uint16_t i=1;
     uint16_t j, k, y;
     char * method_descriptor;
@@ -1061,7 +1060,7 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     char * return_descriptor;
     char * aux;
     OperandInfo *op = (OperandInfo*) malloc(sizeof(OperandInfo));
->>>>>>> lucchesi
+
 
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
@@ -1106,23 +1105,6 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     if (verbose)
         printf("return_descriptor: %s\n", return_descriptor);
 
-<<<<<<< HEAD
-
-/*********************************************/
-
-    FieldType *FT = read_field_type (parameter_descriptor);
-    if (verbose)
-        printf("read field type: %s\n", FT->class_name_ref);
-
-    if (strcmp (FT->class_name_ref, "java/lang/String") == 0){
-        OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
-        op = popOperand(frame);
-        print_from_index(frame, op->data -1);
-        printf("\n");
-        free(op);
-    } else if (strcmp (FT->class_name_ref, "java/io/PrintStream") == 0){
-        printf("do nothing\n");
-=======
     //********************************//
 
     if (parameter_descriptor[0]=='B')
@@ -1202,7 +1184,6 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
         default:
             printf("FIELD TYPE DOES NOT EXIST!!! Base Type Character:%c\n", parameter_descriptor[0]);
             exit(EXIT_FAILURE);
->>>>>>> lucchesi
     }
 
     /*********************************************/
