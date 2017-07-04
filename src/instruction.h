@@ -4,6 +4,7 @@
 #include "interpreter.h"
 #include "frame.h"
 #include "constant_pool.h"
+#include "conversions.h"
 #include "linker.h"
 
 void (*INSTRUCTION_ARRAY[0xff])();
