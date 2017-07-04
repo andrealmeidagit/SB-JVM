@@ -627,7 +627,15 @@ void instruction_swap(Frame* frame) {
 }
 
 void instruction_iadd(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data += op2->data;
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=3;
 }
 
 void instruction_ladd(Frame* frame) {
