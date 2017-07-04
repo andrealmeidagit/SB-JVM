@@ -956,8 +956,6 @@ void instruction_getstatic(Frame* frame) {
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
     printf("index: %u\n", index);
     printConstantFF(frame, index-1);
-
-
     frame->pc += 3;
 }
 

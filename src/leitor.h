@@ -68,7 +68,7 @@ struct ConstantInfo{
         }Integer_info; //tag == 3
 
         struct{
-            float bytes;
+            uint32_t bytes;
         }Float_info;   //tag == 4
 
         struct{

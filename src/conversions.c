@@ -35,3 +35,27 @@ uint8_t fromInt8(int8_t num) {
     memcpy(&result, &num, sizeof(uint8_t));
     return result;
 }
+
+float toFloat(uint32_t num) {
+    float result;
+    memcpy(&result, &num, sizeof(float));
+    return result;
+}
+
+double toDouble(uint64_t num) {
+    double result;
+    memcpy(&result, &num, sizeof(double));
+    return result;
+}
+
+uint32_t fromFloat(float num) {
+    uint32_t result;
+    memcpy(&result, &num, sizeof(uint32_t));
+    return result;
+}
+
+uint64_t fromDouble(double num) {
+    uint64_t result;
+    memcpy(&result, &num, sizeof(uint64_t));
+    return result;
+}
