@@ -730,7 +730,17 @@ void instruction_ddiv(Frame* frame) {
 }
 
 void instruction_irem(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) -
+                        (toInt32(op2->data)/toInt32(op->data)) *
+                        toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lrem(Frame* frame) {
@@ -746,7 +756,10 @@ void instruction_drem(Frame* frame) {
 }
 
 void instruction_ineg(Frame* frame) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32(0 - toInt32(op->data));
+    pushOperand(frame, op);
+    frame->pc++;
 }
 
 void instruction_lneg(Frame* frame) {
@@ -762,7 +775,15 @@ void instruction_dneg(Frame* frame) {
 }
 
 void instruction_ishl(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) << (toInt32(op2->data) & 0x1F));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lshl(Frame* frame) {
@@ -770,7 +791,15 @@ void instruction_lshl(Frame* frame) {
 }
 
 void instruction_ishr(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) >> (toInt32(op2->data) & 0x1F));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lshr(Frame* frame) {
@@ -786,7 +815,15 @@ void instruction_lushr(Frame* frame) {
 }
 
 void instruction_iand(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) & toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_land(Frame* frame) {
