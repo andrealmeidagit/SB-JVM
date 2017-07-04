@@ -366,19 +366,33 @@ void instruction_ldc2_w(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_iload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    pushOperand(frame, newOperand(frame->local_variables[index]));
+    frame->pc += 2;
 }
 
 void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    pushOperand(frame, newOperand(frame->local_variables[index]));
+    pushOperand(frame, newOperand(frame->local_variables[index+1]));
+    frame->pc += 2;
 }
 
 void instruction_fload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    pushOperand(frame, newOperand(frame->local_variables[index]));
+    frame->pc += 2;
 }
 
 void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    pushOperand(frame, newOperand(frame->local_variables[index]));
+    pushOperand(frame, newOperand(frame->local_variables[index+1]));
+    frame->pc += 2;
 }
 
 void instruction_aload(Frame* frame, ClassFile* class_files, int class_files_count) {
