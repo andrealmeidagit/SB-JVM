@@ -1208,6 +1208,10 @@ void instruction_invokestatic(Frame* frame, ClassFile* class_files, int class_fi
     char* method_descriptor = (char*)frame->constant_pool[name_and_type.CONSTANT.NameAndType_info.descriptor_index-1].CONSTANT.Utf8_info.bytes;
     /**** Find the target class file and method info ****/
     ClassFile* target_class_file = findClassFile(class_name, class_files, class_files_count);
+    MethodInfo* target_method_info = findMethodWithDesc(method_name, method_descriptor, target_class_file);
+    Frame* new_frame = newFrame(target_class_file, target_method_info);
+    runFrame(new_frame, class_files, class_files_count);
+    freeFrame(new_frame);
     frame->pc += 3;
 }
 
