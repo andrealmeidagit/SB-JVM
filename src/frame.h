@@ -7,6 +7,8 @@
 #include "leitor.h"
 #include "finder.h"
 
+uint32_t FRAME_AMOUNT;
+
 struct OperandInfo {
     uint32_t data;
     struct OperandInfo *previous;
@@ -30,6 +32,7 @@ struct Frame {
 typedef struct Frame Frame;
 
 Frame* newFrame(ClassFile* class_file, MethodInfo* method_info);
+void freeFrame(Frame* frame);
 void pushOperand(Frame* frame, OperandInfo* operand);
 
 uint8_t getByteAt(Frame* frame, uint32_t index);

@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 #ifdef __JVM__
+    FRAME_AMOUNT = 0;
     initInstructionArray();
     MethodInfo* main_method = findMethod("main", &input_class);
     Frame* initial_frame = newFrame(&input_class, main_method);

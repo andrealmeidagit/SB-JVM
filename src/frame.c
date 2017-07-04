@@ -10,7 +10,18 @@ Frame* newFrame(ClassFile* class_file, MethodInfo* method_info) {
     frame->local_variables = (uint32_t*)malloc(frame->local_variable_count * sizeof(uint32_t));
     frame->constant_pool_count = class_file->constant_pool_count;
     frame->constant_pool = class_file->constant_pool;
+    FRAME_AMOUNT++;
     return frame;
+}
+
+void freeFrame(Frame* frame) {
+    free(frame->local_variables);
+    while (frame->operand_stack != NULL) {
+        OperandInfo* op = popOperand(frame);
+        free(op);
+    }
+    free(frame);
+    FRAME_AMOUNT--;
 }
 
 void pushOperand(Frame* frame, OperandInfo* operand) {
