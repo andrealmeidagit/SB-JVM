@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "leitor.h"
+#include "finder.h"
 
 struct OperandInfo {
     uint32_t data;
@@ -25,12 +26,10 @@ struct Frame {
     elementoListaArrays *listaArrays;
     elementoListaObjetos *listaObjetos;
     */
-
-    struct Frame* previous;
 };
 typedef struct Frame Frame;
 
-Frame* newFrame(ClassFile* class_file, MethodInfo* method_info, Frame* previous);
+Frame* newFrame(ClassFile* class_file, MethodInfo* method_info);
 void pushOperand(Frame* frame, OperandInfo* operand);
 
 uint8_t getByte (Frame* frame, uint32_t index);
