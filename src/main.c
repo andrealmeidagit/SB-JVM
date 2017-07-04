@@ -13,10 +13,10 @@ int main(int argc, char* argv[]) {
     ClassFile input_class;
     checkArgumentAmount(argc);
     checkFileExtension(argv[1]);
-    int output_to_terminal = checkOutputOption(argv[2]);
     input_class = readClassFile(argv[1]);
 
 #ifdef __EXIBIDOR__
+    int output_to_terminal = checkOutputOption(argv[2]);
     showClassFile(output_to_terminal ? stdout : fopen("output.txt", "w+"), &input_class);
 #endif
 

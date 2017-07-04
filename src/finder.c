@@ -17,7 +17,7 @@ AttributeInfo* findCodeAttribute(const MethodInfo* method, const ConstantInfo* c
     uint16_t i;
     for (i = 0; i < method->attributes_count; ++i) {
         AttributeInfo* current_attribute = method->attributes + i;
-        if (strcmp("Code", constant_pool[current_attribute->attribute_name_index - 1].CONSTANT.Utf8_info.bytes) == 0)
+        if (strcmp("Code", (char *)constant_pool[current_attribute->attribute_name_index - 1].CONSTANT.Utf8_info.bytes) == 0)
             return current_attribute;
     }
     fprintf(stderr, "[ERROR]: CodeAttributeNotFoundError");
