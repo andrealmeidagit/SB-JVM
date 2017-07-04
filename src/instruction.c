@@ -395,19 +395,27 @@ void instruction_fload_3(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_dload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[0]));
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    frame->pc += 1;
 }
 
 void instruction_dload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    frame->pc += 1;
 }
 
 void instruction_dload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    frame->pc += 1;
 }
 
 void instruction_dload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, newOperand(frame->local_variables[4]));
+    frame->pc += 1;
 }
 
 void instruction_aload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -659,7 +667,20 @@ void instruction_fadd(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_dadd(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    double num1 = toDouble((high1 << 32) | low1);
+    double num2 = toDouble((high2 << 32) | low2);
+    uint64_t result = fromDouble(num1 + num2);
+    printf("dadd result: %lf\n", toDouble(result));
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_isub(Frame* frame, ClassFile* class_files, int class_files_count) {

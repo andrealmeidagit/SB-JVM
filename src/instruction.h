@@ -213,6 +213,4 @@ void instruction_ifnonnull(Frame* frame, ClassFile* class_files, int class_files
 void instruction_goto_w(Frame* frame, ClassFile* class_files, int class_files_count);
 void instruction_jsr_w(Frame* frame, ClassFile* class_files, int class_files_count);
 
-
-
 #endif /* INSTRUCTION_H_ */
