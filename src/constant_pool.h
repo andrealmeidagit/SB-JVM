@@ -16,5 +16,4 @@
 void printConstantFF(Frame* frame, uint16_t index);
 void print_from_index (Frame* frame, uint16_t index);
 void printUTF8(char* unicode);
-
 #endif

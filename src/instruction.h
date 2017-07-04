@@ -4,7 +4,7 @@
 #include "interpreter.h"
 #include "frame.h"
 #include "constant_pool.h"
-#include <string.h>
+#include "linker.h"
 
 void (*INSTRUCTION_ARRAY[0xff])();
 
@@ -212,24 +212,6 @@ void instruction_ifnull(Frame* frame);
 void instruction_ifnonnull(Frame* frame);
 void instruction_goto_w(Frame* frame);
 void instruction_jsr_w(Frame* frame);
-
-
-
-typedef union FieldType{
-    int8_t    byte_type;
-    char      char_type;
-    double    double_type;
-    float     float_type;
-    int       integer_type;
-    long int  long_type;
-    char*     class_name_ref;
-    short int short_type;
-    int8_t    bool_type;
-    char*     array_ref; /*?*/
-}FieldType;
-
-//Funções auxiliares
-FieldType* read_field_type (char* str);
 
 
 
