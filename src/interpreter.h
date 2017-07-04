@@ -5,6 +5,7 @@
 #include "frame.h"
 #include "instruction.h"
 #include "finder.h"
+#include "opcode_array.h"
 
 void runFrame(Frame* frame);
 
