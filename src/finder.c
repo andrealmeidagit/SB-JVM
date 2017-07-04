@@ -29,7 +29,6 @@ ClassFile* findClassFile(char* class_name, ClassFile* class_files, uint16_t clas
     for (int i = 0; i < class_files_count; ++i) {
         ClassFile* class_file = class_files + i;
         char* class_file_name = (char*)class_file->constant_pool[class_file->constant_pool[class_file->this_class-1].CONSTANT.Class_info.name_index-1].CONSTANT.Utf8_info.bytes;
-        printf("class file name: %s\n", class_file_name);
         if (strcmp(class_file_name, class_name) == 0)
             return class_file;
     }
