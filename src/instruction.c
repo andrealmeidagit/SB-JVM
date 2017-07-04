@@ -642,7 +642,7 @@ void instruction_iadd(Frame* frame) {
     pushOperand(frame, op);
     free(op2);
 
-    frame->pc+=3;
+    frame->pc+=1;
 }
 
 void instruction_ladd(Frame* frame) {
@@ -658,7 +658,15 @@ void instruction_dadd(Frame* frame) {
 }
 
 void instruction_isub(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) - toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lsub(Frame* frame) {
@@ -674,7 +682,15 @@ void instruction_dsub(Frame* frame) {
 }
 
 void instruction_imul(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) * toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lmul(Frame* frame) {
@@ -690,7 +706,15 @@ void instruction_dmul(Frame* frame) {
 }
 
 void instruction_idiv(Frame* frame) {
+    OperandInfo *op = popOperand(frame);
+    OperandInfo *op2 = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) / toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_ldiv(Frame* frame) {
