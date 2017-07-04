@@ -8,4 +8,8 @@ int32_t toInt32(uint32_t num);
 int16_t toInt16(uint16_t num);
 int8_t toInt8(uint8_t num);
 
+uint32_t fromInt32(int32_t num);
+uint16_t fromInt16(int16_t num);
+uint8_t fromInt8(int8_t num);
+
 #endif /* CONVERSIONS_H_ */
