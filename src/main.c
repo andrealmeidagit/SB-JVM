@@ -57,8 +57,9 @@ int main(int argc, char* argv[]) {
 
 #ifdef __EXIBIDOR__
     int output_to_terminal = checkOutputOption(argv[1]);
+    printf("%d\n", output_to_terminal);
     FILE *fp = NULL;
-    if (output_to_terminal)
+    if (!output_to_terminal)
         fp = fopen("output.txt", "w+");
     for (int i = 0; i < argc-2; ++i)
         showClassFile(output_to_terminal ? stdout : fp, &(input_classes[i]));

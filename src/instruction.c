@@ -835,27 +835,48 @@ void instruction_iastore(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_lastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint64_t low = op->data; free(op);
+    op = popOperand(frame); uint64_t high = op->data; free(op);
+    int64_t value = toInt64((high << 32) | low);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); int64_t* pointer = (int64_t*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 
 void instruction_fastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint32_t bytes = op->data; free(op);
+    float value = toFloat(bytes);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); float* pointer = (float*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 
 void instruction_dastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint64_t low = op->data; free(op);
+    op = popOperand(frame); uint64_t high = op->data; free(op);
+    double value = toDouble((high << 32) | low);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); double* pointer = (double*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 
 void instruction_aastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint32_t value = op->data; free(op);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); uint32_t* pointer = (uint32_t*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 
 void instruction_bastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint32_t bytes = op->data; free(op);
+    int8_t value = toInt8(bytes);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); int8_t* pointer = (int8_t*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 
