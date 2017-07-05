@@ -526,14 +526,12 @@ void instruction_aload_3(Frame* frame, ClassFile* class_files, int class_files_c
 void instruction_iaload(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo * op_index = popOperand(frame);
     OperandInfo * op_array = popOperand(frame);
-    OperandInfo * op_value = NULL;
-    int32_t * apointer = (int32_t *) toPointer(op_array->data);
-    if (apointer == NULL){
-        fprintf(stderr, "INSTRUCTION IALOAD: NullPointerException\n");
+    int32_t * pointer = (int32_t *) toPointer(op_array->data);
+    if (pointer == NULL){
+        fprintf(stderr, "IALOAD: NullPointerException\n");
         exit(EXIT_FAILURE);
     }
-    op_value = newOperand( apointer[toInt32(op_index->data)]);
-    pushOperand(frame, op_value);
+    pushOperand(frame, newOperand(pointer[toInt32(op_index->data)]));
     free(op_index);
     free(op_array);
     frame->pc+=1;
@@ -822,16 +820,12 @@ void instruction_astore_3(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_iastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    OperandInfo *op_value = popOperand(frame);
-    OperandInfo *op_index = popOperand(frame);
-    OperandInfo *op_array = popOperand(frame);
-    int32_t * apointer = (int32_t *) toPointer(op_array->data);
-    if (apointer == NULL){
-        fprintf(stderr, "INSTRUCTION IASTORE: NullPointerException\n");
-        exit(EXIT_FAILURE);
-    }
-    apointer[op_index->data] = toInt32 (op_value->data);
-    frame->pc+=1;
+    OperandInfo* op = popOperand(frame); uint32_t bytes = op->data; free(op);
+    int32_t value = toInt32(bytes);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); int32_t* pointer = (int32_t*)toPointer(op->data); free(op);
+    pointer[index] = value;
+    frame->pc++;
 }
 
 void instruction_lastore(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -881,12 +875,20 @@ void instruction_bastore(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_castore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint32_t bytes = op->data; free(op);
+    int16_t value = toInt16(bytes);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); int16_t* pointer = (int16_t*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 
 void instruction_sastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo* op = popOperand(frame); uint32_t bytes = op->data; free(op);
+    int16_t value = toInt16(bytes);
+    op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
+    op = popOperand(frame); int16_t* pointer = (int16_t*)toPointer(op->data); free(op);
+    pointer[index] = value;
     frame->pc++;
 }
 

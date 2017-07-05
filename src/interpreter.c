@@ -1,7 +1,7 @@
 #include "interpreter.h"
 
 void runFrame(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint8_t verbose = 0;
+    uint8_t verbose = 1;
     uint8_t current_opcode = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc];
     if (verbose)
         printf("\n**************\nFrame #%d: (%u, %#04x): %s\n", FRAME_AMOUNT, current_opcode, current_opcode, OPCODE_ARRAY[current_opcode]);
