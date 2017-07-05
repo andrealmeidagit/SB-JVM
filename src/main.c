@@ -3,10 +3,10 @@ Universidade de Brasília - 01/2017
 Software Básico - Turma A
 Projeto Java Virtual Machine
 
-Alunos: 		Gabriel Naves da Silva 				12/0011867
+Alunos: 		André Abreu Rodrigues de Almeida	12/0007100
 				Fernando Lucchesi Alencar 			11/0060571
 				Filipe Pereira Fortes 				09/0113799
-				André Abreu Rodrigues de Almeida	12/0007100
+				Gabriel Naves da Silva 				12/0011867
 				Ricardo Hideki Ito 					12/0045818
 */
 
