@@ -879,7 +879,7 @@ void instruction_lsub(Frame* frame, ClassFile* class_files, int class_files_coun
     int64_t num1 = toInt64((high1 << 32) | low1);
     int64_t num2 = toInt64((high2 << 32) | low2);
     uint64_t result = fromInt64(num1 - num2);
-    printf("lsub result: %ld\n", (long)toInt64(result));
+    printf("lsub result: %lld\n", toInt64(result));
     uint64_t high_res = result >> 32;
     uint64_t low_res = result & 0x00000000FFFFFFFF;
     pushOperand(frame, newOperand(high_res));
