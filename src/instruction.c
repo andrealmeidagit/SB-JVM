@@ -375,7 +375,7 @@ void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_cou
     // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
 
-    printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
+    // printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
     pushOperand(frame, newOperand(frame->local_variables[index]));
     pushOperand(frame, newOperand(frame->local_variables[index+1]));
     frame->pc += 2;
@@ -943,7 +943,7 @@ void instruction_ladd(Frame* frame, ClassFile* class_files, int class_files_coun
     int64_t num1 = toInt64((high1 << 32) | low1);
     int64_t num2 = toInt64((high2 << 32) | low2);
     uint64_t result = fromInt64(num1 + num2);
-    printf("ladd result: %lld\n", toInt64(result));
+    // printf("ladd result: %lld\n", toInt64(result));
     uint64_t high_res = result >> 32;
     uint64_t low_res = result & 0x00000000FFFFFFFF;
     pushOperand(frame, newOperand(high_res));
