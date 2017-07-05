@@ -72,7 +72,7 @@ static void printConstant(FILE* stream, ClassFile* class_file, uint16_t index) {
         fprintf(stream, "Integer:\t\t #%u\n", p->CONSTANT.Integer_info.bytes);
         break;
     case Const_Float:   //tag4
-        fprintf(stream, "Float:\t\t #%f\n", p->CONSTANT.Float_info.bytes);
+        fprintf(stream, "Float:\t\t #%f\n", (float) p->CONSTANT.Float_info.bytes);
         break;
     case Const_Long:   //tag5
         fprintf(stream, "Long:\t\t #%u\t#%u\n", p->CONSTANT.Long_info.high_bytes, p->CONSTANT.Long_info.low_bytes);

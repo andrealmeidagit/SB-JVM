@@ -2015,13 +2015,19 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     return_descriptor = (char*) malloc (strlen (method_descriptor));
     if (return_descriptor==NULL) exit (1);
     j=i;
-    while (method_descriptor[i]!='V'){   //get return_descriptor
-        return_descriptor[i-j] = method_descriptor[i];
-        i++;
-    }
-    return_descriptor[i-j]='\0';
-    if (i==j) return_descriptor=NULL;
 
+    if (method_descriptor[i] != 'L'){
+        return_descriptor[0] = method_descriptor[i];
+        return_descriptor[1] = '\0';
+    } else {
+        while (method_descriptor[i]!=';'){   //get return_descriptor
+            return_descriptor[i-j] = method_descriptor[i];
+            i++;
+        }
+        return_descriptor[i-j]='\0';
+        if (i==j) return_descriptor=NULL;
+    }
+    
     //*********************************//
 
     if (verbose)
