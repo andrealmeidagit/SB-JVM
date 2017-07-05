@@ -19,6 +19,8 @@ void freeFrame(Frame* frame) {
     free(frame->local_variables);
     while (frame->operand_stack != NULL) {
         OperandInfo* op = popOperand(frame);
+        if (op->ispointer)
+            free(toPointer(op->data));
         free(op);
     }
     free(frame);

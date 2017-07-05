@@ -8,5 +8,5 @@ a.out
 *.exe
 /[Dd]ocs/
 [Dd]oxyfile
-
 *.class
+jvm
