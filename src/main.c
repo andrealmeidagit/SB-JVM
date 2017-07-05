@@ -18,8 +18,6 @@ Alunos: 		Gabriel Naves da Silva 				12/0011867
 /** Inclusão de bibliotecas para checagem de argumentos, leitura do arquivo .class em bytecode, exibição dos 
 campos do bytecode, criação de frames, implementação de instruções.
 */
-
-
 #include "argument_checks.h"
 #include "leitor.h"
 #include "exibidor.h"
@@ -31,14 +29,18 @@ campos do bytecode, criação de frames, implementação de instruções.
 // #define __EXIBIDOR__
 #define __JVM__
 
-
-/**
- * 
- * @brief Função main
- * 
- * @param argc Número de argumentos do programa
- * @param argv Argumentos de linha de comando
- * 
+/** @brief Função de inicialização da JVM ou do leitor-exibidor
+ *
+ *  @param[in] argc
+ *  @param[in] argv
+ *
+ *
+ *  A função main checa a corretude do número de parâmetros recebidos e do tipo de arquivo recebido .class.
+ *  Estando tudo correto, o programa carrega o .class em uma ClassFile
+ *
+ *  Caso o programa esteja no modo EXIBIDOR, a função exibe o .class chamando a função showClassFile.
+ *  
+ *  Caso o programa esteja no modo JVM, a função começa a execução
  */
 int main(int argc, char* argv[]) {
 
