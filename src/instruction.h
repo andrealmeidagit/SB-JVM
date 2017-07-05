@@ -6,8 +6,10 @@
 #include "constant_pool.h"
 #include "conversions.h"
 
-#define INSTRUCTION_NOT_IMPLEMENTED_ERROR fprintf(stderr, "[ERROR]: InstructionNotImplementedError\n")
-#define UNTESTED_INSTRUCTION_WARNING printf("[WARNING]: Untested instruction\n")
+#define INSTRUCTION_NOT_IMPLEMENTED_ERROR ;
+#define UNTESTED_INSTRUCTION_WARNING ;
+// #define INSTRUCTION_NOT_IMPLEMENTED_ERROR fprintf(stderr, "[ERROR]: InstructionNotImplementedError\n")
+// #define UNTESTED_INSTRUCTION_WARNING printf("[WARNING]: Untested instruction\n")
 
 void (*INSTRUCTION_ARRAY[0xff])();
 
