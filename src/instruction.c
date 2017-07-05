@@ -1396,19 +1396,25 @@ void instruction_d2f(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_i2b(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32((int32_t)((int8_t)toInt32(op->data)));
+    pushOperand(frame, op);
+    frame->pc+=1;
 }
 
 void instruction_i2c(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    printf("eh noix %d/n", toInt32(op->data));
-    op->data = op->data & 0x0000FFFF;
+    op->data = fromInt32(toInt32(op->data) & 0x0000FFFF);
+
     pushOperand(frame, op);
     frame->pc+=1;
 }
 
 void instruction_i2s(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32((int32_t)((int16_t)(op->data)));
+    pushOperand(frame, op);
+    frame->pc+=1;
 }
 
 void instruction_lcmp(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1762,7 +1768,7 @@ void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
-    int verbose = 0;
+    int verbose = 1;
 
     uint16_t i=1;
     uint16_t j, k, y;
@@ -1825,12 +1831,15 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     {
         case 'B':
             printf("implementar field_type->byte\n" );
+            op = popOperand(frame);
+            // printUTF8
+            printf("BYTE: %d\n", toInt8(op->data));
             break;
         case 'C':
             printf("implementar field_type->char\n" );
             op = popOperand(frame);
             // printUTF8
-            printf ("CHAR: %c\n", ((char)(op->data))+1);
+            printf ("CHAR: %c\n", (char)(op->data));
             break;
         case 'D':
             op = popOperand(frame);
@@ -1870,6 +1879,9 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             break;
         case 'S':
             printf("implementar field_type->short\n" );
+            op = popOperand(frame);
+            // printUTF8
+            printf("SHORT: %d\n", op->data);
             break;
         case 'Z':
             printf("implementar field_type->bool\n" );
