@@ -8,3 +8,4 @@ a.out
 *.exe
 /[Dd]ocs/
 [Dd]oxyfile
+jvm
