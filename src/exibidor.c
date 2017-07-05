@@ -31,6 +31,7 @@ void showClassFile(FILE* stream, ClassFile* class_file) {
     printMethods(stream, class_file);
     fprintf(stream, "**************\n* ATTRIBUTES *\n**************\n\n");
     printAttributes(stream, class_file, class_file->attributes_count, class_file->attributes);
+    fprintf(stream, "\n\n");
 }
 
 static void printGeneralClassInformation(FILE* stream, ClassFile* class_file) {
