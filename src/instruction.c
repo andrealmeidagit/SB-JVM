@@ -210,7 +210,7 @@ void instruction_nop(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_aconst_null(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     frame->pc += 1;
 }
@@ -251,46 +251,46 @@ void instruction_iconst_5(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_lconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_lconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(1));
     frame->pc++;
 }
 
 void instruction_fconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_fconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(fromFloat(1)));
     frame->pc++;
 }
 
 void instruction_fconst_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(fromFloat(2)));
     frame->pc++;
 }
 
 void instruction_dconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
+    UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
+    UNTESTED_INSTRUCTION_WARNING;
     uint64_t num = fromDouble(1);
     pushOperand(frame, newOperand(num >> 32));
     pushOperand(frame, newOperand(num & 0x00000000FFFFFFFF));
@@ -334,7 +334,7 @@ void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_ldc_w(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     uint16_t constant_pool_index = getByteAt(frame, frame->pc+1);
     constant_pool_index = constant_pool_index << 8 | getByteAt(frame, frame->pc+2);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
@@ -372,7 +372,7 @@ void instruction_iload(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
 
     printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
@@ -382,14 +382,14 @@ void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_fload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
     pushOperand(frame, newOperand(frame->local_variables[index]));
     frame->pc += 2;
 }
 
 void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
     pushOperand(frame, newOperand(frame->local_variables[index]));
     pushOperand(frame, newOperand(frame->local_variables[index+1]));
@@ -397,7 +397,9 @@ void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_aload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    pushOperand(frame, newOperand(frame->local_variables[index]));
+    frame->pc += 2;
 }
 
 void instruction_iload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -427,7 +429,7 @@ void instruction_lload_0(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_lload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(frame->local_variables[1]));
     pushOperand(frame, newOperand(frame->local_variables[2]));
     frame->pc += 1;
@@ -526,31 +528,60 @@ void instruction_iaload(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_laload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); int64_t* arrayref = (int64_t*)toPointer(op->data); free(op);
+    uint64_t value = fromInt64(arrayref[index]);
+    pushOperand(frame, newOperand(value >> 32));
+    pushOperand(frame, newOperand(value & 0xFFFFFFFF));
+    frame->pc++;
 }
 
 void instruction_faload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); float* arrayref = (float*)toPointer(op->data); free(op);
+    uint32_t value = fromFloat(arrayref[index]);
+    pushOperand(frame, newOperand(value));
+    frame->pc++;
 }
 
 void instruction_daload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); double* arrayref = (double*)toPointer(op->data); free(op);
+    uint64_t value = fromDouble(arrayref[index]);
+    pushOperand(frame, newOperand(value >> 32));
+    pushOperand(frame, newOperand(value & 0xFFFFFFFF));
+    frame->pc++;
 }
 
 void instruction_aaload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); uint32_t* arrayref = (uint32_t*)toPointer(op->data); free(op);
+    pushOperand(frame, newOperand(arrayref[index]));
+    frame->pc++;
 }
 
 void instruction_baload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); int8_t* arrayref = (int8_t*)toPointer(op->data); free(op);
+    uint32_t value = fromInt32((int32_t)arrayref[index]);
+    pushOperand(frame, newOperand(value));
+    frame->pc++;
 }
 
 void instruction_caload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); int16_t* arrayref = (int16_t*)toPointer(op->data); free(op);
+    uint32_t value = fromInt16(arrayref[index]);
+    pushOperand(frame, newOperand(value));
+    frame->pc++;
 }
 
 void instruction_saload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    op = popOperand(frame); int16_t* arrayref = (int16_t*)toPointer(op->data); free(op);
+    uint32_t value = fromInt32((int32_t)arrayref[index]);
+    pushOperand(frame, newOperand(value));
+    frame->pc++;
 }
 
 void instruction_istore(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -592,7 +623,11 @@ void instruction_dstore(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_astore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[index] = op->data;
+    free(op);
+    frame->pc += 2;
 }
 
 void instruction_istore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -776,39 +811,49 @@ void instruction_iastore(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_lastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_fastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_dastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_aastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_bastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_castore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_sastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_pop(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    free(popOperand(frame));
+    frame->pc++;
 }
 
 void instruction_pop2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    free(popOperand(frame));
+    free(popOperand(frame));
+    frame->pc++;
 }
 
 void instruction_dup(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -821,27 +866,36 @@ void instruction_dup(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_dup_x1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_dup_x2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_dup2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_dup2_x1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_dup2_x2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_swap(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* value1 = popOperand(frame);
+    OperandInfo* value2 = popOperand(frame);
+    pushOperand(frame, value1);
+    pushOperand(frame, value2);
+    frame->pc++;
 }
 
 void instruction_iadd(Frame* frame, ClassFile* class_files, int class_files_count) {
