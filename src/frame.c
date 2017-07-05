@@ -37,7 +37,7 @@ OperandInfo* popOperand(Frame* frame) {
 }
 
 OperandInfo* newOperand(uint32_t data){
-    OperandInfo *operand = (OperandInfo*)malloc(sizeof(OperandInfo));
+    OperandInfo* operand = (OperandInfo*)malloc(sizeof(OperandInfo));
     operand->data = data;
     operand->previous = NULL;
     return operand;
