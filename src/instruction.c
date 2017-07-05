@@ -1472,7 +1472,19 @@ void instruction_i2s(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_lcmp(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    if (num1 > num2)
+        pushOperand(frame, newOperand(fromInt32(1)));
+    else if (num1 == num2)
+        pushOperand(frame, newOperand(fromInt32(0)));
+    else
+        pushOperand(frame, newOperand(fromInt32(-1)));
 }
 
 void instruction_fcmpl(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1743,11 +1755,25 @@ void instruction_if_icmple(Frame* frame, ClassFile* class_files, int class_files
 }
 
 void instruction_if_acmpeq(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* value2 = popOperand(frame);
+    OperandInfo* value1 = popOperand(frame);
+    uint16_t offset = getByteAt(frame, frame->pc+1);
+    offset = (offset << 8) | getByteAt(frame, frame->pc+2);
+    if (value1->data == value2->data)
+        frame->pc += toInt16(offset);
+    else frame->pc += 3;
+    free(value1); free(value2);
 }
 
 void instruction_if_acmpne(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* value2 = popOperand(frame);
+    OperandInfo* value1 = popOperand(frame);
+    uint16_t offset = getByteAt(frame, frame->pc+1);
+    offset = (offset << 8) | getByteAt(frame, frame->pc+2);
+    if (value1->data != value2->data)
+        frame->pc += toInt16(offset);
+    else frame->pc += 3;
+    free(value1); free(value2);
 }
 
 void instruction_goto(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1758,19 +1784,23 @@ void instruction_goto(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_jsr(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint16_t offset = getByteAt(frame, frame->pc+1);
+    offset = (offset << 8) | getByteAt(frame, frame->pc+2);
+    pushOperand(frame, newOperand(frame->pc+3));
+    frame->pc += toInt16(offset);
 }
 
 void instruction_ret(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint8_t address = getByteAt(frame, frame->pc+1);
+    frame->pc = frame->local_variables[address];
 }
 
 void instruction_tableswitch(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
 }
 
 void instruction_lookupswitch(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
 }
 
 void instruction_ireturn(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1796,7 +1826,7 @@ void instruction_dreturn(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_areturn(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame->previous, popOperand(frame));
 }
 
 void instruction_return(Frame* frame, ClassFile* class_files, int class_files_count) {}
@@ -1810,15 +1840,18 @@ void instruction_getstatic(Frame* frame, ClassFile* class_files, int class_files
 }
 
 void instruction_putstatic(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_getfield(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1957,7 +1990,8 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
 }
 
 void instruction_invokespecial(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_invokestatic(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1987,15 +2021,18 @@ void instruction_invokestatic(Frame* frame, ClassFile* class_files, int class_fi
 }
 
 void instruction_invokeinterface(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 5;
 }
 
 void instruction_invokedynamic(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 5;
 }
 
 void instruction_new(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -2042,53 +2079,84 @@ void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_anewarray(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_arraylength(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_athrow(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc++;
 }
 
 void instruction_checkcast(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_instanceof(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 3;
 }
 
 void instruction_monitorenter(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    free(popOperand(frame));
+    frame->pc++;
 }
 
 void instruction_monitorexit(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    free(popOperand(frame));
+    frame->pc++;
 }
 
 void instruction_wide(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
 }
 
 void instruction_multianewarray(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    frame->pc += 4;
 }
 
 void instruction_ifnull(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame);
+    int16_t offset = toInt16((((uint16_t)getByteAt(frame, frame->pc)) << 8) | getByteAt(frame, frame->pc+2));
+    if (op->data == 0)
+        frame->pc += offset;
+    else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_ifnonnull(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo* op = popOperand(frame);
+    int16_t offset = toInt16((((uint16_t)getByteAt(frame, frame->pc)) << 8) | getByteAt(frame, frame->pc+2));
+    if (op->data != 0)
+        frame->pc += offset;
+    else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_goto_w(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint32_t wide_offset = getByteAt(frame, frame->pc+1);
+    wide_offset = (wide_offset << 8) | getByteAt(frame, frame->pc+2);
+    wide_offset = (wide_offset << 8) | getByteAt(frame, frame->pc+3);
+    wide_offset = (wide_offset << 8) | getByteAt(frame, frame->pc+4);
+    frame->pc += toInt32(wide_offset);
 }
 
 void instruction_jsr_w(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint32_t wide_offset = getByteAt(frame, frame->pc+1);
+    wide_offset = (wide_offset << 8) | getByteAt(frame, frame->pc+2);
+    wide_offset = (wide_offset << 8) | getByteAt(frame, frame->pc+3);
+    wide_offset = (wide_offset << 8) | getByteAt(frame, frame->pc+4);
+    pushOperand(frame, newOperand(frame->pc+5));
+    frame->pc += toInt32(wide_offset);
 }
