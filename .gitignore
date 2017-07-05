@@ -7,3 +7,5 @@ output_backup\.txt
 a.out
 *.exe
 /[Dd]ocs/
+*.class
+jvm

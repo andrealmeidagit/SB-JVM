@@ -6,10 +6,12 @@
 #include <stdint.h>
 #include "leitor.h"
 #include "finder.h"
+#include "conversions.h"
 
 uint32_t FRAME_AMOUNT;
 
 struct OperandInfo {
+    uint32_t ispointer;
     uint32_t data;
     struct OperandInfo *previous;
 };

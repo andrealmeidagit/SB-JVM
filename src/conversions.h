@@ -20,4 +20,7 @@ double toDouble(uint64_t num);
 uint32_t fromFloat(float num);
 uint64_t fromDouble(double num);
 
+void* toPointer(uint32_t address);
+uint32_t fromPointer(void* pointer);
+
 #endif /* CONVERSIONS_H_ */
