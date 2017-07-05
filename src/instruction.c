@@ -313,7 +313,7 @@ void instruction_sipush(Frame* frame, ClassFile* class_files, int class_files_co
 
 void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t constant_pool_index = getByteAt(frame, frame->pc + 1);
-    printConstantFF(frame, constant_pool_index-1);
+    //printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
     switch (constant.tag) {
@@ -366,7 +366,6 @@ void instruction_ldc2_w(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_iload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
     pushOperand(frame, newOperand(frame->local_variables[index]));
     frame->pc += 2;
@@ -491,23 +490,30 @@ void instruction_dload_3(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_aload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[0]));
+    frame->pc+=1;
 }
 
 void instruction_aload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[1]));
+    frame->pc+=1;
 }
 
 void instruction_aload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[2]));
+    frame->pc+=1;
 }
 
 void instruction_aload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    pushOperand(frame, newOperand(frame->local_variables[3]));
+    frame->pc+=1;
 }
 
 void instruction_iaload(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    // ConstantInfo * op_index = popOperand(frame);
+    // ConstantInfo * op_array = popOperand(frame);
+    //
+    // frame->pc+=1;
 }
 
 void instruction_laload(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1413,27 +1419,75 @@ void instruction_dcmpg(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_ifeq(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    uint16_t branch;
+    if (toInt32(op->data) == 0){
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_ifne(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    uint16_t branch;
+    if (toInt32(op->data) != 0){
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_iflt(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    uint16_t branch;
+    if (toInt32(op->data) < 0){
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_ifge(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    uint16_t branch;
+    if (toInt32(op->data) >= 0){
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_ifgt(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    uint16_t branch;
+    if (toInt32(op->data) > 0){
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_ifle(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    uint16_t branch;
+    if (toInt32(op->data) <= 0){
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }else
+        frame->pc += 3;
+    free(op);
 }
 
 void instruction_if_icmpeq(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1612,7 +1666,7 @@ void instruction_getstatic(Frame* frame, ClassFile* class_files, int class_files
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
     //printf("index: %u\n", index);
-    printConstantFF(frame, index-1);
+    //printConstantFF(frame, index-1);
     frame->pc += 3;
 }
 
@@ -1645,7 +1699,8 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
 
-    printf("Constant Pool index: %u\n", index);
+    if (verbose)
+        printf("Constant Pool index: %u\n", index);
 
     if (verbose)
         printConstantFF(frame, index-1);
