@@ -375,7 +375,7 @@ void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_cou
     // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
 
-    // printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
+    printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
     pushOperand(frame, newOperand(frame->local_variables[index]));
     pushOperand(frame, newOperand(frame->local_variables[index+1]));
     frame->pc += 2;
@@ -890,28 +890,80 @@ void instruction_dup(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_dup_x1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
-    frame->pc++;
+    UNTESTED_INSTRUCTION_WARNING;
+    OperandInfo * op = popOperand(frame);
+    OperandInfo * op2 = newOperand(op->data);
+    OperandInfo * op3 = popOperand(frame);
+    op2->ispointer = op->ispointer;
+    pushOperand(frame, op);
+    pushOperand(frame, op3);
+    pushOperand(frame, op2);
+    frame->pc+=1;
 }
 
 void instruction_dup_x2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
-    frame->pc++;
+  UNTESTED_INSTRUCTION_WARNING;
+  OperandInfo * op = popOperand(frame);
+  OperandInfo * op2 = newOperand(op->data);
+  OperandInfo * op3 = popOperand(frame);
+  OperandInfo * op4 = popOperand(frame);
+  op2->ispointer = op->ispointer;
+  pushOperand(frame, op);
+  pushOperand(frame, op4);
+  pushOperand(frame, op3);
+  pushOperand(frame, op2);
+  frame->pc+=1;
 }
 
 void instruction_dup2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
-    frame->pc++;
+    UNTESTED_INSTRUCTION_WARNING;
+    OperandInfo * op = popOperand(frame);
+    OperandInfo * op2 = newOperand(op->data);
+    OperandInfo * op3 = popOperand(frame);
+    OperandInfo * op4 = newOperand(op->data);
+    op2->ispointer = op->ispointer;
+    op4->ispointer = op3->ispointer;
+    pushOperand(frame, op3);
+    pushOperand(frame, op);
+    pushOperand(frame, op4);
+    pushOperand(frame, op2);
+    frame->pc+=1;
 }
 
 void instruction_dup2_x1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
-    frame->pc++;
+  UNTESTED_INSTRUCTION_WARNING;
+  OperandInfo * op = popOperand(frame);
+  OperandInfo * op2 = newOperand(op->data);
+  OperandInfo * op3 = popOperand(frame);
+  OperandInfo * op4 = newOperand(op->data);
+  OperandInfo * op5 = popOperand(frame);
+  op2->ispointer = op->ispointer;
+  op4->ispointer = op3->ispointer;
+  pushOperand(frame, op3);
+  pushOperand(frame, op);
+  pushOperand(frame, op5);
+  pushOperand(frame, op4);
+  pushOperand(frame, op2);
+  frame->pc+=1;
 }
 
 void instruction_dup2_x2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
-    frame->pc++;
+  UNTESTED_INSTRUCTION_WARNING;
+  OperandInfo * op = popOperand(frame);
+  OperandInfo * op2 = newOperand(op->data);
+  OperandInfo * op3 = popOperand(frame);
+  OperandInfo * op4 = newOperand(op->data);
+  OperandInfo * op5 = popOperand(frame);
+  OperandInfo * op6 = popOperand(frame);
+  op2->ispointer = op->ispointer;
+  op4->ispointer = op3->ispointer;
+  pushOperand(frame, op3);
+  pushOperand(frame, op);
+  pushOperand(frame, op5);
+  pushOperand(frame, op6);
+  pushOperand(frame, op4);
+  pushOperand(frame, op2);
+  frame->pc+=1;
 }
 
 void instruction_swap(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -943,7 +995,7 @@ void instruction_ladd(Frame* frame, ClassFile* class_files, int class_files_coun
     int64_t num1 = toInt64((high1 << 32) | low1);
     int64_t num2 = toInt64((high2 << 32) | low2);
     uint64_t result = fromInt64(num1 + num2);
-    // printf("ladd result: %lld\n", toInt64(result));
+    printf("ladd result: %lld\n", toInt64(result));
     uint64_t high_res = result >> 32;
     uint64_t low_res = result & 0x00000000FFFFFFFF;
     pushOperand(frame, newOperand(high_res));
@@ -1462,12 +1514,11 @@ void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_l2i(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    uint64_t high, low;
+    uint32_t high, low;
     OperandInfo *op;
     op = popOperand(frame); low = op->data; free(op);
     op = popOperand(frame); high = op->data; free(op);
-    int64_t value = toInt64((high << 32) | low);
-    pushOperand (frame, newOperand(fromInt32((int32_t)value)));
+    pushOperand (frame, newOperand(low));
     frame->pc+=1;
 }
 
@@ -1517,13 +1568,14 @@ void instruction_f2l(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_f2d(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    OperandInfo* float_op = popOperand(frame);
-    uint64_t res = fromDouble((double)(toFloat(float_op->data)));
-    uint64_t high = res >> 32;
-    uint64_t low = res & 0xFFFFFFFF;
-    pushOperand(frame, newOperand(high));
-    pushOperand(frame, newOperand(low));
-    free(float_op);
+    uint64_t dodododoub;
+    uint32_t high, low;
+    OperandInfo *op = popOperand(frame); free(op);
+    dodododoub = fromDouble((double)(fromFloat(op->data)));
+    low = fromInt64((int64_t)dodododoub);
+    high = fromInt64((int64_t)(dodododoub >> 32));
+    pushOperand (frame, newOperand(high));
+    pushOperand (frame, newOperand(low));
     frame->pc+=1;
 }
 
@@ -2027,7 +2079,7 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
         return_descriptor[i-j]='\0';
         if (i==j) return_descriptor=NULL;
     }
-    
+
     //*********************************//
 
     if (verbose)
@@ -2170,8 +2222,8 @@ void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_
     free(op);
 
     if (count < 0) {
-      fprintf(stderr, "INSTRUCTION NEWARRAY: NegativeArraySizeException\n");
-      exit(EXIT_FAILURE);
+        fprintf(stderr, "INSTRUCTION NEWARRAY: NegativeArraySizeException\n");
+        exit(EXIT_FAILURE);
     }
     atype = getByteAt(frame, frame->pc+1);
 
@@ -2193,8 +2245,8 @@ void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_
     else if(atype == T_DOUBLE || atype == T_LONG)
         pointer = calloc (count, sizeof(uint64_t));
     else{
-      fprintf(stderr, "INSTRUCTION NEWARRAY: Invalid ATYPE\n");
-      exit(EXIT_FAILURE);
+        fprintf(stderr, "INSTRUCTION NEWARRAY: Invalid ATYPE\n");
+        exit(EXIT_FAILURE);
     }
 
     op = newOperand(fromPointer(pointer));
