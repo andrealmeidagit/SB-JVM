@@ -559,11 +559,22 @@ void instruction_lstore(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_fstore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    frame->local_variables[index]=op->data;
+    free (op);
+    frame->pc+=2;
 }
 
 void instruction_dstore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op2 = popOperand(frame); //lo
+    OperandInfo *op = popOperand(frame); //hi
+    uint8_t index = getByteAt(frame, frame->pc+1);
+    frame->local_variables[index]=op->data;
+    frame->local_variables[index+1]=op2->data;
+    free (op2);
+    free (op);
+    frame->pc+=2;
 }
 
 void instruction_astore(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -639,35 +650,71 @@ void instruction_lstore_3(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_fstore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[0]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_fstore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[1]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_fstore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[2]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_fstore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[3]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_dstore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op2 = popOperand(frame); //lo
+    OperandInfo *op = popOperand(frame); //hi
+    frame->local_variables[0]=op->data;
+    frame->local_variables[1]=op2->data;
+    free (op2);
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_dstore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op2 = popOperand(frame); //lo
+    OperandInfo *op = popOperand(frame); //hi
+    frame->local_variables[1]=op->data;
+    frame->local_variables[2]=op2->data;
+    free (op2);
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_dstore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op2 = popOperand(frame); //lo
+    OperandInfo *op = popOperand(frame); //hi
+    frame->local_variables[2]=op->data;
+    frame->local_variables[3]=op2->data;
+    free (op2);
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_dstore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op2 = popOperand(frame); //lo
+    OperandInfo *op = popOperand(frame); //hi
+    frame->local_variables[3]=op->data;
+    frame->local_variables[4]=op2->data;
+    free (op2);
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_astore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -784,7 +831,15 @@ void instruction_ladd(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_fadd(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromFloat(toFloat(op->data) + toFloat(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_dadd(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -833,11 +888,32 @@ void instruction_lsub(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_fsub(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromFloat(toFloat(op->data) - toFloat(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_dsub(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    double num1 = toDouble((high1 << 32) | low1);
+    double num2 = toDouble((high2 << 32) | low2);
+    uint64_t result = fromDouble(num1 - num2);
+    printf("dsub result: %lf\n", toDouble(result));
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_imul(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -853,15 +929,47 @@ void instruction_imul(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_lmul(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 * num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_fmul(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromFloat(toFloat(op->data) * toFloat(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_dmul(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    double num1 = toDouble((high1 << 32) | low1);
+    double num2 = toDouble((high2 << 32) | low2);
+    uint64_t result = fromDouble(num1 * num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_idiv(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -877,15 +985,47 @@ void instruction_idiv(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_ldiv(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 / num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_fdiv(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromFloat(toFloat(op->data) / toFloat(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_ddiv(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    double num1 = toDouble((high1 << 32) | low1);
+    double num2 = toDouble((high2 << 32) | low2);
+    uint64_t result = fromDouble(num1 / num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_irem(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -903,15 +1043,49 @@ void instruction_irem(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_lrem(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 - (num1/num2) * num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_frem(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) -
+    (toInt32(op->data)/toInt32(op2->data)) *
+    toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_drem(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    double num1 = toDouble((high1 << 32) | low1);
+    double num2 = toDouble((high2 << 32) | low2);
+    uint64_t result = fromDouble(num1 - (num1/num2) * num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_ineg(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -922,15 +1096,36 @@ void instruction_ineg(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_lneg(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1;
+    OperandInfo *op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    uint64_t result = fromInt64(0 - num1);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_fneg(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32(0 - toInt32(op->data));
+    pushOperand(frame, op);
+    frame->pc++;
 }
 
 void instruction_dneg(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1;
+    OperandInfo *op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    double num1 = toDouble((high1 << 32) | low1);
+    uint64_t result = fromDouble(0 - num1);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_ishl(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -946,15 +1141,27 @@ void instruction_ishl(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_lshl(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 << (num2 & 0x3F));
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_ishr(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame);
     OperandInfo *op = popOperand(frame);
 
-    printf("***********************************************************\n");
-    printf ("OP1: %d\tOP2: %d",toInt32(op->data),toInt32(op2->data));
+    // printf("***********************************************************\n");
+    // printf ("OP1: %d\tOP2: %d",toInt32(op->data),toInt32(op2->data));
     op->data = fromInt32(toInt32(op->data) >> (toInt32(op2->data) & 0x1F));
 
     pushOperand(frame, op);
@@ -964,7 +1171,19 @@ void instruction_ishr(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_lshr(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 >> (num2 & 0x3F));
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_iushr(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -988,23 +1207,75 @@ void instruction_iand(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_land(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 & num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_ior(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) | toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lor(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 | num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_ixor(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
 
+    op->data = fromInt32(toInt32(op->data) ^ toInt32(op2->data));
+
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lxor(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 ^ num2);
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_iinc(Frame* frame, ClassFile* class_files, int class_files_count) {
