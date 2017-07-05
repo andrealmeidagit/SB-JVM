@@ -650,7 +650,16 @@ void instruction_astore_3(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_iastore(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op_value = popOperand(frame);
+    OperandInfo *op_index = popOperand(frame);
+    OperandInfo *op_array = popOperand(frame);
+    int32_t * apointer = (int32_t *) toPointer(op_array->data);
+    if (apointer == NULL){
+        fprintf(stderr, "INSTRUCTION IASTORE: NullPointerException\n");
+        exit(EXIT_FAILURE);
+    }
+    apointer[op_index->data] = toInt32 (op_value->data);
+    frame->pc+=1;
 }
 
 void instruction_lastore(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -690,7 +699,12 @@ void instruction_pop2(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_dup(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo * op = popOperand(frame);
+    OperandInfo * op2 = newOperand(op->data);
+    op2->ispointer = op->ispointer;
+    pushOperand(frame, op);
+    pushOperand(frame, op2);
+    frame->pc+=1;
 }
 
 void instruction_dup_x1(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -774,7 +788,7 @@ void instruction_lsub(Frame* frame, ClassFile* class_files, int class_files_coun
     int64_t num1 = toInt64((high1 << 32) | low1);
     int64_t num2 = toInt64((high2 << 32) | low2);
     uint64_t result = fromInt64(num1 - num2);
-    printf("lsub result: %ld\n", toInt64(result));
+    printf("lsub result: %lld\n", toInt64(result));
     uint64_t high_res = result >> 32;
     uint64_t low_res = result & 0x00000000FFFFFFFF;
     pushOperand(frame, newOperand(high_res));
