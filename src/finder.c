@@ -8,8 +8,6 @@ MethodInfo* findMethod(const char* method_name, ClassFile* class_file) {
         if (strcmp((const char*)method_name_constant.CONSTANT.Utf8_info.bytes, method_name) == 0)
             return method_info;
     }
-    fprintf(stderr, "[ERROR]: MethodNameNotFoundError: %s\n", method_name);
-    exit(EXIT_FAILURE);
     return NULL;
 }
 

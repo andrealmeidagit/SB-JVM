@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+void validateArguments(int argc, char* argv[]);
 void checkArgumentAmount(int argc);
 void checkFileExtension(char* file_name);
 int checkOutputOption(char* op);
