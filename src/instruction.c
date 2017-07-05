@@ -1856,22 +1856,16 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             break;
         case 'L':
             aux = (char*) malloc (strlen(parameter_descriptor)-2);
-            for (i = 0, j = 1; i<strlen(parameter_descriptor)-2; i++, j++)
-            {
+            for (i = 0, j = 1; parameter_descriptor[j] != ';'; i++, j++)
                 aux[i]=parameter_descriptor[j];
-            }
             aux[i]='\0';
             // puts (aux);
             op = popOperand(frame);
-            if (strcmp (aux, "java/lang/String")==0)
-            {
+            if (strcmp (aux, "java/lang/String")==0) {
                 print_from_index(frame, op->data-1);
                 printf("\n");
-
             }else
-            {
-                printf("Case 'java/io/PrintStream'. Do nothing.\n");
-            }
+                printf("Case %s. Do nothing.\n", aux);
 
             break;
         case 'S':
