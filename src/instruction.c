@@ -408,7 +408,6 @@ void instruction_iload_0(Frame* frame, ClassFile* class_files, int class_files_c
 
 void instruction_iload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     pushOperand(frame, newOperand(frame->local_variables[1]));
-    printf("ILOAD1: %d\n", toInt32(frame->local_variables[1]));
     frame->pc+=1;
 }
 
@@ -718,19 +717,31 @@ void instruction_dstore_3(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_astore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+  OperandInfo *op = popOperand(frame);
+  frame->local_variables[0]=op->data;
+  free (op);
+  frame->pc+=1;
 }
 
 void instruction_astore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[1]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_astore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[2]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_astore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    frame->local_variables[3]=op->data;
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_iastore(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1600,7 +1611,7 @@ void instruction_return(Frame* frame, ClassFile* class_files, int class_files_co
 void instruction_getstatic(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
-    printf("index: %u\n", index);
+    //printf("index: %u\n", index);
     printConstantFF(frame, index-1);
     frame->pc += 3;
 }
@@ -1618,7 +1629,7 @@ void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
-    int verbose = 1;
+    int verbose = 0;
 
     uint16_t i=1;
     uint16_t j, k, y;
