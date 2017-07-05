@@ -7,6 +7,5 @@ output_backup\.txt
 a.out
 *.exe
 /[Dd]ocs/
-[Dd]oxyfile
 *.class
 jvm

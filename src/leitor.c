@@ -1,5 +1,10 @@
 #include "leitor.h"
 
+/** Função readByte: Lê apenas 1 byte do arquivo apontado por fp.
+    @param[in] fp Ponteiro que aponta para o arquivo .class.
+    @param[out] byte Retorna 1 byte.
+
+*/
 static uint8_t readByte(FILE* fp) {
     uint8_t byte;
     fread(&byte, 1, 1, fp);
@@ -10,6 +15,11 @@ static uint8_t readByte(FILE* fp) {
     return byte;
 }
 
+/** Função read2Byte: Lê 2 bytes do arquivo apontado por fp.
+    @param[in] fp Ponteiro que aponta para o arquivo .class.
+    @param[out] byte Retorna 2 byte.
+
+*/
 static uint16_t read2Byte(FILE* fp) {
     uint16_t byte2;
     byte2 = readByte(fp);
@@ -17,6 +27,10 @@ static uint16_t read2Byte(FILE* fp) {
     return byte2;
 }
 
+/** Função readByte: Lê 4 bytes do arquivo apontado por fp.
+    @param[in] fp Ponteiro que aponta para o arquivo .class.
+    @param[out] byte Retorna 4 byte.
+*/
 static uint32_t read4Byte(FILE* fp) {
     uint32_t byte4;
     byte4 = read2Byte(fp);
@@ -24,6 +38,15 @@ static uint32_t read4Byte(FILE* fp) {
     return byte4;
 }
 
+/** Função readConstantPool: Lê o número de constantes primeiramente,
+e em seguida analisa a tag para saber o Tipo de Constante e realiza a operação
+de acordo.    
+    @param[in]  class_file Arquivo .class file.
+                fp_class_file Endereço do .class file.
+
+    @param[out] Tamanho do Array ConstantPool.
+
+*/
 static void readConstantPool(ClassFile* class_file, FILE* fp_class_file) {
     uint16_t /*i,*/ j;
     class_file->constant_pool_count = read2Byte(fp_class_file);  // le o numero de elementos na CONSTANTE pool
