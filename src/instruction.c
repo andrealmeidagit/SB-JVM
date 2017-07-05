@@ -397,14 +397,9 @@ void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_aload(Frame* frame, ClassFile* class_files, int class_files_count) {
-<<<<<<< HEAD
-
-
-=======
     uint8_t index = getByteAt(frame, frame->pc+1);
     pushOperand(frame, newOperand(frame->local_variables[index]));
     frame->pc += 2;
->>>>>>> naves
 }
 
 void instruction_iload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
