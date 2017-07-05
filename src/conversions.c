@@ -60,13 +60,49 @@ uint64_t fromDouble(double num) {
     return result;
 }
 
-uint32_t* toPointer(uint32_t address) {
+uint64_t* toPointerUI64(uint32_t address) {
+    uint64_t* pointer;
+    memcpy(&pointer, &address, sizeof(uint64_t*));
+    return pointer;
+}
+
+uint32_t fromPointerUI64(uint64_t* pointer) {
+    uint32_t address;
+    memcpy(&address, &pointer, sizeof(uint32_t));
+    return address;
+}
+
+uint32_t* toPointerUI32(uint32_t address) {
     uint32_t* pointer;
     memcpy(&pointer, &address, sizeof(uint32_t*));
     return pointer;
 }
 
-uint32_t fromPointer(uint32_t* pointer) {
+uint32_t fromPointerUI32(uint32_t* pointer) {
+    uint32_t address;
+    memcpy(&address, &pointer, sizeof(uint32_t));
+    return address;
+}
+
+uint16_t* toPointerUI16(uint32_t address) {
+    uint16_t* pointer;
+    memcpy(&pointer, &address, sizeof(uint16_t*));
+    return pointer;
+}
+
+uint32_t fromPointerUI16(uint16_t* pointer) {
+    uint32_t address;
+    memcpy(&address, &pointer, sizeof(uint32_t));
+    return address;
+}
+
+uint8_t* toPointerUI8(uint32_t address) {
+    uint8_t* pointer;
+    memcpy(&pointer, &address, sizeof(uint8_t*));
+    return pointer;
+}
+
+uint32_t fromPointerUI8(uint8_t* pointer) {
     uint32_t address;
     memcpy(&address, &pointer, sizeof(uint32_t));
     return address;

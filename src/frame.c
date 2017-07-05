@@ -28,6 +28,7 @@ OperandInfo* newOperand(uint32_t data){
     OperandInfo *operand = (OperandInfo*)malloc(sizeof(OperandInfo));
     operand->data = data;
     operand->previous = NULL;
+    operand->ispointer = 0;
     return operand;
 }
 

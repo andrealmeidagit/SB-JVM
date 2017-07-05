@@ -8,6 +8,7 @@
 #include "finder.h"
 
 struct OperandInfo {
+    uint32_t ispointer;
     uint32_t data;
     struct OperandInfo *previous;
 };
