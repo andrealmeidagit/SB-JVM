@@ -398,6 +398,7 @@ void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_cou
 
 void instruction_aload(Frame* frame, ClassFile* class_files, int class_files_count) {
 
+
 }
 
 void instruction_iload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -446,22 +447,34 @@ void instruction_lload_3(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_fload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     pushOperand(frame, newOperand(frame->local_variables[0]));
+    if (verbose)
+        printf("fload: %f", toFloat(frame->local_variables[0]));
     frame->pc += 1;
 }
 
 void instruction_fload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     pushOperand(frame, newOperand(frame->local_variables[1]));
+    if (verbose)
+        printf("fload: %f", toFloat(frame->local_variables[1]));
     frame->pc += 1;
 }
 
 void instruction_fload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     pushOperand(frame, newOperand(frame->local_variables[2]));
+    if (verbose)
+        printf("fload: %f", toFloat(frame->local_variables[2]));
     frame->pc += 1;
 }
 
 void instruction_fload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     pushOperand(frame, newOperand(frame->local_variables[3]));
+    if (verbose)
+        printf("fload: %f", toFloat(frame->local_variables[3]));
     frame->pc += 1;
 }
 
@@ -664,29 +677,41 @@ void instruction_lstore_3(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_fstore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
     frame->local_variables[0]=op->data;
+    if (verbose)
+        printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_fstore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
     frame->local_variables[1]=op->data;
+    if (verbose)
+        printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_fstore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
     frame->local_variables[2]=op->data;
+    if (verbose)
+        printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_fstore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
     frame->local_variables[3]=op->data;
+    if (verbose)
+        printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
     frame->pc+=1;
 }
@@ -1230,11 +1255,34 @@ void instruction_lshr(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_iushr(Frame* frame, ClassFile* class_files, int class_files_count) {
+    UNTESTED_INSTRUCTION_WARNING;
+    OperandInfo *op2 = popOperand(frame);
+    OperandInfo *op = popOperand(frame);
+    // printf("***********************************************************\n");
+    // printf ("OP1: %d\tOP2: %d",toInt32(op->data),toInt32(op2->data));
+    op->data = (op->data) >> ((op2->data) & 0x1F);
 
+    pushOperand(frame, op);
+    free(op2);
+
+    frame->pc+=1;
 }
 
 void instruction_lushr(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    uint64_t num1 = ((high1 << 32) | low1);
+    uint64_t num2 = ((high2 << 32) | low2);
+    uint64_t result = (num1 >> (num2 & 0x3F));
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_iand(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1360,39 +1408,111 @@ void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_l2i(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint32_t high, low;
+    OperandInfo *op;
+    op = popOperand(frame); low = op->data; free(op);
+    op = popOperand(frame); high = op->data; free(op);
+    pushOperand (frame, newOperand(low));
+    frame->pc+=1;
 }
 
 void instruction_l2f(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint32_t high, low;
+    OperandInfo *op;
+    op = popOperand(frame); low = op->data; free(op);
+    op = popOperand(frame); high = op->data; free(op);
+    low = fromFloat((float)(toInt64((((uint64_t)high << 32) | (uint64_t)low))));
+    pushOperand (frame, newOperand(low));
+    frame->pc+=1;
 }
 
 void instruction_l2d(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint32_t high, low;
+    uint64_t dodododoub;
+    OperandInfo *op;
+    op = popOperand(frame); low = op->data; free(op);
+    op = popOperand(frame); high = op->data; free(op);
+    dodododoub = fromDouble((double)(toInt64((((uint64_t)high << 32) | (uint64_t)low))));
+    low = fromInt64((int64_t)dodododoub);
+    high = fromInt64((int64_t)(dodododoub >> 32));
+    pushOperand (frame, newOperand(high));
+    pushOperand (frame, newOperand(low));
+    frame->pc+=1;
 }
 
 void instruction_f2i(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32((int32_t)(toFloat(op->data)));
+    pushOperand (frame, op);
+    frame->pc+=1;
 }
 
 void instruction_f2l(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint32_t zero = 0;
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32((int32_t)(toFloat(op->data)));
+    pushOperand(frame, newOperand(zero));
+    pushOperand (frame, op);
+    frame->pc+=1;
 }
 
 void instruction_f2d(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint64_t dodododoub;
+    uint32_t high, low;
+    OperandInfo *op = popOperand(frame); free(op);
+    dodododoub = fromDouble((double)(fromFloat(op->data)));
+    low = fromInt64((int64_t)dodododoub);
+    high = fromInt64((int64_t)(dodododoub >> 32));
+    pushOperand (frame, newOperand(high));
+    pushOperand (frame, newOperand(low));
+    frame->pc+=1;
 }
 
 void instruction_d2i(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+  UNTESTED_INSTRUCTION_WARNING;
+  uint32_t high, low;
+  uint64_t dodododoub;
+  OperandInfo *op;
+  op = popOperand(frame); low = op->data; free(op);
+  op = popOperand(frame); high = op->data; free(op);
+  dodododoub = fromDouble(((uint64_t)high << 32) | (uint64_t)low);
+  low = fromInt64((int64_t)dodododoub);
+  pushOperand (frame, newOperand(low));
+  frame->pc+=1;
 }
 
 void instruction_d2l(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint32_t high, low;
+    uint64_t dodododoub;
+    OperandInfo *op;
+    op = popOperand(frame); low = op->data; free(op);
+    op = popOperand(frame); high = op->data; free(op);
+    dodododoub = fromDouble(((uint64_t)high << 32) | (uint64_t)low);
+    low = fromInt64((int64_t)dodododoub);
+    high = fromInt64((int64_t)(dodododoub >> 32));
+    pushOperand (frame, newOperand(high));
+    pushOperand (frame, newOperand(low));
+    frame->pc+=1;
 }
 
 void instruction_d2f(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    UNTESTED_INSTRUCTION_WARNING;
+    uint32_t high, low;
+    double dodododoub;
+    OperandInfo *op;
+    op = popOperand(frame); low = op->data; free(op);
+    op = popOperand(frame); high = op->data; free(op);
+    dodododoub = toDouble(((uint64_t)high << 32) | (uint64_t)low);
+    low = fromFloat((float)dodododoub);
+    pushOperand (frame, newOperand(low));
+    frame->pc+=1;
 }
 
 void instruction_i2b(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1768,7 +1888,7 @@ void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
-    int verbose = 1;
+    uint8_t verbose = 0;
 
     uint16_t i=1;
     uint16_t j, k, y;

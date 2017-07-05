@@ -12,10 +12,10 @@ Alunos: 		Gabriel Naves da Silva 				12/0011867
 
 /**
  * @file main.c
- * @brief Execução do programa pela função 'main'. 
+ * @brief Execução do programa pela função 'main'.
  */
 
-/** Inclusão de bibliotecas para checagem de argumentos, leitura do arquivo .class em bytecode, exibição dos 
+/** Inclusão de bibliotecas para checagem de argumentos, leitura do arquivo .class em bytecode, exibição dos
 campos do bytecode, criação de frames, implementação de instruções.
 */
 #include "argument_checks.h"
@@ -39,7 +39,7 @@ campos do bytecode, criação de frames, implementação de instruções.
  *  Estando tudo correto, o programa carrega o .class em uma ClassFile
  *
  *  Caso o programa esteja no modo EXIBIDOR, a função exibe o .class chamando a função showClassFile.
- *  
+ *
  *  Caso o programa esteja no modo JVM, a função começa a execução
  */
 int main(int argc, char* argv[]) {
