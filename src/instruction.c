@@ -510,10 +510,19 @@ void instruction_aload_3(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_iaload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // ConstantInfo * op_index = popOperand(frame);
-    // ConstantInfo * op_array = popOperand(frame);
-    //
-    // frame->pc+=1;
+    OperandInfo * op_index = popOperand(frame);
+    OperandInfo * op_array = popOperand(frame);
+    OperandInfo * op_value = NULL;
+    int32_t * apointer = (int32_t *) toPointer(op_array->data);
+    if (apointer == NULL){
+        fprintf(stderr, "INSTRUCTION IALOAD: NullPointerException\n");
+        exit(EXIT_FAILURE);
+    }
+    op_value = newOperand( apointer[toInt32(op_index->data)]);
+    pushOperand(frame, op_value);
+    free(op_index);
+    free(op_array);
+    frame->pc+=1;
 }
 
 void instruction_laload(Frame* frame, ClassFile* class_files, int class_files_count) {
