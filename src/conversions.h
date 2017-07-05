@@ -18,4 +18,7 @@ double toDouble(uint64_t num);
 uint32_t fromFloat(float num);
 uint64_t fromDouble(double num);
 
+uint32_t* toPointer(uint32_t address);
+uint32_t fromPointer(uint32_t* pointer);
+
 #endif /* CONVERSIONS_H_ */

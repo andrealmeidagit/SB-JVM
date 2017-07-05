@@ -59,3 +59,15 @@ uint64_t fromDouble(double num) {
     memcpy(&result, &num, sizeof(uint64_t));
     return result;
 }
+
+uint32_t* toPointer(uint32_t address) {
+    uint32_t* pointer;
+    memcpy(&pointer, &address, sizeof(uint32_t*));
+    return pointer;
+}
+
+uint32_t fromPointer(uint32_t* pointer) {
+    uint32_t address;
+    memcpy(&address, &pointer, sizeof(uint32_t));
+    return address;
+}
