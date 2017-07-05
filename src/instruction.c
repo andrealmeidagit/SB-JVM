@@ -283,14 +283,14 @@ void instruction_fconst_2(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_dconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     uint64_t num = fromDouble(1);
     pushOperand(frame, newOperand(num >> 32));
     pushOperand(frame, newOperand(num & 0x00000000FFFFFFFF));
@@ -716,9 +716,9 @@ void instruction_dstore_2(Frame* frame, ClassFile* class_files, int class_files_
     OperandInfo *op = popOperand(frame); //hi
     frame->local_variables[2]=op->data;
     frame->local_variables[3]=op2->data;
-    int64_t debug1 = op->data, debug2 = op2->data;
-    int64_t result = toInt64((debug1 << 32) | debug2);
-    printf("\n\n\nPRINTOU AQUI: %lf\n\n\n\n", toDouble(result));
+    // int64_t debug1 = op->data, debug2 = op2->data;
+    // int64_t result = toInt64((debug1 << 32) | debug2);
+    // printf("\n\n\nPRINTOU AQUI: %lf\n\n\n\n", toDouble(result));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -1396,19 +1396,25 @@ void instruction_d2f(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_i2b(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32((int32_t)((int8_t)toInt32(op->data)));
+    pushOperand(frame, op);
+    frame->pc+=1;
 }
 
 void instruction_i2c(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    printf("eh noix %d/n", toInt32(op->data));
-    op->data = op->data & 0x0000FFFF;
+    op->data = fromInt32(toInt32(op->data) & 0x0000FFFF);
+
     pushOperand(frame, op);
     frame->pc+=1;
 }
 
 void instruction_i2s(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    OperandInfo *op = popOperand(frame);
+    op->data = fromInt32((int32_t)((int16_t)(op->data)));
+    pushOperand(frame, op);
+    frame->pc+=1;
 }
 
 void instruction_lcmp(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -1762,7 +1768,7 @@ void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
-    int verbose = 0;
+    int verbose = 1;
 
     uint16_t i=1;
     uint16_t j, k, y;
@@ -1825,12 +1831,15 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     {
         case 'B':
             printf("implementar field_type->byte\n" );
+            op = popOperand(frame);
+            // printUTF8
+            printf("BYTE: %d\n", toInt8(op->data));
             break;
         case 'C':
             printf("implementar field_type->char\n" );
             op = popOperand(frame);
             // printUTF8
-            printf ("CHAR: %c\n", ((char)(op->data))+1);
+            printf ("CHAR: %c\n", (char)(op->data));
             break;
         case 'D':
             op = popOperand(frame);
@@ -1856,26 +1865,23 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             break;
         case 'L':
             aux = (char*) malloc (strlen(parameter_descriptor)-2);
-            for (i = 0, j = 1; i<strlen(parameter_descriptor)-2; i++, j++)
-            {
+            for (i = 0, j = 1; parameter_descriptor[j] != ';'; i++, j++)
                 aux[i]=parameter_descriptor[j];
-            }
             aux[i]='\0';
             // puts (aux);
             op = popOperand(frame);
-            if (strcmp (aux, "java/lang/String")==0)
-            {
+            if (strcmp (aux, "java/lang/String")==0) {
                 print_from_index(frame, op->data-1);
                 printf("\n");
-
             }else
-            {
-                printf("Case 'java/io/PrintStream'. Do nothing.\n");
-            }
+                printf("Case %s. Do nothing.\n", aux);
 
             break;
         case 'S':
             printf("implementar field_type->short\n" );
+            op = popOperand(frame);
+            // printUTF8
+            printf("SHORT: %d\n", op->data);
             break;
         case 'Z':
             printf("implementar field_type->bool\n" );
