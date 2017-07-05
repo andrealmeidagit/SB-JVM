@@ -375,7 +375,7 @@ void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_cou
     // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
 
-    printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
+    // printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
     pushOperand(frame, newOperand(frame->local_variables[index]));
     pushOperand(frame, newOperand(frame->local_variables[index+1]));
     frame->pc += 2;
@@ -943,7 +943,7 @@ void instruction_ladd(Frame* frame, ClassFile* class_files, int class_files_coun
     int64_t num1 = toInt64((high1 << 32) | low1);
     int64_t num2 = toInt64((high2 << 32) | low2);
     uint64_t result = fromInt64(num1 + num2);
-    printf("ladd result: %lld\n", toInt64(result));
+    // printf("ladd result: %lld\n", toInt64(result));
     uint64_t high_res = result >> 32;
     uint64_t low_res = result & 0x00000000FFFFFFFF;
     pushOperand(frame, newOperand(high_res));
@@ -1462,11 +1462,12 @@ void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_l2i(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    uint32_t high, low;
+    uint64_t high, low;
     OperandInfo *op;
     op = popOperand(frame); low = op->data; free(op);
     op = popOperand(frame); high = op->data; free(op);
-    pushOperand (frame, newOperand(low));
+    int64_t value = toInt64((high << 32) | low);
+    pushOperand (frame, newOperand(fromInt32((int32_t)value)));
     frame->pc+=1;
 }
 
@@ -1516,14 +1517,13 @@ void instruction_f2l(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_f2d(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    uint64_t dodododoub;
-    uint32_t high, low;
-    OperandInfo *op = popOperand(frame); free(op);
-    dodododoub = fromDouble((double)(fromFloat(op->data)));
-    low = fromInt64((int64_t)dodododoub);
-    high = fromInt64((int64_t)(dodododoub >> 32));
-    pushOperand (frame, newOperand(high));
-    pushOperand (frame, newOperand(low));
+    OperandInfo* float_op = popOperand(frame);
+    uint64_t res = fromDouble((double)(toFloat(float_op->data)));
+    uint64_t high = res >> 32;
+    uint64_t low = res & 0xFFFFFFFF;
+    pushOperand(frame, newOperand(high));
+    pushOperand(frame, newOperand(low));
+    free(float_op);
     frame->pc+=1;
 }
 
