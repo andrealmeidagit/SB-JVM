@@ -746,7 +746,6 @@ void instruction_dadd(Frame* frame, ClassFile* class_files, int class_files_coun
     double num1 = toDouble((high1 << 32) | low1);
     double num2 = toDouble((high2 << 32) | low2);
     uint64_t result = fromDouble(num1 + num2);
-    printf("dadd result: %lf\n", toDouble(result));
     uint64_t high_res = result >> 32;
     uint64_t low_res = result & 0x00000000FFFFFFFF;
     pushOperand(frame, newOperand(high_res));
@@ -767,7 +766,20 @@ void instruction_isub(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_lsub(Frame* frame, ClassFile* class_files, int class_files_count) {
-
+    uint64_t high1, low1, high2, low2;
+    OperandInfo *op = popOperand(frame); low2 = op->data; free(op);
+    op = popOperand(frame); high2 = op->data; free(op);
+    op = popOperand(frame); low1 = op->data; free(op);
+    op = popOperand(frame); high1 = op->data; free(op);
+    int64_t num1 = toInt64((high1 << 32) | low1);
+    int64_t num2 = toInt64((high2 << 32) | low2);
+    uint64_t result = fromInt64(num1 - num2);
+    printf("lsub result: %ld\n", toInt64(result));
+    uint64_t high_res = result >> 32;
+    uint64_t low_res = result & 0x00000000FFFFFFFF;
+    pushOperand(frame, newOperand(high_res));
+    pushOperand(frame, newOperand(low_res));
+    frame->pc++;
 }
 
 void instruction_fsub(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -951,7 +963,7 @@ void instruction_iinc(Frame* frame, ClassFile* class_files, int class_files_coun
 
 void instruction_i2l(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    uint64_t aux = fromLong((long)toInt32(op->data));
+    uint64_t aux = fromInt64((uint64_t)toInt32(op->data));
     OperandInfo *op2 = newOperand((uint32_t)aux);
     op->data = (uint32_t)(aux >> 32); //hi
     pushOperand (frame, op2);
@@ -1232,67 +1244,40 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
 
     //********************************//
 
-    if (parameter_descriptor[0]=='B')
-        i = 1;
-    else if (parameter_descriptor[0]=='C')
-        i = 2;
-    else if (parameter_descriptor[0]=='D')
-        i = 3;
-    else if (parameter_descriptor[0]=='F')
-        i = 4;
-    else if (parameter_descriptor[0]=='I')
-        i = 5;
-    else if (parameter_descriptor[0]=='J')
-        i = 6;
-    else if (parameter_descriptor[0]=='L')
-        i = 7;
-    else if (parameter_descriptor[0]=='S')
-        i = 8;
-    else if (parameter_descriptor[0]=='Z')
-        i = 9;
-    else if (parameter_descriptor[0]=='[')
-        i = 10;
-    else
-        i = 0;
-
-    switch (i)
+    switch (parameter_descriptor[0])
     {
-        case 1:
+        case 'B':
             printf("implementar field_type->byte\n" );
             break;
-        case 2:
+        case 'C':
             printf("implementar field_type->char\n" );
             op = popOperand(frame);
             // printUTF8
             printf ("CHAR: %c\n", ((char)(op->data))+1);
             break;
-        case 3:
-            // printf("implementar field_type->double\n" );
+        case 'D':
             op = popOperand(frame);
             op2 = popOperand(frame);
-            aux_double = ((uint64_t)op->data) << 32;
-            aux_double = aux_double | (uint64_t)op2->data;
+            aux_double = ((uint64_t)op2->data) << 32;
+            aux_double = aux_double | (uint64_t)op->data;
             printf("%lf\n", toDouble(aux_double));
             break;
-        case 4:
-            // printf("implementar field_type->float\n" );
+        case 'F':
             op = popOperand(frame);
             printf("%f\n", toFloat(op->data));
             break;
-        case 5:
-            // printf("implementar field_type->int\n" );
+        case 'I':
             op = popOperand(frame);
             printf("%d\n", toInt32(op->data));
-
             break;
-        case 6:
+        case 'J':
             op = popOperand(frame);
             op2 = popOperand(frame);
-            aux_long = ((uint64_t)op->data) << 32;
-            aux_long = aux_long | (uint64_t)op2->data;
-            printf("%ld\n", toLong(aux_long));
+            aux_long = ((uint64_t)op2->data) << 32;
+            aux_long = aux_long | (uint64_t)op->data;
+            printf("%lld\n", toInt64(aux_long));
             break;
-        case 7:
+        case 'L':
             aux = (char*) malloc (strlen(parameter_descriptor)-2);
             for (i = 0, j = 1; i<strlen(parameter_descriptor)-2; i++, j++)
             {
@@ -1311,13 +1296,13 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             }
 
             break;
-        case 8:
+        case 'S':
             printf("implementar field_type->short\n" );
             break;
-        case 9:
+        case 'Z':
             printf("implementar field_type->bool\n" );
             break;
-        case 10:
+        case '[':
             printf("implementar field_type->array\n" );
             break;
         default:

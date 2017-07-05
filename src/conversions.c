@@ -1,5 +1,11 @@
 #include "conversions.h"
 
+int64_t toInt64(uint64_t num) {
+    int64_t result;
+    memcpy(&result, &num, sizeof(int64_t));
+    return result;
+}
+
 int32_t toInt32(uint32_t num) {
     int32_t result;
     memcpy(&result, &num, sizeof(int32_t));
@@ -12,10 +18,15 @@ int16_t toInt16(uint16_t num) {
     return result;
 }
 
-
 int8_t toInt8(uint8_t num) {
     int8_t result;
     memcpy(&result, &num, sizeof(int8_t));
+    return result;
+}
+
+uint64_t fromInt64(int64_t num) {
+    uint64_t result;
+    memcpy(&result, &num, sizeof(uint64_t));
     return result;
 }
 
@@ -49,12 +60,6 @@ double toDouble(uint64_t num) {
     return result;
 }
 
-long toLong(uint64_t num) {
-    long result;
-    memcpy(&result, &num, sizeof(long));
-    return result;
-}
-
 uint32_t fromFloat(float num) {
     uint32_t result;
     memcpy(&result, &num, sizeof(uint32_t));
@@ -62,12 +67,6 @@ uint32_t fromFloat(float num) {
 }
 
 uint64_t fromDouble(double num) {
-    uint64_t result;
-    memcpy(&result, &num, sizeof(uint64_t));
-    return result;
-}
-
-uint64_t fromLong(long num) {
     uint64_t result;
     memcpy(&result, &num, sizeof(uint64_t));
     return result;
