@@ -79,6 +79,10 @@ static void printConstant(FILE* stream, ClassFile* class_file, uint16_t index) {
       break;
     case Const_Double:   //tag5
         fprintf(stream, "Double:\t\t \n\t- High Bytes:\t #%#010x\n\t- Low Bytes:\t #%#010x\n", p->CONSTANT.Double_info.high_bytes, p->CONSTANT.Double_info.low_bytes);
+        uint32_t high = p->CONSTANT.Double_info.high_bytes;
+        uint32_t low = p->CONSTANT.Double_info.low_bytes;
+        uint64_t mostra_double = fromDouble(((uint64_t)high << 32) | (uint64_t)low);
+        fprintf(stream, "\t- Double:\t #%lf\n", (double)mostra_double);
         break;
     case Const_Class:   //tag7
         fprintf(stream, "Class:\t\t #%u\t // ", p->CONSTANT.Class_info.name_index);
