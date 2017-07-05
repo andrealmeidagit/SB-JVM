@@ -1,3 +1,8 @@
+/** @file main.c
+ *  @brief Arquivo possui a inicialização da JVM.
+ *   
+ *  Este arquivo possui a função inicial de começo da JVM e do leitor-exibidor
+ */
 #include "argument_checks.h"
 #include "leitor.h"
 #include "exibidor.h"
@@ -9,6 +14,19 @@
 // #define __EXIBIDOR__
 #define __JVM__
 
+/** @brief Função de inicialização da JVM ou do leitor-exibidor
+ *
+ *  @param[in] argc
+ *  @param[in] argv
+ *
+ *
+ *  A função main checa a corretude do número de parâmetros recebidos e do tipo de arquivo recebido .class.
+ *  Estando tudo correto, o programa carrega o .class em uma ClassFile
+ *
+ *  Caso o programa esteja no modo EXIBIDOR, a função exibe o .class chamando a função showClassFile.
+ *  
+ *  Caso o programa esteja no modo JVM, a função começa a execução
+ */
 int main(int argc, char* argv[]) {
     ClassFile input_class;
     checkArgumentAmount(argc);
