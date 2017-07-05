@@ -26,7 +26,7 @@ campos do bytecode, criação de frames, implementação de instruções.
 #include "interpreter.h"
 #include "instruction.h"
 
-// #define __EXIBIDOR__
+#define __EXIBIDOR__
 #define __JVM__
 
 /** @brief Função de inicialização da JVM ou do leitor-exibidor

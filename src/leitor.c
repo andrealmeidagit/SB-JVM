@@ -40,7 +40,7 @@ static uint32_t read4Byte(FILE* fp) {
 
 /** Função readConstantPool: Lê o número de constantes primeiramente,
 e em seguida analisa a tag para saber o Tipo de Constante e realiza a operação
-de acordo.    
+de acordo.
     @param[in]  class_file Arquivo .class file.
                 fp_class_file Endereço do .class file.
 
@@ -378,6 +378,10 @@ ClassFile readClassFile(char* file_name) {
     ClassFile class_file;
     fp = fopen(file_name, "rb");
     class_file.magic = read4Byte(fp);
+        if(class_file.magic != 0XCAFEBABE){
+            printf( "INVALID MAGIC NUMBER\n");
+            exit(EXIT_FAILURE);
+        }
     class_file.minor_version = read2Byte(fp);
     class_file.major_version = read2Byte(fp);
     readConstantPool(&class_file, fp);
