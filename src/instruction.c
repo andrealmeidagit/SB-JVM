@@ -1517,14 +1517,13 @@ void instruction_f2l(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_f2d(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    uint64_t dodododoub;
-    uint32_t high, low;
-    OperandInfo *op = popOperand(frame); free(op);
-    dodododoub = fromDouble((double)(fromFloat(op->data)));
-    low = fromInt64((int64_t)dodododoub);
-    high = fromInt64((int64_t)(dodododoub >> 32));
-    pushOperand (frame, newOperand(high));
-    pushOperand (frame, newOperand(low));
+    OperandInfo* float_op = popOperand(frame);
+    uint64_t res = fromDouble((double)(toFloat(float_op->data)));
+    uint64_t high = res >> 32;
+    uint64_t low = res & 0xFFFFFFFF;
+    pushOperand(frame, newOperand(high));
+    pushOperand(frame, newOperand(low));
+    free(float_op);
     frame->pc+=1;
 }
 
