@@ -702,6 +702,9 @@ void instruction_dstore_2(Frame* frame, ClassFile* class_files, int class_files_
     OperandInfo *op = popOperand(frame); //hi
     frame->local_variables[2]=op->data;
     frame->local_variables[3]=op2->data;
+    int64_t debug1 = op->data, debug2 = op2->data;
+    int64_t result = toInt64((debug1 << 32) | debug2);
+    printf("\n\n\nPRINTOU AQUI: %lf\n\n\n\n", toDouble(result));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -1286,12 +1289,14 @@ void instruction_iinc(Frame* frame, ClassFile* class_files, int class_files_coun
 }
 
 void instruction_i2l(Frame* frame, ClassFile* class_files, int class_files_count) {
-    OperandInfo *op = popOperand(frame);
-    uint64_t aux = fromInt64((uint64_t)toInt32(op->data));
-    OperandInfo *op2 = newOperand((uint32_t)aux);
-    op->data = (uint32_t)(aux >> 32); //hi
-    pushOperand (frame, op2);
-    pushOperand (frame, op);
+    OperandInfo *op = popOperand(frame); //lo
+    uint64_t aux = fromInt64((int64_t)toInt32(op->data));
+    uint64_t high_res = aux >> 32;
+    uint64_t low_res = aux & 0x00000000FFFFFFFF;
+
+    pushOperand (frame, newOperand(high_res));
+    pushOperand (frame, newOperand(low_res));
+    free(op);
     frame->pc+=1;
 }
 
@@ -1303,15 +1308,14 @@ void instruction_i2f(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count) {
-    OperandInfo *op = popOperand(frame);
+    OperandInfo *op = popOperand(frame); //lo
     uint64_t aux = fromDouble((double)toInt32(op->data));
-    OperandInfo *op2 = newOperand((uint32_t)aux);
+    uint64_t high_res = aux >> 32;
+    uint64_t low_res = aux & 0x00000000FFFFFFFF;
 
-    op->data = (uint32_t)(aux >> 32); //hi
-
-    // printf("->i2d: %d\n", toInt32(op->data));
-    pushOperand (frame, op2);
-    pushOperand (frame, op);
+    pushOperand (frame, newOperand(high_res));
+    pushOperand (frame, newOperand(low_res));
+    free(op);
     frame->pc+=1;
 }
 
@@ -1388,27 +1392,99 @@ void instruction_dcmpg(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_ifeq(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint16_t branch;
 
+    if(toInt32(op->data) == 0)
+    {
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }
+    else {
+        frame->pc += 3;
+    }
+    free(op);
 }
 
 void instruction_ifne(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint16_t branch;
 
+    if(toInt32(op->data) != 0)
+    {
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }
+    else {
+        frame->pc += 3;
+    }
+    free(op);
 }
 
 void instruction_iflt(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint16_t branch;
 
+    if(toInt32(op->data) < 0)
+    {
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }
+    else {
+        frame->pc += 3;
+    }
+    free(op);
 }
 
 void instruction_ifge(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint16_t branch;
 
+    if(toInt32(op->data) >= 0)
+    {
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }
+    else {
+        frame->pc += 3;
+    }
+    free(op);
 }
 
 void instruction_ifgt(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint16_t branch;
 
+    if(toInt32(op->data) > 0)
+    {
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }
+    else {
+        frame->pc += 3;
+    }
+    free(op);
 }
 
 void instruction_ifle(Frame* frame, ClassFile* class_files, int class_files_count) {
+    OperandInfo *op = popOperand(frame);
+    uint16_t branch;
 
+    if(toInt32(op->data) <= 0)
+    {
+        branch = getByteAt(frame, frame->pc+1);
+        branch = (branch << 8) | getByteAt(frame, frame->pc+2);
+        frame->pc += toInt16(branch);
+    }
+    else {
+        frame->pc += 3;
+    }
+    free(op);
 }
 
 void instruction_if_icmpeq(Frame* frame, ClassFile* class_files, int class_files_count) {
