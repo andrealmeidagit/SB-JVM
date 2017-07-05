@@ -1275,7 +1275,7 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             op2 = popOperand(frame);
             aux_long = ((uint64_t)op2->data) << 32;
             aux_long = aux_long | (uint64_t)op->data;
-            printf("%lu\n", toInt64(aux_long));
+            printf("%lld\n", toInt64(aux_long));
             break;
         case 'L':
             aux = (char*) malloc (strlen(parameter_descriptor)-2);
