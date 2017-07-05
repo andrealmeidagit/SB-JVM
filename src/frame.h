@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "leitor.h"
 #include "finder.h"
+#include "conversions.h"
 
 uint32_t FRAME_AMOUNT;
 
