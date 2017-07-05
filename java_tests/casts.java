@@ -1,5 +1,5 @@
 public class casts {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         int a = 1456;
         System.out.println((byte)a);
         System.out.println((short)a);

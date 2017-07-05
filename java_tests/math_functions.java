@@ -1,5 +1,5 @@
 public class math_functions {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         System.out.println(sum(4, 14));
         System.out.println(sub(4, 14));
         System.out.println(mul(4, 14));
