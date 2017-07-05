@@ -1,8 +1,23 @@
-/** @file main.c
- *  @brief Arquivo possui a inicialização da JVM.
- *   
- *  Este arquivo possui a função inicial de começo da JVM e do leitor-exibidor
+/*
+Universidade de Brasília - 01/2017
+Software Básico - Turma A
+Projeto Java Virtual Machine
+
+Alunos: 		Gabriel Naves da Silva 				12/0011867
+				Fernando Lucchesi Alencar 			11/0060571
+				Filipe Pereira Fortes 				09/0113799
+				André Abreu Rodrigues de Almeida	12/0007100
+				Ricardo Hideki Ito 					12/0045818
+*/
+
+/**
+ * @file main.c
+ * @brief Execução do programa pela função 'main'. 
  */
+
+/** Inclusão de bibliotecas para checagem de argumentos, leitura do arquivo .class em bytecode, exibição dos 
+campos do bytecode, criação de frames, implementação de instruções.
+*/
 #include "argument_checks.h"
 #include "leitor.h"
 #include "exibidor.h"
@@ -28,11 +43,17 @@
  *  Caso o programa esteja no modo JVM, a função começa a execução
  */
 int main(int argc, char* argv[]) {
+
+	/** Verificação do arquivo .class. Checa quantidade de parametros, extensão do arquivo. 	*/
+
     validateArguments(argc, argv);
 
     ClassFile input_classes[argc-2];
     for(int i = 2, k = 0; i < argc; ++i, ++k)
         input_classes[k] = readClassFile(argv[i]);
+
+
+    /** Exibição do arquivo .class se o código EXIBIDOR estiver definido. */
 
 #ifdef __EXIBIDOR__
     int output_to_terminal = checkOutputOption(argv[1]);
@@ -42,6 +63,8 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < argc-2; ++i)
         showClassFile(output_to_terminal ? stdout : fp, &(input_classes[i]));
 #endif
+
+    /** @brief Busca, Execução do Método e Criação de Frames recursivamente. */
 
 #ifdef __JVM__
     FRAME_AMOUNT = 0;
