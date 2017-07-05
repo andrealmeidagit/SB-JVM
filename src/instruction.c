@@ -1605,6 +1605,7 @@ void instruction_putfield(Frame* frame, ClassFile* class_files, int class_files_
 
 void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_files_count) {
     int verbose = 1;
+
     uint16_t i=1;
     uint16_t j, k, y;
     uint64_t aux_double, aux_long;
@@ -1614,6 +1615,7 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     char * aux;
     OperandInfo *op = (OperandInfo*) malloc(sizeof(OperandInfo));
     OperandInfo *op2 = (OperandInfo*) malloc(sizeof(OperandInfo));
+
 
     uint16_t index = findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+1];
     index = (index << 8) | findCodeAttribute(frame->method_info, frame->constant_pool)->u.Code.code[frame->pc+2];
@@ -1778,7 +1780,46 @@ void instruction_new(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint16_t count, atype;
 
+    void* pointer  = NULL;
+
+    OperandInfo * op = popOperand(frame);
+    count = op->data;
+    free(op);
+
+    if (count < 0) {
+      fprintf(stderr, "INSTRUCTION NEWARRAY: NegativeArraySizeException\n");
+      exit(EXIT_FAILURE);
+    }
+    atype = getByteAt(frame, frame->pc+1);
+
+    const int T_BOOLEAN =  4;
+    const int T_CHAR    =  5;
+    const int T_FLOAT   =  6;
+    const int T_DOUBLE  =  7;
+    const int T_BYTE    =  8;
+    const int T_SHORT   =  9;
+    const int T_INT     =  10;
+    const int T_LONG    =  11;
+
+    if(atype == T_BOOLEAN || atype == T_BYTE)
+        pointer = calloc(count, sizeof(uint8_t));
+    else if(atype == T_CHAR || atype == T_SHORT)
+        pointer = calloc (count, sizeof(uint16_t));
+    else if(atype == T_FLOAT || atype == T_INT)
+        pointer = calloc (count, sizeof(uint32_t));
+    else if(atype == T_DOUBLE || atype == T_LONG)
+        pointer = calloc (count, sizeof(uint64_t));
+    else{
+      fprintf(stderr, "INSTRUCTION NEWARRAY: Invalid ATYPE\n");
+      exit(EXIT_FAILURE);
+    }
+
+    op = newOperand(fromPointer(pointer));
+    op->ispointer = 1;
+    pushOperand(frame, op);
+    frame->pc += 2;
 }
 
 void instruction_anewarray(Frame* frame, ClassFile* class_files, int class_files_count) {

@@ -19,6 +19,8 @@ void freeFrame(Frame* frame) {
     free(frame->local_variables);
     while (frame->operand_stack != NULL) {
         OperandInfo* op = popOperand(frame);
+        if (op->ispointer)
+            free(toPointer(op->data));
         free(op);
     }
     free(frame);
@@ -40,6 +42,7 @@ OperandInfo* newOperand(uint32_t data){
     OperandInfo* operand = (OperandInfo*)malloc(sizeof(OperandInfo));
     operand->data = data;
     operand->previous = NULL;
+    operand->ispointer = 0;
     return operand;
 }
 

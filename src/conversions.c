@@ -72,13 +72,13 @@ uint64_t fromDouble(double num) {
     return result;
 }
 
-uint32_t* toPointer(uint32_t address) {
-    uint32_t* pointer;
-    memcpy(&pointer, &address, sizeof(uint32_t*));
+void* toPointer(uint32_t address) {
+    void* pointer;
+    memcpy(&pointer, &address, sizeof(void*));
     return pointer;
 }
 
-uint32_t fromPointer(uint32_t* pointer) {
+uint32_t fromPointer(void* pointer) {
     uint32_t address;
     memcpy(&address, &pointer, sizeof(uint32_t));
     return address;
