@@ -1,0 +1,12 @@
+output.txt
+output_javap.txt
+jam/
+
+output_backup\.txt
+
+a.out
+*.exe
+/[Dd]ocs/
+[Dd]oxyfile
+
+*.class

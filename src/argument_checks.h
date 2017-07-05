@@ -7,5 +7,6 @@
 
 void checkArgumentAmount(int argc);
 void checkFileExtension(char* file_name);
+int checkOutputOption(char* op);
 
 #endif /* ARGUMENT_CHECKS_H_ */
