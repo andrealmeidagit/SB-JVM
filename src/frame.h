@@ -10,6 +10,7 @@
 uint32_t FRAME_AMOUNT;
 
 struct OperandInfo {
+    uint32_t ispointer;
     uint32_t data;
     struct OperandInfo *previous;
 };

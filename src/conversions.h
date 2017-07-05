@@ -20,7 +20,13 @@ double toDouble(uint64_t num);
 uint32_t fromFloat(float num);
 uint64_t fromDouble(double num);
 
-uint32_t* toPointer(uint32_t address);
-uint32_t fromPointer(uint32_t* pointer);
+uint64_t* toPointerUI64(uint32_t address);
+uint32_t fromPointerUI64(uint64_t* pointer);
+uint32_t* toPointerUI32(uint32_t address);
+uint32_t fromPointerUI32(uint32_t* pointer);
+uint16_t* toPointerUI16(uint32_t address);
+uint32_t fromPointerUI16(uint16_t* pointer);
+uint8_t* toPointerUI8(uint32_t address);
+uint32_t fromPointerUI8(uint8_t* pointer);
 
 #endif /* CONVERSIONS_H_ */
