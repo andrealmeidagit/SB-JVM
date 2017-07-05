@@ -283,14 +283,14 @@ void instruction_fconst_2(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_dconst_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     pushOperand(frame, newOperand(0));
     pushOperand(frame, newOperand(0));
     frame->pc++;
 }
 
 void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    UNTESTED_INSTRUCTION_WARNING;
+    // UNTESTED_INSTRUCTION_WARNING;
     uint64_t num = fromDouble(1);
     pushOperand(frame, newOperand(num >> 32));
     pushOperand(frame, newOperand(num & 0x00000000FFFFFFFF));
@@ -716,9 +716,9 @@ void instruction_dstore_2(Frame* frame, ClassFile* class_files, int class_files_
     OperandInfo *op = popOperand(frame); //hi
     frame->local_variables[2]=op->data;
     frame->local_variables[3]=op2->data;
-    int64_t debug1 = op->data, debug2 = op2->data;
-    int64_t result = toInt64((debug1 << 32) | debug2);
-    printf("\n\n\nPRINTOU AQUI: %lf\n\n\n\n", toDouble(result));
+    // int64_t debug1 = op->data, debug2 = op2->data;
+    // int64_t result = toInt64((debug1 << 32) | debug2);
+    // printf("\n\n\nPRINTOU AQUI: %lf\n\n\n\n", toDouble(result));
     free (op2);
     free (op);
     frame->pc+=1;
