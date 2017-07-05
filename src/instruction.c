@@ -1462,11 +1462,12 @@ void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_l2i(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    uint32_t high, low;
+    uint64_t high, low;
     OperandInfo *op;
     op = popOperand(frame); low = op->data; free(op);
     op = popOperand(frame); high = op->data; free(op);
-    pushOperand (frame, newOperand(low));
+    int64_t value = toInt64((high << 32) | low);
+    pushOperand (frame, newOperand(fromInt32((int32_t)value)));
     frame->pc+=1;
 }
 
