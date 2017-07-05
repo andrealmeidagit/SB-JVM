@@ -22,7 +22,7 @@ void printConstantFF(Frame* frame, uint16_t index) {
         printf("Integer:\t\t #%u\n", p->CONSTANT.Integer_info.bytes);
         break;
     case Const_Float:   //tag4
-        printf("Float:\t\t #%f\n", p->CONSTANT.Float_info.bytes);
+        printf("Float:\t\t #%f\n", (float) p->CONSTANT.Float_info.bytes);
         break;
     case Const_Long:   //tag5
         printf("Long:\t\t #%u\t#%u\n", p->CONSTANT.Long_info.high_bytes, p->CONSTANT.Long_info.low_bytes);
