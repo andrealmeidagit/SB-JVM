@@ -1,3 +1,15 @@
 output.txt
 output_javap.txt
 jam/
+
+output_backup\.txt
+
+a.out
+*.exe
+/[Dd]ocs/
+*.class
+jvm
+
+java_tests/array_test.class
+
+java_tests/fibonacci.class

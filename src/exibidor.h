@@ -10,6 +10,8 @@
 
 #include "leitor.h"
 #include "access_flags.h"
+#include "opcode_array.h"
+#include "conversions.h"
 
 void showClassFile(FILE* stream, ClassFile* class_file);
 
