@@ -298,8 +298,9 @@ void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_bipush(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint8_t data = getByteAt(frame, frame->pc+1);
-    pushOperand(frame, newOperand(data));
+    uint8_t byte = getByteAt(frame, frame->pc+1);
+    uint32_t value = fromInt32((uint32_t)toInt8(byte));
+    pushOperand(frame, newOperand(value));
     frame->pc += 2;
 }
 
