@@ -524,9 +524,12 @@ void instruction_aload_3(Frame* frame, ClassFile* class_files, int class_files_c
 }
 
 void instruction_iaload(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     OperandInfo * op_index = popOperand(frame);
     OperandInfo * op_array = popOperand(frame);
     int32_t * pointer = (int32_t *) toPointer(op_array->data);
+    if (verbose)
+        printf("index: %u\tarray pointer: %p\n", op_index->data, pointer);
     if (pointer == NULL){
         fprintf(stderr, "IALOAD: NullPointerException\n");
         exit(EXIT_FAILURE);
@@ -939,17 +942,30 @@ void instruction_dup_x2(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_dup2(Frame* frame, ClassFile* class_files, int class_files_count) {
+    uint8_t verbose = 0;
     UNTESTED_INSTRUCTION_WARNING;
     OperandInfo * op = popOperand(frame);
     OperandInfo * op2 = newOperand(op->data);
     OperandInfo * op3 = popOperand(frame);
-    OperandInfo * op4 = newOperand(op->data);
+    OperandInfo * op4 = newOperand(op3->data);
     op2->ispointer = op->ispointer;
     op4->ispointer = op3->ispointer;
+    if (verbose)
+        printf("POP %u\n", op->data);
+    if (verbose)
+        printf("POP %u\n", op3->data);
     pushOperand(frame, op3);
     pushOperand(frame, op);
     pushOperand(frame, op4);
     pushOperand(frame, op2);
+    if (verbose)
+        printf("PUSH %u\n", op3->data);
+    if (verbose)
+        printf("PUSH %u\n", op->data);
+    if (verbose)
+        printf("PUSH %u\n", op4->data);
+    if (verbose)
+        printf("PUSH %u\n", op2->data);
     frame->pc+=1;
 }
 
@@ -958,7 +974,7 @@ void instruction_dup2_x1(Frame* frame, ClassFile* class_files, int class_files_c
   OperandInfo * op = popOperand(frame);
   OperandInfo * op2 = newOperand(op->data);
   OperandInfo * op3 = popOperand(frame);
-  OperandInfo * op4 = newOperand(op->data);
+  OperandInfo * op4 = newOperand(op3->data);
   OperandInfo * op5 = popOperand(frame);
   op2->ispointer = op->ispointer;
   op4->ispointer = op3->ispointer;
@@ -975,7 +991,7 @@ void instruction_dup2_x2(Frame* frame, ClassFile* class_files, int class_files_c
   OperandInfo * op = popOperand(frame);
   OperandInfo * op2 = newOperand(op->data);
   OperandInfo * op3 = popOperand(frame);
-  OperandInfo * op4 = newOperand(op->data);
+  OperandInfo * op4 = newOperand(op3->data);
   OperandInfo * op5 = popOperand(frame);
   OperandInfo * op6 = popOperand(frame);
   op2->ispointer = op->ispointer;

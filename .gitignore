@@ -9,3 +9,7 @@ a.out
 /[Dd]ocs/
 *.class
 jvm
+
+java_tests/array_test.class
+
+java_tests/fibonacci.class
