@@ -298,16 +298,17 @@ void instruction_dconst_1(Frame* frame, ClassFile* class_files, int class_files_
 }
 
 void instruction_bipush(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint8_t data = getByteAt(frame, frame->pc+1);
-    pushOperand(frame, newOperand(data));
+    uint8_t byte = getByteAt(frame, frame->pc+1);
+    uint32_t value = fromInt32((uint32_t)toInt8(byte));
+    pushOperand(frame, newOperand(value));
     frame->pc += 2;
 }
 
 void instruction_sipush(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint16_t data = getByteAt(frame, frame->pc+1);
-    uint16_t data2 = getByteAt(frame, frame->pc+2);
-    pushOperand(frame, newOperand(fromInt16((toInt16(data)<<8)|toInt16(data2))));
-    // printf("%d \n", ((toInt16(data)<<8)|toInt16(data2)));
+    uint16_t immediate = getByteAt(frame, frame->pc+1);
+    immediate = (immediate << 8) | getByteAt(frame, frame->pc+2);
+    uint32_t value = fromInt32((int32_t)toInt16(immediate));
+    pushOperand(frame, newOperand(value));
     frame->pc += 3;
 }
 
@@ -350,7 +351,7 @@ void instruction_ldc_w(Frame* frame, ClassFile* class_files, int class_files_cou
             op->data = constant.CONSTANT.String_info.string_index;
             break;
         default:
-        fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
+            fprintf(stderr, "[ERROR]: LDC requested unsupported constant\n");
     }
     pushOperand(frame, op);
     frame->pc += 3;
@@ -589,7 +590,7 @@ void instruction_caload(Frame* frame, ClassFile* class_files, int class_files_co
 }
 
 void instruction_saload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    OperandInfo* op = popOperand(frame); uint32_t index = op->data; free(op);
+    OperandInfo* op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
     op = popOperand(frame); int16_t* arrayref = (int16_t*)toPointer(op->data); free(op);
     uint32_t value = fromInt32((int32_t)arrayref[index]);
     pushOperand(frame, newOperand(value));
@@ -887,7 +888,7 @@ void instruction_castore(Frame* frame, ClassFile* class_files, int class_files_c
 
 void instruction_sastore(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo* op = popOperand(frame); uint32_t bytes = op->data; free(op);
-    int16_t value = toInt16(bytes);
+    int16_t value = (int16_t)toInt32(bytes);
     op = popOperand(frame); int32_t index = toInt32(op->data); free(op);
     op = popOperand(frame); int16_t* pointer = (int16_t*)toPointer(op->data); free(op);
     pointer[index] = value;
@@ -2273,7 +2274,7 @@ void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_
     else if(atype == T_DOUBLE || atype == T_LONG)
         pointer = calloc (count, sizeof(uint64_t));
     else {
-        fprintf(stderr, "INSTRUCTION NEWARRAY: Invalid ATYPE\n");
+        fprintf(stderr, "[ERROR]: newarray: unknown atype: %u\n", atype);
         exit(EXIT_FAILURE);
     }
 
