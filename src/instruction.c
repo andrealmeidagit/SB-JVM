@@ -2131,16 +2131,12 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
     switch (parameter_descriptor[0])
     {
         case 'B':
-            printf("implementar field_type->byte\n" );
             op = popOperand(frame);
-            // printUTF8
-            printf("BYTE: %d\n", toInt8(op->data));
+            printf("%d\n", toInt8(op->data));
             break;
         case 'C':
-            printf("implementar field_type->char\n" );
             op = popOperand(frame);
-            // printUTF8
-            printf ("CHAR: %c\n", (char)(op->data));
+            printf ("%c\n", (char)(op->data));
             break;
         case 'D':
             op = popOperand(frame);
@@ -2169,30 +2165,30 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             for (i = 0, j = 1; parameter_descriptor[j] != ';'; i++, j++)
                 aux[i]=parameter_descriptor[j];
             aux[i]='\0';
-            // puts (aux);
             op = popOperand(frame);
             if (strcmp (aux, "java/lang/String")==0) {
                 print_from_index(frame, op->data-1);
                 printf("\n");
-            }else
-                printf("Case %s. Do nothing.\n", aux);
-
+            }else{
+                printf("Method '%s' is not treated. Instruction will be skipped.\nPress any key to continue.", aux);
+                getchar();
+            }
             break;
         case 'S':
             printf("implementar field_type->short\n" );
             op = popOperand(frame);
-            // printUTF8
-            printf("SHORT: %d\n", op->data);
+            printf("%d\n", toInt16(op->data));
             break;
         case 'Z':
-            printf("implementar field_type->bool\n" );
+            op = popOperand(frame);
+            printf("%d\n", toInt8(op->data));
             break;
         case '[':
-            printf("implementar field_type->array\n" );
+            printf("invokevirtual -> 'println(array type)': not implemented.\n" );
             break;
         default:
-            printf("FIELD TYPE DOES NOT EXIST!!! Base Type Character:%c\n", parameter_descriptor[0]);
-            exit(EXIT_FAILURE);
+            printf("\n");
+
     }
 
     /*********************************************/
