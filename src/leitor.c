@@ -379,7 +379,7 @@ ClassFile readClassFile(char* file_name) {
     fp = fopen(file_name, "rb");
     class_file.magic = read4Byte(fp);
         if(class_file.magic != 0XCAFEBABE){
-            printf( "INVALID MAGIC NUMBER\n");
+            fprintf(stderr, "INVALID MAGIC NUMBER\n");
             exit(EXIT_FAILURE);
         }
     class_file.minor_version = read2Byte(fp);
