@@ -2130,37 +2130,37 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
 
     switch (parameter_descriptor[0])
     {
-        case 'B':
+        case 'B': // Byte
             op = popOperand(frame);
-            printf("%d\n", toInt8(op->data));
+            printf("%d\n", (uint32_t)toInt8(op->data));
             break;
-        case 'C':
+        case 'C': // Char
             op = popOperand(frame);
             printf ("%c\n", (char)(op->data));
             break;
-        case 'D':
+        case 'D': // Double
             op = popOperand(frame);
             op2 = popOperand(frame);
             aux_double = ((uint64_t)op2->data) << 32;
             aux_double = aux_double | (uint64_t)op->data;
             printf("%lf\n", toDouble(aux_double));
             break;
-        case 'F':
+        case 'F': // Float
             op = popOperand(frame);
             printf("%f\n", toFloat(op->data));
             break;
-        case 'I':
+        case 'I': // Int
             op = popOperand(frame);
             printf("%d\n", toInt32(op->data));
             break;
-        case 'J':
+        case 'J': // Long
             op = popOperand(frame);
             op2 = popOperand(frame);
             aux_long = ((uint64_t)op2->data) << 32;
             aux_long = aux_long | (uint64_t)op->data;
             printf("%lld\n", toInt64(aux_long));
             break;
-        case 'L':
+        case 'L': // Reference
             aux = (char*) malloc (strlen(parameter_descriptor)-2);
             for (i = 0, j = 1; parameter_descriptor[j] != ';'; i++, j++)
                 aux[i]=parameter_descriptor[j];
@@ -2169,22 +2169,17 @@ void instruction_invokevirtual(Frame* frame, ClassFile* class_files, int class_f
             if (strcmp (aux, "java/lang/String")==0) {
                 print_from_index(frame, op->data-1);
                 printf("\n");
-            }else{
-                printf("Method '%s' is not treated. Instruction will be skipped.\nPress any key to continue.", aux);
-                getchar();
             }
             break;
-        case 'S':
-            printf("implementar field_type->short\n" );
+        case 'S': // Short
             op = popOperand(frame);
             printf("%d\n", toInt16(op->data));
             break;
-        case 'Z':
+        case 'Z': // Boolean
             op = popOperand(frame);
-            printf("%d\n", toInt8(op->data));
+            printf("%s\n", toInt8(op->data) == 0 ? "False" : "True");
             break;
-        case '[':
-            printf("invokevirtual -> 'println(array type)': not implemented.\n" );
+        case '[': // Reference (one array dimension)
             break;
         default:
             printf("\n");
