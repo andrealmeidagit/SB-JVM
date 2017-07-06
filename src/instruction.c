@@ -367,7 +367,7 @@ void instruction_ldc2_w(Frame* frame, ClassFile* class_files, int class_files_co
 
 void instruction_iload(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t index = getByteAt(frame, frame->pc+1);
-    pushOperand(frame, newOperand(frame->local_variables[index]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[index])));
     frame->pc += 2;
 }
 
@@ -375,151 +375,150 @@ void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_cou
     // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
 
-    printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index] << 32 | frame->local_variables[index+1]) );
-    pushOperand(frame, newOperand(frame->local_variables[index]));
-    pushOperand(frame, newOperand(frame->local_variables[index+1]));
+    printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index].data << 32 | frame->local_variables[index+1].data) );
+    pushOperand(frame, dupOperand(&(frame->local_variables[index])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[index+1])));
     frame->pc += 2;
 }
 
 void instruction_fload(Frame* frame, ClassFile* class_files, int class_files_count) {
     // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
-    pushOperand(frame, newOperand(frame->local_variables[index]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[index])));
     frame->pc += 2;
 }
 
 void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_count) {
     // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
-    pushOperand(frame, newOperand(frame->local_variables[index]));
-    pushOperand(frame, newOperand(frame->local_variables[index+1]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[index])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[index+1])));
     frame->pc += 2;
 }
 
 void instruction_aload(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t index = getByteAt(frame, frame->pc+1);
-    pushOperand(frame, newOperand(frame->local_variables[index]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[index])));
     frame->pc += 2;
 }
 
 void instruction_iload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[0]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[0])));
     frame->pc+=1;
 }
 
 void instruction_iload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
     frame->pc+=1;
 }
 
 void instruction_iload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
     frame->pc+=1;
 }
 
 void instruction_iload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
     frame->pc+=1;
 }
 
 void instruction_lload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[0]));
-    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[0])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
     frame->pc += 1;
 }
 
 void instruction_lload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
-    pushOperand(frame, newOperand(frame->local_variables[1]));
-    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
     frame->pc += 1;
 }
 
 void instruction_lload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[2]));
-    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
     frame->pc += 1;
 }
 
 void instruction_lload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[3]));
-    pushOperand(frame, newOperand(frame->local_variables[4]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[4])));
     frame->pc += 1;
 }
 
 void instruction_fload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
-    pushOperand(frame, newOperand(frame->local_variables[0]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[0])));
     if (verbose)
-        printf("fload: %f", toFloat(frame->local_variables[0]));
+        printf("fload: %f", toFloat(frame->local_variables[0].data));
     frame->pc += 1;
 }
 
 void instruction_fload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
-    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
     if (verbose)
-        printf("fload: %f", toFloat(frame->local_variables[1]));
+        printf("fload: %f", toFloat(frame->local_variables[1].data));
     frame->pc += 1;
 }
 
 void instruction_fload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
-    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
     if (verbose)
-        printf("fload: %f", toFloat(frame->local_variables[2]));
+        printf("fload: %f", toFloat(frame->local_variables[2].data));
     frame->pc += 1;
 }
 
 void instruction_fload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
-    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
     if (verbose)
-        printf("fload: %f", toFloat(frame->local_variables[3]));
+        printf("fload: %f", toFloat(frame->local_variables[3].data));
     frame->pc += 1;
 }
 
 void instruction_dload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[0]));
-    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[0])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
     frame->pc += 1;
 }
 
 void instruction_dload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[1]));
-    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
     frame->pc += 1;
 }
 
 void instruction_dload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[2]));
-    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
     frame->pc += 1;
 }
 
 void instruction_dload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[3]));
-    pushOperand(frame, newOperand(frame->local_variables[4]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
+    pushOperand(frame, dupOperand(&(frame->local_variables[4])));
     frame->pc += 1;
 }
 
 void instruction_aload_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[0]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[0])));
     frame->pc+=1;
 }
 
 void instruction_aload_1(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[1]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[1])));
     frame->pc+=1;
 }
 
 void instruction_aload_2(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[2]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[2])));
     frame->pc+=1;
 }
 
 void instruction_aload_3(Frame* frame, ClassFile* class_files, int class_files_count) {
-    pushOperand(frame, newOperand(frame->local_variables[3]));
+    pushOperand(frame, dupOperand(&(frame->local_variables[3])));
     frame->pc+=1;
 }
 
@@ -534,7 +533,7 @@ void instruction_iaload(Frame* frame, ClassFile* class_files, int class_files_co
         fprintf(stderr, "IALOAD: NullPointerException\n");
         exit(EXIT_FAILURE);
     }
-    pushOperand(frame, newOperand(pointer[toInt32(op_index->data)]));
+    pushOperand(frame, newOperand(fromInt32(pointer[toInt32(op_index->data)])));
     free(op_index);
     free(op_array);
     frame->pc+=1;
@@ -600,7 +599,7 @@ void instruction_saload(Frame* frame, ClassFile* class_files, int class_files_co
 void instruction_istore(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
     uint8_t index = getByteAt(frame, frame->pc+1);
-    frame->local_variables[index]=op->data;
+    copyOperand(op, &(frame->local_variables[index]));
     free (op);
     frame->pc+=2;
 }
@@ -609,8 +608,8 @@ void instruction_lstore(Frame* frame, ClassFile* class_files, int class_files_co
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
     uint8_t index = getByteAt(frame, frame->pc+1);
-    frame->local_variables[index]=op->data;
-    frame->local_variables[index+1]=op2->data;
+    copyOperand(op, &(frame->local_variables[index]));
+    copyOperand(op2, &(frame->local_variables[index+1]));
     free (op2);
     free (op);
     frame->pc+=2;
@@ -619,7 +618,7 @@ void instruction_lstore(Frame* frame, ClassFile* class_files, int class_files_co
 void instruction_fstore(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
     uint8_t index = getByteAt(frame, frame->pc+1);
-    frame->local_variables[index]=op->data;
+    copyOperand(op, &(frame->local_variables[index]));
     free (op);
     frame->pc+=2;
 }
@@ -628,8 +627,8 @@ void instruction_dstore(Frame* frame, ClassFile* class_files, int class_files_co
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
     uint8_t index = getByteAt(frame, frame->pc+1);
-    frame->local_variables[index]=op->data;
-    frame->local_variables[index+1]=op2->data;
+    copyOperand(op, &(frame->local_variables[index]));
+    copyOperand(op2, &(frame->local_variables[index+1]));
     free (op2);
     free (op);
     frame->pc+=2;
@@ -638,35 +637,35 @@ void instruction_dstore(Frame* frame, ClassFile* class_files, int class_files_co
 void instruction_astore(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t index = getByteAt(frame, frame->pc+1);
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[index] = op->data;
+    copyOperand(op, &(frame->local_variables[index]));
     free(op);
     frame->pc += 2;
 }
 
 void instruction_istore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[0]=op->data;
+    copyOperand(op, &(frame->local_variables[0]));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_istore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[1]=op->data;
+    copyOperand(op, &(frame->local_variables[1]));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_istore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[2]=op->data;
+    copyOperand(op, &(frame->local_variables[2]));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_istore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[3]=op->data;
+    copyOperand(op, &(frame->local_variables[3]));
     free (op);
     frame->pc+=1;
 }
@@ -674,8 +673,8 @@ void instruction_istore_3(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_lstore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[0]=op->data;
-    frame->local_variables[1]=op2->data;
+    copyOperand(op, &(frame->local_variables[0]));
+    copyOperand(op2, &(frame->local_variables[1]));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -684,8 +683,8 @@ void instruction_lstore_0(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_lstore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[1]=op->data;
-    frame->local_variables[2]=op2->data;
+    copyOperand(op, &(frame->local_variables[1]));
+    copyOperand(op2, &(frame->local_variables[2]));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -694,8 +693,8 @@ void instruction_lstore_1(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_lstore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[2]=op->data;
-    frame->local_variables[3]=op2->data;
+    copyOperand(op, &(frame->local_variables[2]));
+    copyOperand(op2, &(frame->local_variables[3]));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -704,8 +703,8 @@ void instruction_lstore_2(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_lstore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[3]=op->data;
-    frame->local_variables[4]=op2->data;
+    copyOperand(op, &(frame->local_variables[3]));
+    copyOperand(op2, &(frame->local_variables[4]));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -714,7 +713,7 @@ void instruction_lstore_3(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_fstore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[0]=op->data;
+    copyOperand(op, &(frame->local_variables[0]));
     if (verbose)
         printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
@@ -724,7 +723,7 @@ void instruction_fstore_0(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_fstore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[1]=op->data;
+    copyOperand(op, &(frame->local_variables[1]));
     if (verbose)
         printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
@@ -734,7 +733,7 @@ void instruction_fstore_1(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_fstore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[2]=op->data;
+    copyOperand(op, &(frame->local_variables[2]));
     if (verbose)
         printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
@@ -744,7 +743,7 @@ void instruction_fstore_2(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_fstore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t verbose = 0;
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[3]=op->data;
+    copyOperand(op, &(frame->local_variables[3]));
     if (verbose)
         printf("FSTORE: %f\n", toFloat(op->data));
     free (op);
@@ -754,8 +753,8 @@ void instruction_fstore_3(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_dstore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[0]=op->data;
-    frame->local_variables[1]=op2->data;
+    copyOperand(op, &(frame->local_variables[0]));
+    copyOperand(op2, &(frame->local_variables[1]));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -764,8 +763,8 @@ void instruction_dstore_0(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_dstore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[1]=op->data;
-    frame->local_variables[2]=op2->data;
+    copyOperand(op, &(frame->local_variables[1]));
+    copyOperand(op2, &(frame->local_variables[2]));
     free (op2);
     free (op);
     frame->pc+=1;
@@ -774,8 +773,8 @@ void instruction_dstore_1(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_dstore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[2]=op->data;
-    frame->local_variables[3]=op2->data;
+    copyOperand(op, &(frame->local_variables[2]));
+    copyOperand(op2, &(frame->local_variables[3]));
     // int64_t debug1 = op->data, debug2 = op2->data;
     // int64_t result = toInt64((debug1 << 32) | debug2);
     // printf("\n\n\nPRINTOU AQUI: %lf\n\n\n\n", toDouble(result));
@@ -787,37 +786,37 @@ void instruction_dstore_2(Frame* frame, ClassFile* class_files, int class_files_
 void instruction_dstore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op2 = popOperand(frame); //lo
     OperandInfo *op = popOperand(frame); //hi
-    frame->local_variables[3]=op->data;
-    frame->local_variables[4]=op2->data;
+    copyOperand(op, &(frame->local_variables[3]));
+    copyOperand(op2, &(frame->local_variables[4]));
     free (op2);
     free (op);
     frame->pc+=1;
 }
 
 void instruction_astore_0(Frame* frame, ClassFile* class_files, int class_files_count) {
-  OperandInfo *op = popOperand(frame);
-  frame->local_variables[0]=op->data;
-  free (op);
-  frame->pc+=1;
+    OperandInfo *op = popOperand(frame);
+    copyOperand(op, &(frame->local_variables[0]));
+    free (op);
+    frame->pc+=1;
 }
 
 void instruction_astore_1(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[1]=op->data;
+    copyOperand(op, &(frame->local_variables[1]));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_astore_2(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[2]=op->data;
+    copyOperand(op, &(frame->local_variables[2]));
     free (op);
     frame->pc+=1;
 }
 
 void instruction_astore_3(Frame* frame, ClassFile* class_files, int class_files_count) {
     OperandInfo *op = popOperand(frame);
-    frame->local_variables[3]=op->data;
+    copyOperand(op, &(frame->local_variables[3]));
     free (op);
     frame->pc+=1;
 }
@@ -1515,8 +1514,8 @@ void instruction_lxor(Frame* frame, ClassFile* class_files, int class_files_coun
 
 void instruction_iinc(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint32_t index = getByteAt(frame, frame->pc+1);
-    int32_t value = toInt8(getByteAt(frame, frame->pc+2));
-    frame->local_variables[index] = fromInt32(toInt32(frame->local_variables[index]) + value);
+    int32_t value = (int32_t)toInt8(getByteAt(frame, frame->pc+2));
+    frame->local_variables[index].data = fromInt32(toInt32(frame->local_variables[index].data) + value);
     frame->pc+=3;
 }
 
@@ -1553,11 +1552,10 @@ void instruction_i2d(Frame* frame, ClassFile* class_files, int class_files_count
 
 void instruction_l2i(Frame* frame, ClassFile* class_files, int class_files_count) {
     UNTESTED_INSTRUCTION_WARNING;
-    uint32_t high, low;
-    OperandInfo *op;
-    op = popOperand(frame); low = op->data; free(op);
-    op = popOperand(frame); high = op->data; free(op);
-    pushOperand (frame, newOperand(low));
+    OperandInfo *low; low = popOperand(frame);
+    OperandInfo *high; high = popOperand(frame);
+    pushOperand(frame, low);
+    free(high);
     frame->pc+=1;
 }
 
@@ -2001,8 +1999,8 @@ void instruction_jsr(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_ret(Frame* frame, ClassFile* class_files, int class_files_count) {
-    uint8_t address = getByteAt(frame, frame->pc+1);
-    frame->pc = frame->local_variables[address];
+    uint8_t address_index = getByteAt(frame, frame->pc+1);
+    frame->pc = frame->local_variables[address_index].data;
 }
 
 void instruction_tableswitch(Frame* frame, ClassFile* class_files, int class_files_count) {
@@ -2228,7 +2226,7 @@ void instruction_invokestatic(Frame* frame, ClassFile* class_files, int class_fi
     uint32_t argument_amount = argumentAmountFromDescriptor(method_descriptor);
     for (int i = argument_amount - 1; i >= 0; --i) {
         OperandInfo* op = popOperand(frame);
-        new_frame->local_variables[i] = op->data;
+        copyOperand(op, &(new_frame->local_variables[i]));
         free(op);
     }
     runFrame(new_frame, class_files, class_files_count);
