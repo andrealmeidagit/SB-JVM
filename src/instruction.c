@@ -2254,7 +2254,7 @@ void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_
 
     void* pointer  = NULL;
 
-    OperandInfo * op = popOperand(frame);
+    OperandInfo* op = popOperand(frame);
     count = op->data;
     free(op);
 
@@ -2281,13 +2281,12 @@ void instruction_newarray(Frame* frame, ClassFile* class_files, int class_files_
         pointer = calloc (count, sizeof(uint32_t));
     else if(atype == T_DOUBLE || atype == T_LONG)
         pointer = calloc (count, sizeof(uint64_t));
-    else{
+    else {
         fprintf(stderr, "INSTRUCTION NEWARRAY: Invalid ATYPE\n");
         exit(EXIT_FAILURE);
     }
 
-    op = newOperand(fromPointer(pointer));
-    op->ispointer = 1;
+    op = newArrayOperand(fromPointer(pointer), count);
     pushOperand(frame, op);
     frame->pc += 2;
 }
@@ -2298,7 +2297,9 @@ void instruction_anewarray(Frame* frame, ClassFile* class_files, int class_files
 }
 
 void instruction_arraylength(Frame* frame, ClassFile* class_files, int class_files_count) {
-    INSTRUCTION_NOT_IMPLEMENTED_ERROR;
+    OperandInfo *arrayref = popOperand(frame);
+    pushOperand(frame, newOperand(arrayref->array_length));
+    free(arrayref);
     frame->pc++;
 }
 
