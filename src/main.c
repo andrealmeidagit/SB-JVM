@@ -26,8 +26,8 @@ campos do bytecode, criação de frames, implementação de instruções.
 #include "interpreter.h"
 #include "instruction.h"
 
-// #define __EXIBIDOR__
-#define __JVM__
+#define __EXIBIDOR__	//ATIVA O EXIBIDOR
+#define __JVM__				//ATIVA A JVM
 
 /** @brief Função de inicialização da JVM ou do leitor-exibidor
  *
@@ -57,12 +57,13 @@ int main(int argc, char* argv[]) {
 
 #ifdef __EXIBIDOR__
     int output_to_terminal = checkOutputOption(argv[1]);
-    printf("%d\n", output_to_terminal);
+    //printf("%d\n", output_to_terminal);
     FILE *fp = NULL;
     if (!output_to_terminal)
         fp = fopen("output.txt", "w+");
     for (int i = 0; i < argc-2; ++i)
         showClassFile(output_to_terminal ? stdout : fp, &(input_classes[i]));
+		printf("*******************\n* Fim do exibidor *\n*******************\n\n");
 #endif
 
     /** @brief Busca, Execução do Método e Criação de Frames recursivamente. */

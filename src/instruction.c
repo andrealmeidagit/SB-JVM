@@ -314,7 +314,6 @@ void instruction_sipush(Frame* frame, ClassFile* class_files, int class_files_co
 
 void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count) {
     uint8_t constant_pool_index = getByteAt(frame, frame->pc + 1);
-    //printConstantFF(frame, constant_pool_index-1);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
     OperandInfo* op = (OperandInfo*)malloc(sizeof(OperandInfo));
     switch (constant.tag) {
@@ -335,7 +334,6 @@ void instruction_ldc(Frame* frame, ClassFile* class_files, int class_files_count
 }
 
 void instruction_ldc_w(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
     uint16_t constant_pool_index = getByteAt(frame, frame->pc+1);
     constant_pool_index = constant_pool_index << 8 | getByteAt(frame, frame->pc+2);
     ConstantInfo constant = frame->constant_pool[constant_pool_index - 1];
@@ -373,7 +371,6 @@ void instruction_iload(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
 
     printf ("lload: %lld\n", ((uint64_t)frame->local_variables[index].data << 32 | frame->local_variables[index+1].data) );
@@ -383,14 +380,12 @@ void instruction_lload(Frame* frame, ClassFile* class_files, int class_files_cou
 }
 
 void instruction_fload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
     pushOperand(frame, dupOperand(&(frame->local_variables[index])));
     frame->pc += 2;
 }
 
 void instruction_dload(Frame* frame, ClassFile* class_files, int class_files_count) {
-    // UNTESTED_INSTRUCTION_WARNING;
     uint8_t index = getByteAt(frame, frame->pc+1);
     pushOperand(frame, dupOperand(&(frame->local_variables[index])));
     pushOperand(frame, dupOperand(&(frame->local_variables[index+1])));
