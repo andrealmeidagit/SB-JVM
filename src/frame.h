@@ -12,6 +12,7 @@ uint32_t FRAME_AMOUNT;
 
 struct OperandInfo {
     uint32_t ispointer;
+    uint32_t array_length;
     uint32_t data;
     struct OperandInfo *previous;
 };
@@ -22,7 +23,7 @@ struct Frame {
     uint32_t pc;
     OperandInfo* operand_stack;
     uint32_t local_variable_count;
-    uint32_t* local_variables;
+    OperandInfo* local_variables;
     uint16_t constant_pool_count;
     ConstantInfo* constant_pool;
 
@@ -41,6 +42,10 @@ void freeFrame(Frame* frame);
 uint8_t getByteAt(Frame* frame, uint32_t index);
 
 OperandInfo* newOperand(uint32_t data);
+OperandInfo* newArrayOperand(uint32_t data, uint32_t array_length);
+OperandInfo* dupOperand(OperandInfo* operand);
+void copyOperand(OperandInfo* src, OperandInfo* dst);
+
 void pushOperand(Frame* frame, OperandInfo* operand);
 OperandInfo* popOperand(Frame* frame);
 
